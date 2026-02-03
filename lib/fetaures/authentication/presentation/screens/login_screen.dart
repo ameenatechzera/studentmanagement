@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:studentmanagement/fetaures/home_screen/presentation/screens/home_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -53,13 +54,13 @@ class LoginScreen extends StatelessWidget {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      // Navigator.of(context).push(
-                      //   MaterialPageRoute(
-                      //     builder: (context) {
-                      //       return LoginScreen();
-                      //     },
-                      //   ),
-                      // );
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return HomeScreen();
+                          },
+                        ),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xFFC4005F),
@@ -67,7 +68,7 @@ class LoginScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(4),
                       ),
                     ),
-                    child: Text('Next'),
+                    child: Text('Login'),
                   ),
                 ),
               ],
