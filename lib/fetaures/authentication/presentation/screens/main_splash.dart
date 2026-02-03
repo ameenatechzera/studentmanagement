@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:studentmanagement/fetaures/splashes/presentation/screens/second_splash.dart';
+import 'package:studentmanagement/fetaures/authentication/presentation/screens/second_splash.dart';
 
 class MainSplashScreen extends StatefulWidget {
   const MainSplashScreen({super.key});

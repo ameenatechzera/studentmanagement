@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:studentmanagement/fetaures/splashes/presentation/screens/main_splash.dart';
+import 'package:studentmanagement/fetaures/authentication/presentation/screens/main_splash.dart';
 
 void main() {
   runApp(const MyApp());
