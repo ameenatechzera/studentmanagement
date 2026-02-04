@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:studentmanagement/core/navigation/app_navigator.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/screens/third_splash.dart';
 
 class SecondSplashScreen extends StatelessWidget {
@@ -51,25 +52,22 @@ class SecondSplashScreen extends StatelessWidget {
                     ),
                     SizedBox(width: 20),
                     Expanded(
-                      child: Container(
-                        //width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) {
-                                  return ThirdSplashScreen();
-                                },
-                              ),
-                            );
-                          },
-                          child: Text('Next'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFFC4005F),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(4),
-                            ),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          AppNavigator.pushSlide(
+                            context: context,
+                            page: ThirdSplashScreen(),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFFC4005F),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(4),
                           ),
+                        ),
+                        child: Text(
+                          'Next',
+                          style: TextStyle(color: Colors.white),
                         ),
                       ),
                     ),

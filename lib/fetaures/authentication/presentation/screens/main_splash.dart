@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:studentmanagement/core/navigation/app_navigator.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/screens/second_splash.dart';
 
 class MainSplashScreen extends StatefulWidget {
@@ -14,10 +15,11 @@ class _MainSplashScreenState extends State<MainSplashScreen> {
     super.initState();
 
     Future.delayed(const Duration(seconds: 3), () {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const SecondSplashScreen()),
-      );
+      AppNavigator.pushSlide(context: context, page: SecondSplashScreen());
+      // Navigator.pushReplacement(
+      //   context,
+      //   MaterialPageRoute(builder: (context) => const SecondSplashScreen()),
+      // );
     });
   }
 

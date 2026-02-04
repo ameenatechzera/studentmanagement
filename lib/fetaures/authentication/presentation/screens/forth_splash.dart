@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:studentmanagement/core/navigation/app_navigator.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/screens/login_screen.dart';
 
 class ForthSplashScreen extends StatelessWidget {
@@ -55,12 +56,9 @@ class ForthSplashScreen extends StatelessWidget {
                         //width: double.infinity,
                         child: ElevatedButton(
                           onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) {
-                                  return LoginScreen();
-                                },
-                              ),
+                            AppNavigator.pushSlide(
+                              context: context,
+                              page: LoginScreen(),
                             );
                           },
                           style: ElevatedButton.styleFrom(
@@ -69,7 +67,10 @@ class ForthSplashScreen extends StatelessWidget {
                               borderRadius: BorderRadius.circular(4),
                             ),
                           ),
-                          child: Text('Next'),
+                          child: Text(
+                            'Next',
+                            style: TextStyle(color: Colors.white),
+                          ),
                         ),
                       ),
                     ),

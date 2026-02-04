@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:studentmanagement/fetaures/home_screen/presentation/screens/home_screen.dart';
+import 'package:studentmanagement/core/navigation/app_navigator.dart';
+import 'package:studentmanagement/fetaures/home_screen/presentation/screens/main_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -54,12 +55,9 @@ class LoginScreen extends StatelessWidget {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) {
-                            return HomeScreen();
-                          },
-                        ),
+                      AppNavigator.pushSlide(
+                        context: context,
+                        page: MainScreen(),
                       );
                     },
                     style: ElevatedButton.styleFrom(
@@ -68,7 +66,7 @@ class LoginScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(4),
                       ),
                     ),
-                    child: Text('Login'),
+                    child: Text('Login', style: TextStyle(color: Colors.white)),
                   ),
                 ),
               ],
