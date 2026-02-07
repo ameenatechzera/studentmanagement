@@ -10,7 +10,7 @@ class ApiConstants {
 
   /// Returns the full URL for Login endpoint
   static String getLoginPath(String baseUrl) {
-    return '$baseUrl/login';
+    return '$baseUrl/student-login';
   }
 
   ///for units fetching

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studentmanagement/core/navigation/app_navigator.dart';
+import 'package:studentmanagement/fetaures/authentication/domain/entities/login_entity.dart';
+import 'package:studentmanagement/fetaures/authentication/presentation/bloc/logincubit/login_cubit.dart';
 import 'package:studentmanagement/fetaures/classdiary/presentation/screens/alldiary_screen.dart';
 import 'package:studentmanagement/fetaures/fees/presentation/screens/fees_screen.dart';
 import 'package:studentmanagement/fetaures/marklist/presentation/screens/marklist_screen.dart';
@@ -7,7 +10,8 @@ import 'package:studentmanagement/fetaures/timetable/presentation/screens/timeta
 import 'package:studentmanagement/fetaures/materials/presentation/screens/materials_screen.dart';
 
 class StudentScreen extends StatelessWidget {
-  const StudentScreen({super.key});
+  final LoginResponseResult? loginResponse;
+  const StudentScreen({super.key,this.loginResponse});
 
   @override
   Widget build(BuildContext context) {
@@ -16,130 +20,132 @@ class StudentScreen extends StatelessWidget {
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(18, 14, 18, 18),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Student card
-              _StudentInfoCard(
-                name: "Serin Johnson",
-                phone: "9747958159",
-                classNo: "6",
-                std: "A",
-                rollNo: "23",
-              ),
-              const SizedBox(height: 30),
 
-              // Notification header
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
-                  Text(
-                    "Notification",
+              child:  Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Student card
+                  _StudentInfoCard(
+                    name: loginResponse!.student!.name,
+                    phone: loginResponse!.student!.landPhone.toString(),
+                    classNo:loginResponse!.student!.previousClass.toString(),
+                    std:loginResponse!.student!.stdonAdm,
+                    rollNo: loginResponse!.student!.admno.toString(),
+                  ),
+                  const SizedBox(height: 30),
+
+                  // Notification header
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: const [
+                      Text(
+                        "Notification",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      Text(
+                        "Show All",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  // Notification card
+                  const _NotificationCard(
+                    title: "Impotent Announcement",
+                    subtitle:
+                    "Please Note That Today Will Be A\nHalf-Day Of Classes.",
+                  ),
+                  const SizedBox(height: 22),
+                  // Quick access title
+                  const Text(
+                    "Quick Access",
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                  Text(
-                    "Show All",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              // Notification card
-              const _NotificationCard(
-                title: "Impotent Announcement",
-                subtitle:
-                    "Please Note That Today Will Be A\nHalf-Day Of Classes.",
-              ),
-              const SizedBox(height: 22),
-              // Quick access title
-              const Text(
-                "Quick Access",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: 14),
+                  const SizedBox(height: 14),
 
-              // Quick access grid (2 rows x 3 cols)
-              Wrap(
-                spacing: 22,
-                runSpacing: 18,
-                children: [
-                  _QuickAccessItem(
-                    label: "Fees",
-                    icon: Icons.confirmation_number_outlined,
-                    bubbleColor: Color(0xFFFFF3B0),
-                    iconColor: Color(0xFF232323),
-                    onTap: () {
-                      AppNavigator.pushSlide(
-                        context: context,
-                        page: FeesScreen(),
-                      );
-                    },
+                  // Quick access grid (2 rows x 3 cols)
+                  Wrap(
+                    spacing: 22,
+                    runSpacing: 18,
+                    children: [
+                      _QuickAccessItem(
+                        label: "Fees",
+                        icon: Icons.confirmation_number_outlined,
+                        bubbleColor: Color(0xFFFFF3B0),
+                        iconColor: Color(0xFF232323),
+                        onTap: () {
+                          AppNavigator.pushSlide(
+                            context: context,
+                            page: FeesScreen(),
+                          );
+                        },
+                      ),
+                      _QuickAccessItem(
+                        label: "Time Table",
+                        icon: Icons.shield_outlined,
+                        bubbleColor: Color(0xFFCFF8C6),
+                        iconColor: Color(0xFF1F2B1F),
+                        onTap: () {
+                          AppNavigator.pushSlide(
+                            context: context,
+                            page: TimeTableScreen(),
+                          );
+                        },
+                      ),
+                      _QuickAccessItem(
+                        label: "Mark List",
+                        icon: Icons.wallet_outlined,
+                        bubbleColor: Color(0xFFCFF8C6),
+                        iconColor: Color(0xFF1F2B1F),
+                        onTap: () {
+                          AppNavigator.pushSlide(
+                            context: context,
+                            page: MarkListScreen(),
+                          );
+                        },
+                      ),
+                      _QuickAccessItem(
+                        label: "Material",
+                        icon: Icons.grid_view_rounded,
+                        bubbleColor: Color(0xFFBFD2FF),
+                        iconColor: Color(0xFF1C2240),
+                        onTap: () {
+                          AppNavigator.pushSlide(
+                            context: context,
+                            page: MaterialsScreen(),
+                          );
+                        },
+                      ),
+                      _QuickAccessItem(
+                        label: "Class Diary",
+                        icon: Icons.menu_book_rounded,
+                        bubbleColor: Color(0xFFBFA6FF),
+                        iconColor: Color(0xFF2A1E45),
+                        onTap: () {
+                          AppNavigator.pushSlide(
+                            context: context,
+                            page: AllClassDiaryScreen(),
+                          );
+                        },
+                      ),
+                    ],
                   ),
-                  _QuickAccessItem(
-                    label: "Time Table",
-                    icon: Icons.shield_outlined,
-                    bubbleColor: Color(0xFFCFF8C6),
-                    iconColor: Color(0xFF1F2B1F),
-                    onTap: () {
-                      AppNavigator.pushSlide(
-                        context: context,
-                        page: TimeTableScreen(),
-                      );
-                    },
-                  ),
-                  _QuickAccessItem(
-                    label: "Mark List",
-                    icon: Icons.wallet_outlined,
-                    bubbleColor: Color(0xFFCFF8C6),
-                    iconColor: Color(0xFF1F2B1F),
-                    onTap: () {
-                      AppNavigator.pushSlide(
-                        context: context,
-                        page: MarkListScreen(),
-                      );
-                    },
-                  ),
-                  _QuickAccessItem(
-                    label: "Material",
-                    icon: Icons.grid_view_rounded,
-                    bubbleColor: Color(0xFFBFD2FF),
-                    iconColor: Color(0xFF1C2240),
-                    onTap: () {
-                      AppNavigator.pushSlide(
-                        context: context,
-                        page: MaterialsScreen(),
-                      );
-                    },
-                  ),
-                  _QuickAccessItem(
-                    label: "Class Diary",
-                    icon: Icons.menu_book_rounded,
-                    bubbleColor: Color(0xFFBFA6FF),
-                    iconColor: Color(0xFF2A1E45),
-                    onTap: () {
-                      AppNavigator.pushSlide(
-                        context: context,
-                        page: AllClassDiaryScreen(),
-                      );
-                    },
-                  ),
+                  const SizedBox(height: 22),
                 ],
-              ),
-              const SizedBox(height: 22),
-            ],
-          ),
+              )
+
         ),
       ),
     );

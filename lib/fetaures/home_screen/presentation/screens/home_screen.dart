@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:studentmanagement/fetaures/authentication/domain/entities/login_entity.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/widgets/header_cristal.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/widgets/post_card_cristal.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/widgets/sidenavigation.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  final LoginResponseResult? loginResponse;
+
+  const HomeScreen( {super.key, this.loginResponse});
 
   @override
   Widget build(BuildContext context) {
