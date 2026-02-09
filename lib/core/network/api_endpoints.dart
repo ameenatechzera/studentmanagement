@@ -223,4 +223,10 @@ class ApiConstants {
   static String getBankAccountLedgerPath(String baseUrl) {
     return '$baseUrl/accountledger/bank-account-ledgers';
   }
+
+  /// Returns the full URL for Device Register
+  static String getDeviceRegisterStatusPath(String baseUrl) {
+    return '$baseUrl/check-registration-status';
+  }
+
 }
