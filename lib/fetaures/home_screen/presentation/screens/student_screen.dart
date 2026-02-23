@@ -6,9 +6,29 @@ import 'package:studentmanagement/fetaures/marklist/presentation/screens/marklis
 import 'package:studentmanagement/fetaures/timetable/presentation/screens/timetable_screen.dart';
 import 'package:studentmanagement/fetaures/materials/presentation/screens/materials_screen.dart';
 
+// ✅ Stateless toggle
+final ValueNotifier<bool> showAllNotifications = ValueNotifier<bool>(false);
+
 class StudentScreen extends StatelessWidget {
   const StudentScreen({super.key});
-
+  // demo notifications list (replace with API data)
+  static const List<_NotificationData> _notifications = [
+    _NotificationData(
+      title: "Impotent Announcement",
+      line1: "Please Note That Today Will Be A",
+      line2: "Half-Day Of Classes.",
+    ),
+    _NotificationData(
+      title: "Reminder",
+      line1: "Tomorrow will be PTM",
+      line2: "Please be on time.",
+    ),
+    _NotificationData(
+      title: "Homework",
+      line1: "Maths worksheet submission",
+      line2: "Due by today evening.",
+    ),
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,38 +47,80 @@ class StudentScreen extends StatelessWidget {
                 std: "A",
                 rollNo: "23",
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 20),
 
               // Notification header
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
-                  Text(
-                    "Notification",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  Text(
-                    "Show All",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
+              ValueListenableBuilder<bool>(
+                valueListenable: showAllNotifications,
+                builder: (context, expanded, _) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Notification",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      InkWell(
+                        onTap: () {
+                          showAllNotifications.value = !expanded;
+                        },
+                        child: Text(
+                          expanded ? "Show Less" : "Show All",
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 40),
               // Notification card
-              const _NotificationCard(
-                title: "Impotent Announcement",
-                subtitle:
-                    "Please Note That Today Will Be A\nHalf-Day Of Classes.",
+              // const _NotificationCard(
+              //   // title: "Impotent Announcement",
+              //   // subtitle:
+              //   //     "Please Note That Today Will Be A\nHalf-Day Of Classes.",
+              // ),
+              // const SizedBox(height: 22),
+              // Notifications area
+              ValueListenableBuilder<bool>(
+                valueListenable: showAllNotifications,
+                builder: (context, expanded, _) {
+                  if (!expanded) {
+                    return const Column(
+                      children: [
+                        SizedBox(height: 22),
+                        _NotificationCard(),
+                        SizedBox(height: 22),
+                      ],
+                    );
+                  }
+
+                  return Column(
+                    children: [
+                      const SizedBox(height: 10),
+                      for (int i = 0; i < _notifications.length; i++)
+                        Padding(
+                          padding: EdgeInsets.only(
+                            bottom: i == _notifications.length - 1 ? 0 : 12,
+                          ),
+                          child: _SingleNotificationCard(
+                            data: _notifications[i],
+                          ),
+                        ),
+                      const SizedBox(height: 22),
+                    ],
+                  );
+                },
               ),
-              const SizedBox(height: 22),
+
               // Quick access title
               const Text(
                 "Quick Access",
@@ -144,6 +206,18 @@ class StudentScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+class _NotificationData {
+  final String title;
+  final String line1;
+  final String line2;
+
+  const _NotificationData({
+    required this.title,
+    required this.line1,
+    required this.line2,
+  });
 }
 
 class _StudentInfoCard extends StatelessWidget {
@@ -319,59 +393,241 @@ class _MiniStat extends StatelessWidget {
 }
 
 class _NotificationCard extends StatelessWidget {
-  final String title;
-  final String subtitle;
+  const _NotificationCard();
 
-  const _NotificationCard({required this.title, required this.subtitle});
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 2),
+      child: SizedBox(
+        height: 140, // slightly increased
+        width: double.infinity,
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            // Back layer (TOP MOST – far behind)
+            Positioned(
+              left: 4,
+              right: 4,
+              top: -38, // 👈 move UP
+              height: 140,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(.6),
+                      blurRadius: 16,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            // Middle layer (show ONLY some part of content - peek)
+            Positioned(
+              left: 2,
+              right: 2,
+              top: -19,
+              height: 70,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(.95),
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(.4),
+                      blurRadius: 12,
+                      offset: const Offset(0, 6),
+                    ),
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(24),
+                  child: Opacity(
+                    opacity: 0.55,
+                    child: ClipRect(
+                      child: Align(
+                        alignment: Alignment.topCenter,
+                        heightFactor:
+                            0.38, // ✅ controls how much is visible (0.25 - 0.45)
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 10,
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                height: 56,
+                                width: 56,
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFFC10062),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.campaign_outlined,
+                                  color: Colors.white,
+                                  size: 30,
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Column(
+                                children: [
+                                  Text(
+                                    "Impotent Announcement",
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+            // Front layer (main card)
+            Positioned(
+              left: 0,
+              right: 0,
+              top: 0,
+              height: 120,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 18,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFD6E7),
+                  borderRadius: BorderRadius.circular(24),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      height: 56,
+                      width: 56,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFC10062),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.campaign_outlined,
+                        color: Colors.white,
+                        size: 30,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    const Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Impotent Announcement",
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            "Please Note That Today Will Be A",
+                            style: TextStyle(
+                              fontSize: 13,
+                              height: 1.25,
+                              color: Color(0xFF4A4A4A),
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            "Half-Day Of Classes.",
+                            style: TextStyle(
+                              fontSize: 13,
+                              height: 1.25,
+                              color: Color(0xFF4A4A4A),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SingleNotificationCard extends StatelessWidget {
+  final _NotificationData data;
+  const _SingleNotificationCard({required this.data});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 100,
-      padding: const EdgeInsets.all(14),
+      height: 120,
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
       decoration: BoxDecoration(
-        color: const Color(0xFFFFD6E9),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white10),
+        color: const Color(0xFFFFD6E7),
+        borderRadius: BorderRadius.circular(24),
       ),
       child: Row(
         children: [
           Container(
-            height: 44,
-            width: 44,
-            decoration: BoxDecoration(
-              color: const Color(0xffffc4005f),
-              borderRadius: BorderRadius.circular(14),
+            height: 56,
+            width: 56,
+            decoration: const BoxDecoration(
+              color: Color(0xFFC10062),
+              shape: BoxShape.circle,
             ),
             child: const Icon(
-              Icons.notifications_active_outlined,
+              Icons.campaign_outlined,
               color: Colors.white,
-              size: 22,
+              size: 30,
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                  data.title,
                   style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
                     color: Colors.black,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  data.line1,
+                  style: const TextStyle(
                     fontSize: 13,
-                    fontWeight: FontWeight.w800,
+                    height: 1.25,
+                    color: Color(0xFF4A4A4A),
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  subtitle,
+                  data.line2,
                   style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 12,
+                    fontSize: 13,
                     height: 1.25,
-                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF4A4A4A),
                   ),
                 ),
               ],
