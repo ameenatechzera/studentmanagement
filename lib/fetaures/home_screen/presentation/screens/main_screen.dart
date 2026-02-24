@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:studentmanagement/fetaures/authentication/domain/entities/login_entity.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/screens/home_screen.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/screens/noti.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/screens/settings.dart';
@@ -6,7 +7,8 @@ import 'package:studentmanagement/fetaures/home_screen/presentation/screens/stud
 import 'package:studentmanagement/fetaures/home_screen/presentation/widgets/custom_bottombar.dart';
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
+  final LoginResponseResult? loginResponse;
+  const MainScreen({super.key, this.loginResponse});
 
   @override
   State<MainScreen> createState() => _MainScreenState();
@@ -15,17 +17,17 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
 
-  final List<Widget> _screens = const [
-    HomeScreen(),
-    StudentScreen(),
-    NotificationScreen(),
-    SettingsScreen(),
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final List<Widget> screens = [
+      const HomeScreen(),
+      StudentScreen(loginResponse: widget.loginResponse),
+      const NotificationScreen(),
+      const SettingsScreen(),
+    ];
+
     return Scaffold(
-      body: IndexedStack(index: _currentIndex, children: _screens),
+      body: IndexedStack(index: _currentIndex, children: screens),
       bottomNavigationBar: CustomBottomBar(
         selectedIndex: _currentIndex,
         onItemSelected: (index) {

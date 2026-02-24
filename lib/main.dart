@@ -1,38 +1,68 @@
 import 'package:flutter/material.dart';
-import 'package:studentmanagement/fetaures/authentication/presentation/screens/main_splash.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-void main() {
-  runApp(const MyApp());
+import 'package:studentmanagement/fetaures/authentication/presentation/screens/main_splash.dart';
+import 'package:studentmanagement/services/service_locator.dart';
+import 'package:studentmanagement/services/shared_preference_helper.dart';
+
+import 'core/theme/colors.dart';
+
+import 'fetaures/authentication/presentation/bloc/logincubit/login_cubit.dart';
+
+// late final AppDatabase appDb;
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: AppColors.theme,
+      statusBarIconBrightness: Brightness.dark,
+      //statusBarBrightness: Brightness.dark,
+    ),
+  );
+  // appDb = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
+  await ServiceLocator.init();
+  final sharedPrefHelper = SharedPreferenceHelper();
+
+  // set the default URL if not already set
+  final currentBaseUrl = await sharedPrefHelper.getBaseUrl();
+  if (currentBaseUrl == null) {
+    await sharedPrefHelper.setBaseUrl(
+      'https://cristal.techzera.in/api',
+    );
+  }
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<LoginCubit>(create: (_) => sl<LoginCubit>()),
+
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'QuikSERV',
+        theme: ThemeData(
+          useMaterial3: true,
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          appBarTheme: const AppBarTheme(
+            elevation: 0,
+            scrolledUnderElevation: 0,
+            surfaceTintColor: Colors.transparent,
+            systemOverlayStyle: SystemUiOverlayStyle(
+              statusBarColor: AppColors.theme,
+              statusBarIconBrightness: Brightness.dark,
+              statusBarBrightness: Brightness.light,
+            ),
+          ),
+        ),
+        home: const MainSplashScreen(),
       ),
-      home: const MainSplashScreen(),
     );
   }
 }

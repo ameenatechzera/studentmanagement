@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:studentmanagement/core/navigation/app_navigator.dart';
+import 'package:studentmanagement/fetaures/authentication/domain/entities/login_entity.dart';
 import 'package:studentmanagement/fetaures/classdiary/presentation/screens/alldiary_screen.dart';
 import 'package:studentmanagement/fetaures/fees/presentation/screens/fees_screen.dart';
 import 'package:studentmanagement/fetaures/marklist/presentation/screens/marklist_screen.dart';
 import 'package:studentmanagement/fetaures/timetable/presentation/screens/timetable_screen.dart';
 import 'package:studentmanagement/fetaures/materials/presentation/screens/materials_screen.dart';
 
-// ✅ Stateless toggle
 final ValueNotifier<bool> showAllNotifications = ValueNotifier<bool>(false);
 
 class StudentScreen extends StatelessWidget {
-  const StudentScreen({super.key});
+  final LoginResponseResult? loginResponse;
+  const StudentScreen({super.key, this.loginResponse});
   // demo notifications list (replace with API data)
   static const List<_NotificationData> _notifications = [
     _NotificationData(
@@ -36,27 +37,28 @@ class StudentScreen extends StatelessWidget {
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(18, 14, 18, 18),
+
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Student card
               _StudentInfoCard(
-                name: "Serin Johnson",
-                phone: "9747958159",
-                classNo: "6",
-                std: "A",
-                rollNo: "23",
+                name: loginResponse!.student!.name,
+                phone: loginResponse!.student!.landPhone.toString(),
+                classNo: loginResponse!.student!.previousClass.toString(),
+                std: loginResponse!.student!.stdonAdm,
+                rollNo: loginResponse!.student!.admno.toString(),
               ),
               const SizedBox(height: 20),
 
-              // Notification header
+              // Notification header + toggle
               ValueListenableBuilder<bool>(
                 valueListenable: showAllNotifications,
                 builder: (context, expanded, _) {
                   return Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
+                      const Text(
                         "Notification",
                         style: TextStyle(
                           color: Colors.black,
@@ -70,7 +72,7 @@ class StudentScreen extends StatelessWidget {
                         },
                         child: Text(
                           expanded ? "Show Less" : "Show All",
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Colors.black,
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
@@ -81,20 +83,15 @@ class StudentScreen extends StatelessWidget {
                   );
                 },
               ),
-              const SizedBox(height: 40),
-              // Notification card
-              // const _NotificationCard(
-              //   // title: "Impotent Announcement",
-              //   // subtitle:
-              //   //     "Please Note That Today Will Be A\nHalf-Day Of Classes.",
-              // ),
-              // const SizedBox(height: 22),
+
+              const SizedBox(height: 18),
+
               // Notifications area
               ValueListenableBuilder<bool>(
                 valueListenable: showAllNotifications,
                 builder: (context, expanded, _) {
                   if (!expanded) {
-                    return const Column(
+                    return Column(
                       children: [
                         SizedBox(height: 22),
                         _NotificationCard(),
@@ -400,16 +397,15 @@ class _NotificationCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 2),
       child: SizedBox(
-        height: 140, // slightly increased
+        height: 140,
         width: double.infinity,
         child: Stack(
           clipBehavior: Clip.none,
           children: [
-            // Back layer (TOP MOST – far behind)
             Positioned(
               left: 4,
               right: 4,
-              top: -38, // 👈 move UP
+              top: -38,
               height: 140,
               child: Container(
                 decoration: BoxDecoration(
@@ -425,7 +421,6 @@ class _NotificationCard extends StatelessWidget {
                 ),
               ),
             ),
-            // Middle layer (show ONLY some part of content - peek)
             Positioned(
               left: 2,
               right: 2,
@@ -450,8 +445,7 @@ class _NotificationCard extends StatelessWidget {
                     child: ClipRect(
                       child: Align(
                         alignment: Alignment.topCenter,
-                        heightFactor:
-                            0.38, // ✅ controls how much is visible (0.25 - 0.45)
+                        heightFactor: 0.38,
                         child: Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 16,
@@ -473,16 +467,12 @@ class _NotificationCard extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(width: 16),
-                              Column(
-                                children: [
-                                  Text(
-                                    "Impotent Announcement",
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                ],
+                              const Text(
+                                "Impotent Announcement",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
                             ],
                           ),
@@ -493,8 +483,6 @@ class _NotificationCard extends StatelessWidget {
                 ),
               ),
             ),
-
-            // Front layer (main card)
             Positioned(
               left: 0,
               right: 0,
