@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:studentmanagement/core/navigation/app_navigator.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/screens/second_splash.dart';
+import 'package:studentmanagement/fetaures/home_screen/presentation/screens/main_screen.dart';
+import 'package:studentmanagement/services/shared_preference_helper.dart';
 
 class MainSplashScreen extends StatefulWidget {
   const MainSplashScreen({super.key});
@@ -13,14 +14,36 @@ class _MainSplashScreenState extends State<MainSplashScreen> {
   @override
   void initState() {
     super.initState();
+    _checkLogin();
+    // Future.delayed(const Duration(seconds: 3), () {
+    //   AppNavigator.pushSlide(context: context, page: SecondSplashScreen());
+    // Navigator.pushReplacement(
+    //   context,
+    //   MaterialPageRoute(builder: (context) => const SecondSplashScreen()),
+    // );
+    // });
+  }
 
-    Future.delayed(const Duration(seconds: 3), () {
-      AppNavigator.pushSlide(context: context, page: SecondSplashScreen());
-      // Navigator.pushReplacement(
-      //   context,
-      //   MaterialPageRoute(builder: (context) => const SecondSplashScreen()),
-      // );
-    });
+  Future<void> _checkLogin() async {
+    final sharedPrefHelper = SharedPreferenceHelper();
+
+    final loginResponse = await sharedPrefHelper.getLoginResponse();
+
+    await Future.delayed(const Duration(seconds: 2));
+
+    if (loginResponse != null) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => MainScreen(loginResponse: loginResponse),
+        ),
+      );
+    } else {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => SecondSplashScreen()),
+      );
+    }
   }
 
   @override

@@ -1,21 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:studentmanagement/fetaures/timetable/domain/parameters/fetch_timetable_parameter.dart';
+import 'package:studentmanagement/fetaures/timetable/presentation/cubit/timetable_cubit.dart';
 import 'package:table_calendar/table_calendar.dart';
-
 
 class TimeTableScreen extends StatelessWidget {
   TimeTableScreen({super.key});
 
   final ValueNotifier<DateTime> _focusedDay = ValueNotifier(DateTime.now());
   final ValueNotifier<DateTime> _selectedDay = ValueNotifier(DateTime.now());
-
-  final periods = const [
-    _PeriodItem(1, "Malayalam", "09:00 To 10:00", Color(0xFFFFE9A6)),
-    _PeriodItem(2, "Hindi", "10:00 To 11:00", Color(0xFFB7F19A)),
-    _PeriodItem(3, "Mathematics", "12:00 To 13:00", Color(0xFF9BD6FF)),
-    _PeriodItem(4, "Biology", "01:00 To 02:00", Color(0xFFBDB2FF)),
-    _PeriodItem(5, "Physics", "02:00 To 03:00", Color(0xFFBDB2FF)),
-    _PeriodItem(6, "Chemistry", "03:00 To 04:00", Color(0xFFFFB2E6)),
-  ];
+  String _getWeekDayName(DateTime date) {
+    switch (date.weekday) {
+      case DateTime.monday:
+        return "Monday";
+      case DateTime.tuesday:
+        return "Tuesday";
+      case DateTime.wednesday:
+        return "Wednesday";
+      case DateTime.thursday:
+        return "Thursday";
+      case DateTime.friday:
+        return "Friday";
+      case DateTime.saturday:
+        return "Saturday";
+      case DateTime.sunday:
+        return "Sunday";
+      default:
+        return "";
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +80,16 @@ class TimeTableScreen extends StatelessWidget {
 
                       onDaySelected: (day, focused) {
                         _selectedDay.value = day;
-                        _focusedDay.value = focused;
+                        _focusedDay.value =
+                            focused; // Call API when date changes
+                        context.read<TimetableCubit>().fetchTimeTable(
+                          FetchTimeTableParameter(
+                            accYear: "2025-2026",
+                            standardId: 3,
+                            divisionId: 1,
+                            branchId: 1,
+                          ),
+                        );
                       },
 
                       daysOfWeekStyle: const DaysOfWeekStyle(
@@ -115,17 +137,63 @@ class TimeTableScreen extends StatelessWidget {
             ),
 
             // ================= PERIOD LIST =================
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(12, 0, 12, 20),
-              sliver: SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) => Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: _PeriodRow(item: periods[index]),
-                  ),
-                  childCount: periods.length,
-                ),
-              ),
+            BlocBuilder<TimetableCubit, TimetableState>(
+              builder: (context, state) {
+                if (state is TimetableLoading) {
+                  return const SliverToBoxAdapter(
+                    child: Padding(
+                      padding: EdgeInsets.all(20),
+                      child: Center(child: CircularProgressIndicator()),
+                    ),
+                  );
+                }
+
+                if (state is TimetableError) {
+                  return SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Center(child: Text(state.message)),
+                    ),
+                  );
+                }
+                if (state is TimetableLoaded) {
+                  final selectedDayName = _getWeekDayName(_selectedDay.value);
+
+                  /// 🔥 FILTER DATA BASED ON DAY
+                  final filteredList = state.response.data!
+                      .where((item) => item.dayName == selectedDayName)
+                      .toList();
+
+                  if (filteredList.isEmpty) {
+                    return const SliverToBoxAdapter(
+                      child: Padding(
+                        padding: EdgeInsets.all(20),
+                        child: Center(child: Text("No Timetable Available")),
+                      ),
+                    );
+                  }
+                  return SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(12, 0, 12, 20),
+                    sliver: SliverList(
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                        final item = filteredList[index];
+
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: _PeriodRow(
+                            item: _PeriodItem(
+                              item.periodNo ?? '',
+                              item.subjectName ?? "No Subject",
+                              _getLineColor(index),
+                            ),
+                          ),
+                        );
+                      }, childCount: filteredList.length),
+                    ),
+                  );
+                }
+                return const SliverToBoxAdapter();
+              },
             ),
           ],
         ),
@@ -150,7 +218,7 @@ class _PeriodRow extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "${item.no}",
+                item.no,
                 style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w800,
@@ -204,14 +272,14 @@ class _PeriodRow extends StatelessWidget {
                     ),
                   ),
                 ),
-                Text(
-                  item.time,
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: Colors.black54,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
+                // Text(
+                //   item.time,
+                //   style: const TextStyle(
+                //     fontSize: 11,
+                //     color: Colors.black54,
+                //     fontWeight: FontWeight.w700,
+                //   ),
+                // ),
               ],
             ),
           ),
@@ -223,10 +291,23 @@ class _PeriodRow extends StatelessWidget {
 
 // ================= MODEL =================
 class _PeriodItem {
-  final int no;
+  final String no;
   final String subject;
-  final String time;
+  //final String time;
   final Color lineColor;
 
-  const _PeriodItem(this.no, this.subject, this.time, this.lineColor);
+  const _PeriodItem(this.no, this.subject, this.lineColor);
+}
+
+Color _getLineColor(int index) {
+  final colors = [
+    Colors.pink,
+    Colors.blue,
+    Colors.green,
+    Colors.orange,
+    Colors.purple,
+    Colors.teal,
+  ];
+
+  return colors[index % colors.length];
 }

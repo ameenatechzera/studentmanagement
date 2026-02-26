@@ -8,6 +8,7 @@ import 'package:studentmanagement/fetaures/authentication/domain/parameters/logi
 import 'package:studentmanagement/fetaures/authentication/presentation/bloc/logincubit/login_cubit.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/screens/main_screen.dart';
+import 'package:studentmanagement/services/shared_preference_helper.dart';
 
 class LoginScreen extends StatefulWidget {
   LoginScreen({super.key});
@@ -80,8 +81,16 @@ class _LoginScreenState extends State<LoginScreen> {
                 //  Spacer(),
                 SizedBox(height: 200),
                 BlocConsumer<LoginCubit, LoginState>(
-                  listener: (context, state) {
+                  listener: (context, state) async {
                     if (state is LoginSuccess) {
+                      final sharedPrefHelper = SharedPreferenceHelper();
+
+                      await sharedPrefHelper.setToken(
+                        state.loginResponse.token,
+                      );
+                      await sharedPrefHelper.saveLoginResponse(
+                        state.loginResponse,
+                      );
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) {
@@ -93,14 +102,15 @@ class _LoginScreenState extends State<LoginScreen> {
                       );
                     }
                     if (state is DeviceRegisterStatusSuccess) {
-                      if(state.registerResponse.data?.result==true) {
+                      if (state.registerResponse.data?.result == true) {
                         context.read<LoginCubit>().loginUser(
-                          LoginRequest(admno: admNoCtrl.text, dob: dobCtrl
-                              .text),
+                          LoginRequest(
+                            admno: admNoCtrl.text,
+                            dob: dobCtrl.text,
+                          ),
                         );
-                      }
-                      else{
-                        showAppSnackBar(context,'Device Not Registered..!');
+                      } else {
+                        showAppSnackBar(context, 'Device Not Registered..!');
                       }
                     }
                     if (state is DeviceRegisterStatusFailure) {

@@ -7,8 +7,8 @@ import 'package:studentmanagement/fetaures/home_screen/presentation/screens/stud
 import 'package:studentmanagement/fetaures/home_screen/presentation/widgets/custom_bottombar.dart';
 
 class MainScreen extends StatefulWidget {
-  final LoginResponseResult? loginResponse;
-  const MainScreen({super.key, this.loginResponse});
+  final LoginResponseResult loginResponse;
+  const MainScreen({super.key, required this.loginResponse});
 
   @override
   State<MainScreen> createState() => _MainScreenState();

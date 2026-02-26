@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:studentmanagement/fetaures/classdiary/domain/parameters/fetch_diary_parameter.dart';
+import 'package:studentmanagement/fetaures/classdiary/presentation/cubit/diary_cubit.dart';
 
 final ValueNotifier<String> selectedSubject = ValueNotifier<String>(
   'Mathematics',
@@ -11,6 +14,11 @@ class AllClassDiaryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<DiaryCubit>().fetchDiary(
+        FetchDiaryParameter(admNo: "1000", accYear: "2025-2026"),
+      );
+    });
     return Scaffold(
       appBar: AppBar(
         title: const Text('All Class Diary'),
@@ -57,87 +65,111 @@ class AllClassDiaryScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: ListView.separated(
-        padding: const EdgeInsets.all(16),
-        itemCount: 20,
-        separatorBuilder: (context, index) => const SizedBox(height: 10),
-        itemBuilder: (context, index) {
-          return ValueListenableBuilder<int?>(
-            valueListenable: expandedIndexNotifier,
-            builder: (_, expandedIndex, __) {
-              final isExpanded = expandedIndex == index;
+      body: BlocBuilder<DiaryCubit, DiaryState>(
+        builder: (context, state) {
+          if (state is DiaryLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-              return Container(
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF8F8F9),
-                  borderRadius: BorderRadius.circular(14),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.08),
-                      blurRadius: 16,
-                      offset: const Offset(0, 10),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ListTile(
-                      onTap: () {
-                        expandedIndexNotifier.value = isExpanded ? null : index;
-                      },
-                      title: Text(
-                        '${selectedSubject.value} - Chapter ${index + 1}',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+          if (state is DiaryError) {
+            return Center(
+              child: Text(
+                state.message,
+                style: const TextStyle(color: Colors.red),
+              ),
+            );
+          }
+          if (state is DiaryLoaded) {
+            final diaryList = state.response.data ?? [];
+
+            return ListView.separated(
+              padding: const EdgeInsets.all(16),
+              itemCount: diaryList.length,
+              separatorBuilder: (context, index) => const SizedBox(height: 10),
+              itemBuilder: (context, index) {
+                final diary = diaryList[index];
+                return ValueListenableBuilder<int?>(
+                  valueListenable: expandedIndexNotifier,
+                  builder: (_, expandedIndex, __) {
+                    final isExpanded = expandedIndex == index;
+
+                    return Container(
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF8F8F9),
+                        borderRadius: BorderRadius.circular(14),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.08),
+                            blurRadius: 16,
+                            offset: const Offset(0, 10),
+                          ),
+                        ],
                       ),
-                      subtitle: Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: Text(
-                          'This is the diary entry for chapter ${index + 1}.',
-                        ),
-                      ),
-                      trailing: Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: Column(
-                          children: [
-                            if (!isExpanded) Text('04-02-2026'),
-                            const SizedBox(height: 10),
-                            InkWell(
-                              onTap: () {
-                                expandedIndexNotifier.value = isExpanded
-                                    ? null
-                                    : index;
-                              },
-                              child: Icon(
-                                isExpanded
-                                    ? Icons.keyboard_arrow_down
-                                    : Icons.arrow_forward_ios,
-                                size: 18,
-                                color: const Color(0xFFC4005F),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ListTile(
+                            onTap: () {
+                              expandedIndexNotifier.value = isExpanded
+                                  ? null
+                                  : index;
+                            },
+                            title: Text(
+                              diary.diaryTitle ?? "",
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                          ],
-                        ),
+                            subtitle: Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: Text(diary.description!),
+                            ),
+                            trailing: Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: Column(
+                                children: [
+                                  if (!isExpanded) Text(diary.diaryDate!),
+                                  const SizedBox(height: 10),
+                                  InkWell(
+                                    onTap: () {
+                                      expandedIndexNotifier.value = isExpanded
+                                          ? null
+                                          : index;
+                                    },
+                                    child: Icon(
+                                      isExpanded
+                                          ? Icons.keyboard_arrow_down
+                                          : Icons.arrow_forward_ios,
+                                      size: 18,
+                                      color: const Color(0xFFC4005F),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          if (isExpanded)
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                top: 10,
+                                left: 16,
+                                right: 16,
+                              ),
+                              child: Text(
+                                diary.description!,
+                                style: const TextStyle(color: Colors.black87),
+                              ),
+                            ),
+                        ],
                       ),
-                    ),
-                    if (isExpanded)
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          top: 10,
-                          left: 16,
-                          right: 16,
-                        ),
-                        child: Text(
-                          'This is the detailed diary entry for chapter ${index + 1}. Here you can add notes, homework, or any additional info.',
-                          style: const TextStyle(color: Colors.black87),
-                        ),
-                      ),
-                  ],
-                ),
-              );
-            },
-          );
+                    );
+                  },
+                );
+              },
+            );
+          }
+          return const SizedBox();
         },
       ),
     );

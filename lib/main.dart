@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:studentmanagement/fetaures/authentication/presentation/screens/main_splash.dart';
+import 'package:studentmanagement/fetaures/classdiary/presentation/cubit/diary_cubit.dart';
+import 'package:studentmanagement/fetaures/timetable/presentation/cubit/timetable_cubit.dart';
 import 'package:studentmanagement/services/service_locator.dart';
 import 'package:studentmanagement/services/shared_preference_helper.dart';
 
@@ -28,7 +30,7 @@ void main() async {
   final currentBaseUrl = await sharedPrefHelper.getBaseUrl();
   if (currentBaseUrl == null) {
     await sharedPrefHelper.setBaseUrl(
-      'https://cristal.techzera.in/api',
+      'https://cristalofflineweb.techzera.in/Api/public/api',
     );
   }
   runApp(MyApp());
@@ -42,11 +44,12 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<LoginCubit>(create: (_) => sl<LoginCubit>()),
-
+        BlocProvider<TimetableCubit>(create: (_) => sl<TimetableCubit>()),
+        BlocProvider<DiaryCubit>(create: (_) => sl<DiaryCubit>()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'QuikSERV',
+        title: 'Cristal',
         theme: ThemeData(
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
