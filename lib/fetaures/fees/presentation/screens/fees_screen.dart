@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:studentmanagement/fetaures/fees/domain/parameters/paidFees_request.dart';
+import 'package:studentmanagement/fetaures/fees/presentation/bloc/fees_cubit.dart';
 
 class FeesScreen extends StatelessWidget {
   const FeesScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    Future.microtask(() {
+      context.read<FeesCubit>().fetchPaidFeesDetails(PaidFeesRequest(accyear: '2018-2019', admno: '1000'));
+    });
+
     return Scaffold(
       appBar: AppBar(title: const Text("Fees")),
       body: SafeArea(
@@ -93,105 +100,134 @@ class FeesScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
 
-                ListView.builder(
-                  itemCount: 3,
-                  shrinkWrap: true, // 🔥 important
-                  physics: const NeverScrollableScrollPhysics(), // 🔥 important
-                  itemBuilder: (context, index) {
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(14),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
-                            blurRadius: 8,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                height: 42,
-                                width: 42,
-                                decoration: const BoxDecoration(
-                                  color: Color(0xFFD81B60),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Icon(
-                                  Icons.check_circle_outline,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Row(
-                                  children: const [
-                                    Text(
-                                      "Tuition Fees",
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                    SizedBox(width: 6),
-                                    Icon(
-                                      Icons.check_circle,
-                                      color: Colors.green,
-                                      size: 16,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const Text(
-                                "12-10-2025",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          const Text(
-                            "₹10000",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
+            BlocBuilder<FeesCubit, FeesState>(
+              builder: (context, state) {
+                if (state is FeesInitial) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (state is FeesPaidSuccess) {
+                  final feesList = state.feePaidResult.data; // your API list
+
+                  return ListView.builder(
+                    itemCount: feesList.length,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemBuilder: (context, index) {
+                      final fee = feesList[index];
+
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(14),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.05),
+                              blurRadius: 8,
+                              offset: const Offset(0, 4),
                             ),
-                          ),
-                          const SizedBox(height: 12),
-                          const Divider(),
-                          const SizedBox(height: 12),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: const [
-                              _AmountColumn(
-                                title: "Due Amount",
-                                value: "200000",
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  height: 42,
+                                  width: 42,
+                                  decoration: const BoxDecoration(
+                                    color: Color(0xFFD81B60),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.check_circle_outline,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+
+                                /// TITLE
+                                Expanded(
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        fee.ledgerName ?? "",
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 6),
+                                      const Icon(
+                                        Icons.check_circle,
+                                        color: Colors.green,
+                                        size: 16,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                /// DATE
+                                Text(
+                                  "",
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+
+                            /// TOTAL AMOUNT
+                            Text(
+                              "₹${fee.amount}",
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
                               ),
-                              _AmountColumn(
-                                title: "Paid Amount",
-                                value: "100000",
-                              ),
-                              _AmountColumn(
-                                title: "Balance",
-                                value: "10000",
-                                valueColor: Colors.red,
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
+                            ),
+
+                            const SizedBox(height: 12),
+                            const Divider(),
+                            const SizedBox(height: 12),
+
+                            /// AMOUNT DETAILS
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                _AmountColumn(
+                                  title: "Due Amount",
+                                  value:"",
+                                ),
+                                _AmountColumn(
+                                  title: "Paid Amount",
+                                  value: "",
+                                ),
+                                _AmountColumn(
+                                  title: "Balance",
+                                  value: "",
+                                  valueColor: Colors.red,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  );
+                }
+
+                if (state is FeesPaidFailure) {
+                  return Center(child: Text(state.error));
+                }
+
+                return const SizedBox();
+              },
+            )
               ],
             ),
           ),

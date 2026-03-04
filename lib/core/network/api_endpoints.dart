@@ -27,4 +27,9 @@ class ApiConstants {
   static String getDiaryFetchPath(String baseUrl) {
     return '$baseUrl/get-classdiary-byadmno';
   }
+
+  /// Returns the full URL for Fees / Get Fees Paid
+  static String getFeesPaidServerPath(String baseUrl) {
+    return '$baseUrl/get-paid-byaccyearandadmno';
+  }
 }

@@ -10,6 +10,11 @@ import 'package:studentmanagement/fetaures/classdiary/data/repositories/diary_re
 import 'package:studentmanagement/fetaures/classdiary/domain/repositories/diary_repository.dart';
 import 'package:studentmanagement/fetaures/classdiary/domain/usecases/fetch_diary_usecase.dart';
 import 'package:studentmanagement/fetaures/classdiary/presentation/cubit/diary_cubit.dart';
+import 'package:studentmanagement/fetaures/fees/data/datasources/fees_remote_data_sources.dart';
+import 'package:studentmanagement/fetaures/fees/data/repositories/fees_repository_impl.dart';
+import 'package:studentmanagement/fetaures/fees/domain/repositories/fees_repository.dart';
+import 'package:studentmanagement/fetaures/fees/domain/usecases/fetchPaidFeesDetailsUseCase.dart';
+import 'package:studentmanagement/fetaures/fees/presentation/bloc/fees_cubit.dart';
 import 'package:studentmanagement/fetaures/timetable/data/datasources/timetable_remote_data_source.dart';
 import 'package:studentmanagement/fetaures/timetable/data/repositories/timetable_repository_impl.dart';
 import 'package:studentmanagement/fetaures/timetable/domain/repositories/timettable_repository.dart';
@@ -73,5 +78,22 @@ class ServiceLocator {
     sl.registerLazySingleton<DiaryRepository>(
       () => DiaryRepositoryImpl(remoteDataSource: sl()),
     );
+
+    /// Cubit
+    sl.registerFactory(() => FeesCubit(fetchPaidFeesDetailsUseCase: sl()));
+
+    /// UseCase
+    sl.registerLazySingleton(() => FetchPaidFeesDetailsUseCase(sl()));
+
+    /// Remote Data Source
+    sl.registerLazySingleton<FeesRemoteDataSource>(
+          () => FeesRemoteDataSourceImpl(),
+    );
+
+    /// Repository
+    sl.registerLazySingleton<FeesRepository>(
+          () => FeesRepositoryImpl(remoteDataSource: sl()),
+    );
+
   }
 }

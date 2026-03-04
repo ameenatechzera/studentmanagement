@@ -32,8 +32,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    admNoCtrl.text = '1220';
-    dobCtrl.text = '2018-08-29';
+    admNoCtrl.text = '1000';
+    dobCtrl.text = '2002-12-11';
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
