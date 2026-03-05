@@ -12,6 +12,7 @@ import 'package:studentmanagement/services/shared_preference_helper.dart';
 import 'core/theme/colors.dart';
 
 import 'fetaures/authentication/presentation/bloc/logincubit/login_cubit.dart';
+import 'fetaures/fees/presentation/unPaidFee/un_paid_fee_cubit.dart';
 
 // late final AppDatabase appDb;
 void main() async {
@@ -48,6 +49,8 @@ class MyApp extends StatelessWidget {
         BlocProvider<TimetableCubit>(create: (_) => sl<TimetableCubit>()),
         BlocProvider<DiaryCubit>(create: (_) => sl<DiaryCubit>()),
         BlocProvider<FeesCubit>(create: (_) => sl<FeesCubit>()),
+        BlocProvider<UnPaidFeeCubit>(create: (_) => sl<UnPaidFeeCubit>()),
+
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

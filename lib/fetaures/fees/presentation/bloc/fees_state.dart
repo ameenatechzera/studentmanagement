@@ -5,6 +5,7 @@ sealed class FeesState {}
 
 final class FeesInitial extends FeesState {}
 
+
 final class FeesPaidFailure extends FeesState {
   final String error;
 
@@ -13,6 +14,7 @@ final class FeesPaidFailure extends FeesState {
   @override
   List<Object> get props => [error];
 }
+
 final class FeesPaidSuccess extends FeesState {
   final PaidFeeResult feePaidResult;
 

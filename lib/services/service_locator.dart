@@ -14,7 +14,9 @@ import 'package:studentmanagement/fetaures/fees/data/datasources/fees_remote_dat
 import 'package:studentmanagement/fetaures/fees/data/repositories/fees_repository_impl.dart';
 import 'package:studentmanagement/fetaures/fees/domain/repositories/fees_repository.dart';
 import 'package:studentmanagement/fetaures/fees/domain/usecases/fetchPaidFeesDetailsUseCase.dart';
+import 'package:studentmanagement/fetaures/fees/domain/usecases/fetchUnpaidFeeDetailsUseCase.dart';
 import 'package:studentmanagement/fetaures/fees/presentation/bloc/fees_cubit.dart';
+import 'package:studentmanagement/fetaures/fees/presentation/unPaidFee/un_paid_fee_cubit.dart';
 import 'package:studentmanagement/fetaures/timetable/data/datasources/timetable_remote_data_source.dart';
 import 'package:studentmanagement/fetaures/timetable/data/repositories/timetable_repository_impl.dart';
 import 'package:studentmanagement/fetaures/timetable/domain/repositories/timettable_repository.dart';
@@ -82,8 +84,13 @@ class ServiceLocator {
     /// Cubit
     sl.registerFactory(() => FeesCubit(fetchPaidFeesDetailsUseCase: sl()));
 
+    /// Cubit
+    sl.registerFactory(() => UnPaidFeeCubit(fetchUnPaidFeesDetailsUseCase: sl()));
+
     /// UseCase
     sl.registerLazySingleton(() => FetchPaidFeesDetailsUseCase(sl()));
+    sl.registerLazySingleton(() => FetchUnPaidFeesDetailsUseCase(sl()));
+
 
     /// Remote Data Source
     sl.registerLazySingleton<FeesRemoteDataSource>(
