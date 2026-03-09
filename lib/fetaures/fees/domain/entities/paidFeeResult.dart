@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 
+import 'package:equatable/equatable.dart';
+
 class PaidFeeResult extends Equatable {
   PaidFeeResult({
     required this.status,
@@ -60,9 +62,12 @@ class Datum extends Equatable {
     required this.division,
     required this.stdonAdm,
     required this.ledgerName,
-    required this.amount,
+    required this.totalAmount,
+    required this.paidAmount,
+    required this.balanceAmount,
     required this.feeMonth,
     required this.name,
+    required this.dueDate,
   });
 
   final String admno;
@@ -80,14 +85,23 @@ class Datum extends Equatable {
   final String ledgerName;
   static const String ledgerNameKey = "LedgerName";
 
-  final String amount;
-  static const String amountKey = "Amount";
+  final String totalAmount;
+  static const String totalAmountKey = "TotalAmount";
+
+  final String paidAmount;
+  static const String paidAmountKey = "PaidAmount";
+
+  final String balanceAmount;
+  static const String balanceAmountKey = "BalanceAmount";
 
   final String feeMonth;
   static const String feeMonthKey = "FeeMonth";
 
   final String name;
   static const String nameKey = "Name";
+
+  final String? dueDate;
+  static const String dueDateKey = "DueDate";
 
 
   Datum copyWith({
@@ -96,9 +110,12 @@ class Datum extends Equatable {
     String? division,
     String? stdonAdm,
     String? ledgerName,
-    String? amount,
+    String? totalAmount,
+    String? paidAmount,
+    String? balanceAmount,
     String? feeMonth,
     String? name,
+    String? dueDate,
   }) {
     return Datum(
       admno: admno ?? this.admno,
@@ -106,9 +123,12 @@ class Datum extends Equatable {
       division: division ?? this.division,
       stdonAdm: stdonAdm ?? this.stdonAdm,
       ledgerName: ledgerName ?? this.ledgerName,
-      amount: amount ?? this.amount,
+      totalAmount: totalAmount ?? this.totalAmount,
+      paidAmount: paidAmount ?? this.paidAmount,
+      balanceAmount: balanceAmount ?? this.balanceAmount,
       feeMonth: feeMonth ?? this.feeMonth,
       name: name ?? this.name,
+      dueDate: dueDate ?? this.dueDate,
     );
   }
 
@@ -119,9 +139,12 @@ class Datum extends Equatable {
       division: json["Division"] ?? "",
       stdonAdm: json["StdonAdm"] ?? "",
       ledgerName: json["LedgerName"] ?? "",
-      amount: json["Amount"] ?? "",
+      totalAmount: json["TotalAmount"] ?? "",
+      paidAmount: json["PaidAmount"] ?? "",
+      balanceAmount: json["BalanceAmount"] ?? "",
       feeMonth: json["FeeMonth"] ?? "",
       name: json["Name"] ?? "",
+      dueDate: json["DueDate"] ?? "",
     );
   }
 
@@ -131,17 +154,21 @@ class Datum extends Equatable {
     "Division": division,
     "StdonAdm": stdonAdm,
     "LedgerName": ledgerName,
-    "Amount": amount,
+    "TotalAmount": totalAmount,
+    "PaidAmount": paidAmount,
+    "BalanceAmount": balanceAmount,
     "FeeMonth": feeMonth,
     "Name": name,
+    "DueDate": dueDate
   };
 
   @override
   String toString(){
-    return "$admno, $standard, $division, $stdonAdm, $ledgerName, $amount, $feeMonth, $name, ";
+    return "$admno, $standard, $division, $stdonAdm, $ledgerName, $totalAmount, $paidAmount, $balanceAmount, $feeMonth, $name, $dueDate, ";
   }
 
   @override
   List<Object?> get props => [
-    admno, standard, division, stdonAdm, ledgerName, amount, feeMonth, name, ];
+    admno, standard, division, stdonAdm, ledgerName, totalAmount, paidAmount, balanceAmount, feeMonth, name, dueDate, ];
 }
+

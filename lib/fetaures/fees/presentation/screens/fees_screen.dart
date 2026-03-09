@@ -34,68 +34,7 @@ class FeesScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
 
-                // Container(
-                //   padding: const EdgeInsets.all(16),
-                //   decoration: BoxDecoration(
-                //     color: Colors.white,
-                //     borderRadius: BorderRadius.circular(12),
-                //     boxShadow: [
-                //       BoxShadow(
-                //         color: Colors.black.withOpacity(0.05),
-                //         blurRadius: 8,
-                //         offset: const Offset(0, 4),
-                //       ),
-                //     ],
-                //   ),
-                //   child: Row(
-                //     crossAxisAlignment: CrossAxisAlignment.start,
-                //     children: [
-                //       Container(
-                //         height: 44,
-                //         width: 44,
-                //         decoration: const BoxDecoration(
-                //           color: Color(0xFFD81B60),
-                //           shape: BoxShape.circle,
-                //         ),
-                //         child: const Icon(
-                //           Icons.schedule,
-                //           color: Colors.white,
-                //           size: 22,
-                //         ),
-                //       ),
-                //       const SizedBox(width: 12),
-                //       Expanded(
-                //         child: Column(
-                //           crossAxisAlignment: CrossAxisAlignment.start,
-                //           children: const [
-                //             Text(
-                //               "Tuition Fees",
-                //               style: TextStyle(
-                //                 fontSize: 16,
-                //                 fontWeight: FontWeight.w600,
-                //               ),
-                //             ),
-                //             SizedBox(height: 6),
-                //             Text(
-                //               "₹10000",
-                //               style: TextStyle(
-                //                 fontSize: 18,
-                //                 fontWeight: FontWeight.bold,
-                //                 color: Colors.red,
-                //               ),
-                //             ),
-                //             SizedBox(height: 6),
-                //             Text(
-                //               "Last Date On 23-10-2025",
-                //               style: TextStyle(fontSize: 13, color: Colors.red),
-                //             ),
-                //           ],
-                //         ),
-                //       ),
-                //       const Text("12-10-2025", style: TextStyle(fontSize: 12)),
-                //     ],
-                //   ),
-                // ),
+
                 BlocBuilder<UnPaidFeeCubit, UnPaidFeeState>(
                   builder: (context, state) {
                     if (state is FeeUnpaidInitial) {
@@ -158,8 +97,8 @@ class FeesScreen extends StatelessWidget {
                                           ),
                                         ),
                                         const SizedBox(height: 6),
-                                        const Text(
-                                          "₹10000",
+                                         Text(
+                                          fee.dueAmount ?? "",
                                           style: TextStyle(
                                             fontSize: 18,
                                             fontWeight: FontWeight.bold,
@@ -167,14 +106,14 @@ class FeesScreen extends StatelessWidget {
                                           ),
                                         ),
                                         const SizedBox(height: 6),
-                                        const Text(
-                                          "Last Date On 23-10-2025",
+                                         Text(
+                                          "Last Date On "+fee.dueDate! ?? "",
                                           style: TextStyle(fontSize: 13, color: Colors.red),
                                         ),
                                       ],
                                     ),
                                   ),
-                                  const Text("12-11-2025", style: TextStyle(fontSize: 12)),
+                                 // const Text("12-11-2025", style: TextStyle(fontSize: 12)),
                                 ],
                               ),
                                                         ),
@@ -285,7 +224,7 @@ class FeesScreen extends StatelessWidget {
 
                                 /// TOTAL AMOUNT
                                 Text(
-                                  "₹${fee.amount}",
+                                  "₹${fee.balanceAmount}",
                                   style: const TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
@@ -303,15 +242,15 @@ class FeesScreen extends StatelessWidget {
                                   children: [
                                     _AmountColumn(
                                       title: "Due Amount",
-                                      value: "",
+                                      value: fee.totalAmount,
                                     ),
                                     _AmountColumn(
                                       title: "Paid Amount",
-                                      value: "",
+                                      value: fee.paidAmount,
                                     ),
                                     _AmountColumn(
                                       title: "Balance",
-                                      value: "",
+                                      value: fee.balanceAmount,
                                       valueColor: Colors.red,
                                     ),
                                   ],

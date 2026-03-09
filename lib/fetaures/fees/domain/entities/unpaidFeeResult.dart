@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 
+import 'package:equatable/equatable.dart';
+
 class UnpaidFeeResult extends Equatable {
   UnpaidFeeResult({
     required this.status,
@@ -57,7 +59,12 @@ class Datum extends Equatable {
   Datum({
     required this.admno,
     required this.accYear,
+    required this.feeMonth,
     required this.ledgerName,
+    required this.totalAmount,
+    required this.paidAmount,
+    required this.dueAmount,
+    required this.dueDate,
   });
 
   final String admno;
@@ -66,19 +73,44 @@ class Datum extends Equatable {
   final String accYear;
   static const String accYearKey = "AccYear";
 
+  final String feeMonth;
+  static const String feeMonthKey = "FeeMonth";
+
   final String ledgerName;
   static const String ledgerNameKey = "LedgerName";
+
+  final String totalAmount;
+  static const String totalAmountKey = "TotalAmount";
+
+  final String paidAmount;
+  static const String paidAmountKey = "PaidAmount";
+
+  final String dueAmount;
+  static const String dueAmountKey = "DueAmount";
+
+  final String? dueDate;
+  static const String dueDateKey = "DueDate";
 
 
   Datum copyWith({
     String? admno,
     String? accYear,
+    String? feeMonth,
     String? ledgerName,
+    String? totalAmount,
+    String? paidAmount,
+    String? dueAmount,
+    String? dueDate,
   }) {
     return Datum(
       admno: admno ?? this.admno,
       accYear: accYear ?? this.accYear,
+      feeMonth: feeMonth ?? this.feeMonth,
       ledgerName: ledgerName ?? this.ledgerName,
+      totalAmount: totalAmount ?? this.totalAmount,
+      paidAmount: paidAmount ?? this.paidAmount,
+      dueAmount: dueAmount ?? this.dueAmount,
+      dueDate: dueDate ?? this.dueDate,
     );
   }
 
@@ -86,22 +118,33 @@ class Datum extends Equatable {
     return Datum(
       admno: json["Admno"] ?? "",
       accYear: json["AccYear"] ?? "",
+      feeMonth: json["FeeMonth"] ?? "",
       ledgerName: json["LedgerName"] ?? "",
+      totalAmount: json["TotalAmount"] ?? "",
+      paidAmount: json["PaidAmount"] ?? "",
+      dueAmount: json["DueAmount"] ?? "",
+      dueDate: json["DueDate"] ?? "",
     );
   }
 
   Map<String, dynamic> toJson() => {
     "Admno": admno,
     "AccYear": accYear,
+    "FeeMonth": feeMonth,
     "LedgerName": ledgerName,
+    "TotalAmount": totalAmount,
+    "PaidAmount": paidAmount,
+    "DueAmount": dueAmount,
+    "DueDate": dueDate
   };
 
   @override
   String toString(){
-    return "$admno, $accYear, $ledgerName, ";
+    return "$admno, $accYear, $feeMonth, $ledgerName, $totalAmount, $paidAmount, $dueAmount, $dueDate, ";
   }
 
   @override
   List<Object?> get props => [
-    admno, accYear, ledgerName, ];
+    admno, accYear, feeMonth, ledgerName, totalAmount, paidAmount, dueAmount, dueDate, ];
 }
+
