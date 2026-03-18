@@ -67,6 +67,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       print('🔹 Login URL: $url');
       print('🔹 Request Body: ${params.toJson()}');
       print('🔹 dbName: $dbName');
+      print('🔹 token: $dbName');
 
       final response = await dio.post(
         url,
