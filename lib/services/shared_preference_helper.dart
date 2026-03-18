@@ -51,7 +51,6 @@ class SharedPreferenceHelper {
     return prefs.getString("branchId") ?? '';
   }
 
-  /// ------------------ DATABASE NAME ------------------
   Future<void> setDatabaseName(String dbName) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_databaseNameKey, dbName);
