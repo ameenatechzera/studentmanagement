@@ -32,7 +32,8 @@ void main() async {
   final currentBaseUrl = await sharedPrefHelper.getBaseUrl();
   if (currentBaseUrl == null) {
     await sharedPrefHelper.setBaseUrl(
-      'https://cristalofflineweb.techzera.in/Api/public/api',
+      // 'https://cristalofflineweb.techzera.in/Api/public/api',
+      'https://test.cristaledu.com/Api/public/api',
     );
   }
   runApp(MyApp());
