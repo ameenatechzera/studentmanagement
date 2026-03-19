@@ -5,6 +5,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/screens/main_splash.dart';
 import 'package:studentmanagement/fetaures/classdiary/presentation/cubit/diary_cubit.dart';
 import 'package:studentmanagement/fetaures/fees/presentation/bloc/fees_cubit.dart';
+import 'package:studentmanagement/fetaures/home_screen/presentation/cubit/feed_cubit.dart';
+import 'package:studentmanagement/fetaures/marklist/presentation/cubit/marklist_cubit.dart';
+import 'package:studentmanagement/fetaures/materials/presentation/cubit/material_cubit.dart';
 import 'package:studentmanagement/fetaures/timetable/presentation/cubit/timetable_cubit.dart';
 import 'package:studentmanagement/services/service_locator.dart';
 import 'package:studentmanagement/services/shared_preference_helper.dart';
@@ -51,7 +54,9 @@ class MyApp extends StatelessWidget {
         BlocProvider<DiaryCubit>(create: (_) => sl<DiaryCubit>()),
         BlocProvider<FeesCubit>(create: (_) => sl<FeesCubit>()),
         BlocProvider<UnPaidFeeCubit>(create: (_) => sl<UnPaidFeeCubit>()),
-
+        BlocProvider<FeedCubit>(create: (_) => sl<FeedCubit>()),
+        BlocProvider<MarklistCubit>(create: (_) => sl<MarklistCubit>()),
+        BlocProvider<MaterialCubit>(create: (_) => sl<MaterialCubit>()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

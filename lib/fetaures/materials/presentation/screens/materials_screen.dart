@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studentmanagement/core/navigation/app_navigator.dart';
+import 'package:studentmanagement/fetaures/materials/domain/parameters/fetch_material_parameter.dart';
+import 'package:studentmanagement/fetaures/materials/presentation/cubit/material_cubit.dart';
 import 'package:studentmanagement/fetaures/materials/presentation/screens/notes_expansion_screen.dart';
+import 'package:studentmanagement/fetaures/materials/presentation/widgets/materials_widget.dart';
 
 final ValueNotifier<String> selectedSubject = ValueNotifier<String>(
   'Mathematics',
@@ -11,296 +15,156 @@ class MaterialsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
+    Future.microtask(() {
+      context.read<MaterialCubit>().fetchMaterials(
+        FetchMaterialParameter(
+          branchId: 1,
+          accYear: "2025-2026",
+          standardId: 1,
+          divisionId: 1,
+        ),
+      );
+    });
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
         backgroundColor: Colors.white,
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          title: const Text('Materials Name'),
-          actions: [
-            Padding(
-              padding: const EdgeInsets.only(right: 20.0),
-              child: Container(
-                height: 40,
-                width: 40,
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 208, 205, 205),
-                  borderRadius: BorderRadius.circular(30),
+        title: const Text('Materials Name'),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 20.0),
+            child: Container(
+              height: 40,
+              width: 40,
+              decoration: BoxDecoration(
+                color: const Color.fromARGB(255, 208, 205, 205),
+                borderRadius: BorderRadius.circular(30),
+              ),
+              child: PopupMenuButton(
+                icon: const Icon(Icons.filter_list),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
                 ),
-                child: PopupMenuButton(
-                  icon: const Icon(Icons.filter_list),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  itemBuilder: (context) => [
-                    PopupMenuItem(
-                      enabled: false,
-                      child: SizedBox(
-                        width: 220, // 👈 slightly bigger
-                        child: ValueListenableBuilder<String>(
-                          valueListenable: selectedSubject,
-                          builder: (_, value, _) {
-                            return Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                _radioItem(context, 'Mathematics', value),
-                                _radioItem(context, 'Malayalam', value),
-                                _radioItem(context, 'Physics', value),
-                                _radioItem(context, 'Chemistry', value),
-                                _radioItem(context, 'Biology', value),
-                              ],
-                            );
-                          },
-                        ),
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    enabled: false,
+                    child: SizedBox(
+                      width: 220,
+                      child: ValueListenableBuilder<String>(
+                        valueListenable: selectedSubject,
+                        builder: (_, value, _) {
+                          return Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              radioItem(context, 'Mathematics', value),
+                              radioItem(context, 'Malayalam', value),
+                              radioItem(context, 'Physics', value),
+                              radioItem(context, 'Chemistry', value),
+                              radioItem(context, 'Biology', value),
+                            ],
+                          );
+                        },
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
-          ],
-
-          // 🔹 TAB BAR (ONLY TABS HERE)
-          bottom: const TabBar(
-            indicatorColor: Color(0xFFC4005F),
-            labelColor: Color(0xFFC4005F),
-            unselectedLabelColor: Colors.grey,
-            tabs: [
-              Tab(text: 'PDF'),
-              Tab(text: 'Link'),
-              Tab(text: 'Notes'),
-            ],
           ),
-        ),
+        ],
+      ),
 
-        // 🔹 TAB VIEWS (LISTS HERE)
-        body: TabBarView(
-          children: [
-            // PDF LIST
-            ListView.separated(
+      body: BlocBuilder<MaterialCubit, MaterialsState>(
+        builder: (context, state) {
+          if (state is MaterialLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (state is MaterialError) {
+            return Center(child: Text(state.message));
+          }
+
+          if (state is MaterialLoaded) {
+            final data = state.response.data ?? [];
+
+            if (data.isEmpty) {
+              return const Center(child: Text("No Materials Found"));
+            }
+
+            return ListView.separated(
               separatorBuilder: (context, index) {
                 return SizedBox(height: 10);
               },
               padding: const EdgeInsets.all(16),
-              itemCount: 10,
+              itemCount: data.length,
               itemBuilder: (context, index) {
-                final ValueNotifier<bool> isFav = ValueNotifier<bool>(false);
+                final item = data[index];
+                final bool isFav = item.favorite ?? false;
+                // final ValueNotifier<bool> isFav = ValueNotifier<bool>(
+                //   item.favorite ?? false,
+                // );
 
-                return Container(
-                  height: 100,
-                  padding: const EdgeInsets.symmetric(horizontal: 14),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF8F8F9),
-
-                    borderRadius: BorderRadius.circular(14),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.08),
-                        blurRadius: 16,
-                        offset: const Offset(0, 10),
-                      ),
-                    ],
-                  ),
-                  child: ListTile(
-                    leading: Image(
-                      image: AssetImage('assets/icons/Group (1).png'),
-                    ),
-                    title: Text('chapter 1:Number Systems'),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        ValueListenableBuilder<bool>(
-                          valueListenable: isFav,
-                          builder: (_, value, __) {
-                            return IconButton(
-                              onPressed: () => isFav.value = !value,
-                              icon: Icon(
-                                Icons.star,
-                                color: value ? Colors.yellow : Colors.grey,
-                              ),
-                            );
-                          },
-                        ),
-                        // SizedBox(width: 10),
-                        Container(
-                          height: 20,
-                          width: 20,
-                          decoration: BoxDecoration(
-                            color: const Color(0xffffc4005f),
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          child: Icon(
-                            Icons.download,
-                            color: Colors.white,
-                            size: 10,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-
-            // LINK LIST
-            ListView.separated(
-              separatorBuilder: (context, index) {
-                return SizedBox(height: 10);
-              },
-              padding: const EdgeInsets.all(16),
-              itemCount: 10,
-              itemBuilder: (context, index) {
-                final ValueNotifier<bool> isFav = ValueNotifier<bool>(false);
-                return Container(
-                  height: 100,
-                  padding: const EdgeInsets.symmetric(horizontal: 14),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF8F8F9),
-
-                    borderRadius: BorderRadius.circular(14),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.08),
-                        blurRadius: 16,
-                        offset: const Offset(0, 10),
-                      ),
-                    ],
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 20.0),
+                /// 🔥 PDF
+                if (item.material != null &&
+                    item.material.toString().isNotEmpty) {
+                  return buildCard(
                     child: ListTile(
-                      title: Text('chapter 1:Number Systems'),
+                      leading: leadingIcon(item),
+                      title: Text(item.documentName ?? "-"),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [favIcon(isFav), downloadIcon()],
+                      ),
+                    ),
+                  );
+                }
+
+                /// 🔥 LINK
+                if (item.link != null && item.link.toString().isNotEmpty) {
+                  return buildCard(
+                    child: ListTile(
+                      leading: leadingIcon(item),
+                      title: Text(item.documentName ?? "-"),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          ValueListenableBuilder<bool>(
-                            valueListenable: isFav,
-                            builder: (_, value, _) {
-                              return IconButton(
-                                onPressed: () => isFav.value = !value,
-                                icon: Icon(
-                                  Icons.star,
-                                  color: value ? Colors.yellow : Colors.grey,
-                                ),
-                              );
+                          favIcon(isFav),
+                          arrowIcon(
+                            onTap: () {
+                              print(item.link);
                             },
-                          ),
-                          Container(
-                            height: 25,
-                            width: 25,
-                            decoration: BoxDecoration(
-                              color: const Color(0xffffc4005f),
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            child: IconButton(
-                              onPressed: () {},
-                              icon: Icon(
-                                Icons.arrow_forward_ios,
-                                size: 10,
-                                color: Colors.white,
-                              ),
-                            ),
                           ),
                         ],
                       ),
                     ),
-                  ),
-                );
-              },
-            ),
+                  );
+                }
 
-            // NOTES LIST
-            ListView.separated(
-              separatorBuilder: (context, index) {
-                return SizedBox(height: 10);
-              },
-              padding: const EdgeInsets.all(16),
-              itemCount: 10,
-              itemBuilder: (context, index) {
-                final ValueNotifier<bool> isFav = ValueNotifier<bool>(false);
-                return Container(
-                  height: 100,
-                  padding: const EdgeInsets.symmetric(horizontal: 14),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF8F8F9),
-
-                    borderRadius: BorderRadius.circular(14),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.08),
-                        blurRadius: 16,
-                        offset: const Offset(0, 10),
-                      ),
-                    ],
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 20.0),
+                /// 🔥 NOTES
+                if (item.notes != null && item.notes.toString().isNotEmpty) {
+                  return buildCard(
                     child: ListTile(
                       onTap: () {
                         AppNavigator.pushSlide(
                           context: context,
-                          page: NotesExpansionScreen(),
+                          page: const NotesExpansionScreen(),
                         );
-
-                        // Navigator.of(context).push(
-                        //   MaterialPageRoute(
-                        //     builder: (context) {
-                        //       return NotesExpansionScreen();
-                        //     },
-                        //   ),
-                        // );
                       },
-                      leading: Container(
-                        height: 40,
-                        width: 40,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          color: const Color(0xFFADDFFF),
-                        ),
-                        child: const Icon(Icons.note, color: Colors.black),
-                      ),
-                      title: Text('chapter 1:Number Systems'),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          ValueListenableBuilder<bool>(
-                            valueListenable: isFav,
-                            builder: (_, value, _) {
-                              return IconButton(
-                                onPressed: () => isFav.value = !value,
-                                icon: Icon(
-                                  Icons.star,
-                                  color: value ? Colors.yellow : Colors.grey,
-                                ),
-                              );
-                            },
-                          ),
-                        ],
-                      ),
+                      leading: leadingIcon(item),
+                      title: Text(item.documentName ?? "-"),
+                      trailing: favIcon(isFav),
                     ),
-                  ),
-                );
+                  );
+                }
+
+                return const SizedBox();
               },
-            ),
-          ],
-        ),
+            );
+          }
+
+          return const SizedBox();
+        },
       ),
     );
   }
-}
-
-Widget _radioItem(BuildContext context, String text, String groupValue) {
-  return RadioListTile<String>(
-    value: text,
-    groupValue: groupValue,
-    dense: true,
-    title: Text(text),
-    activeColor: const Color(0xFFC4005F),
-    contentPadding: EdgeInsets.zero,
-    onChanged: (val) {
-      selectedSubject.value = val!;
-      Navigator.pop(context);
-    },
-  );
 }

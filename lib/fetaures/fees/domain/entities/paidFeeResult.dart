@@ -1,7 +1,5 @@
 import 'package:equatable/equatable.dart';
 
-import 'package:equatable/equatable.dart';
-
 class PaidFeeResult extends Equatable {
   PaidFeeResult({
     required this.status,
@@ -18,12 +16,7 @@ class PaidFeeResult extends Equatable {
   final List<Datum> data;
   static const String dataKey = "data";
 
-
-  PaidFeeResult copyWith({
-    int? status,
-    bool? error,
-    List<Datum>? data,
-  }) {
+  PaidFeeResult copyWith({int? status, bool? error, List<Datum>? data}) {
     return PaidFeeResult(
       status: status ?? this.status,
       error: error ?? this.error,
@@ -31,28 +24,29 @@ class PaidFeeResult extends Equatable {
     );
   }
 
-  factory PaidFeeResult.fromJson(Map<String, dynamic> json){
+  factory PaidFeeResult.fromJson(Map<String, dynamic> json) {
     return PaidFeeResult(
       status: json["status"] ?? 0,
       error: json["error"] ?? false,
-      data: json["data"] == null ? [] : List<Datum>.from(json["data"]!.map((x) => Datum.fromJson(x))),
+      data: json["data"] == null
+          ? []
+          : List<Datum>.from(json["data"]!.map((x) => Datum.fromJson(x))),
     );
   }
 
   Map<String, dynamic> toJson() => {
     "status": status,
     "error": error,
-    "data": data.map((x) => x?.toJson()).toList(),
+    "data": data.map((x) => x.toJson()).toList(),
   };
 
   @override
-  String toString(){
+  String toString() {
     return "$status, $error, $data, ";
   }
 
   @override
-  List<Object?> get props => [
-    status, error, data, ];
+  List<Object?> get props => [status, error, data];
 }
 
 class Datum extends Equatable {
@@ -103,7 +97,6 @@ class Datum extends Equatable {
   final String? dueDate;
   static const String dueDateKey = "DueDate";
 
-
   Datum copyWith({
     String? admno,
     String? standard,
@@ -132,7 +125,7 @@ class Datum extends Equatable {
     );
   }
 
-  factory Datum.fromJson(Map<String, dynamic> json){
+  factory Datum.fromJson(Map<String, dynamic> json) {
     return Datum(
       admno: json["Admno"] ?? "",
       standard: json["Standard"] ?? "",
@@ -159,16 +152,26 @@ class Datum extends Equatable {
     "BalanceAmount": balanceAmount,
     "FeeMonth": feeMonth,
     "Name": name,
-    "DueDate": dueDate
+    "DueDate": dueDate,
   };
 
   @override
-  String toString(){
+  String toString() {
     return "$admno, $standard, $division, $stdonAdm, $ledgerName, $totalAmount, $paidAmount, $balanceAmount, $feeMonth, $name, $dueDate, ";
   }
 
   @override
   List<Object?> get props => [
-    admno, standard, division, stdonAdm, ledgerName, totalAmount, paidAmount, balanceAmount, feeMonth, name, dueDate, ];
+    admno,
+    standard,
+    division,
+    stdonAdm,
+    ledgerName,
+    totalAmount,
+    paidAmount,
+    balanceAmount,
+    feeMonth,
+    name,
+    dueDate,
+  ];
 }
-

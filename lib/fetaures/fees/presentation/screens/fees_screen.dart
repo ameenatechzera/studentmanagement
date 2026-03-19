@@ -34,7 +34,6 @@ class FeesScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
 
-
                 BlocBuilder<UnPaidFeeCubit, UnPaidFeeState>(
                   builder: (context, state) {
                     if (state is FeeUnpaidInitial) {
@@ -52,10 +51,9 @@ class FeesScreen extends StatelessWidget {
                         itemBuilder: (context, index) {
                           final fee = feesUnpaidList[index];
 
-                           return
-                            Padding(
-                              padding: const EdgeInsets.only(top: 8.0),
-                              child: Container(
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Container(
                               padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
                                 color: Colors.white,
@@ -87,18 +85,19 @@ class FeesScreen extends StatelessWidget {
                                   const SizedBox(width: 12),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          fee.ledgerName ?? "",
+                                          fee.ledgerName,
                                           style: const TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.w600,
                                           ),
                                         ),
                                         const SizedBox(height: 6),
-                                         Text(
-                                          fee.dueAmount ?? "",
+                                        Text(
+                                          fee.dueAmount,
                                           style: TextStyle(
                                             fontSize: 18,
                                             fontWeight: FontWeight.bold,
@@ -106,18 +105,21 @@ class FeesScreen extends StatelessWidget {
                                           ),
                                         ),
                                         const SizedBox(height: 6),
-                                         Text(
-                                          "Last Date On "+fee.dueDate! ?? "",
-                                          style: TextStyle(fontSize: 13, color: Colors.red),
+                                        Text(
+                                          "Last Date On ${fee.dueDate!}",
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            color: Colors.red,
+                                          ),
                                         ),
                                       ],
                                     ),
                                   ),
-                                 // const Text("12-11-2025", style: TextStyle(fontSize: 12)),
+                                  // const Text("12-11-2025", style: TextStyle(fontSize: 12)),
                                 ],
                               ),
-                                                        ),
-                            );
+                            ),
+                          );
                         },
                       );
                     }
@@ -194,7 +196,7 @@ class FeesScreen extends StatelessWidget {
                                       child: Row(
                                         children: [
                                           Text(
-                                            fee.ledgerName ?? "",
+                                            fee.ledgerName,
                                             style: const TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600,

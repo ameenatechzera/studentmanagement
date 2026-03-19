@@ -17,6 +17,22 @@ import 'package:studentmanagement/fetaures/fees/domain/usecases/fetchPaidFeesDet
 import 'package:studentmanagement/fetaures/fees/domain/usecases/fetchUnpaidFeeDetailsUseCase.dart';
 import 'package:studentmanagement/fetaures/fees/presentation/bloc/fees_cubit.dart';
 import 'package:studentmanagement/fetaures/fees/presentation/unPaidFee/un_paid_fee_cubit.dart';
+import 'package:studentmanagement/fetaures/home_screen/data/datasources/feed_remote_data_source.dart';
+import 'package:studentmanagement/fetaures/home_screen/data/repositories/feed_repository_impl.dart';
+import 'package:studentmanagement/fetaures/home_screen/domain/repositories/feed_repository.dart';
+import 'package:studentmanagement/fetaures/home_screen/domain/usecases/fetch_feed_usecase.dart';
+import 'package:studentmanagement/fetaures/home_screen/presentation/cubit/feed_cubit.dart';
+import 'package:studentmanagement/fetaures/marklist/data/datasources/marklist_remote_data_source.dart';
+import 'package:studentmanagement/fetaures/marklist/data/repositories/marklist_repository_impl.dart';
+import 'package:studentmanagement/fetaures/marklist/domain/repositories/marklist_repository.dart';
+import 'package:studentmanagement/fetaures/marklist/domain/usecases/fetch_examterms_usecase.dart';
+import 'package:studentmanagement/fetaures/marklist/domain/usecases/fetch_marklist_parameter.dart';
+import 'package:studentmanagement/fetaures/marklist/presentation/cubit/marklist_cubit.dart';
+import 'package:studentmanagement/fetaures/materials/data/datasources/materials_remote_data_source.dart';
+import 'package:studentmanagement/fetaures/materials/data/repositories/material_repository_impl.dart';
+import 'package:studentmanagement/fetaures/materials/domain/repositories/material_repository.dart';
+import 'package:studentmanagement/fetaures/materials/domain/usecases/fetch_materials_usecase.dart';
+import 'package:studentmanagement/fetaures/materials/presentation/cubit/material_cubit.dart';
 import 'package:studentmanagement/fetaures/timetable/data/datasources/timetable_remote_data_source.dart';
 import 'package:studentmanagement/fetaures/timetable/data/repositories/timetable_repository_impl.dart';
 import 'package:studentmanagement/fetaures/timetable/domain/repositories/timettable_repository.dart';
@@ -85,22 +101,67 @@ class ServiceLocator {
     sl.registerFactory(() => FeesCubit(fetchPaidFeesDetailsUseCase: sl()));
 
     /// Cubit
-    sl.registerFactory(() => UnPaidFeeCubit(fetchUnPaidFeesDetailsUseCase: sl()));
+    sl.registerFactory(
+      () => UnPaidFeeCubit(fetchUnPaidFeesDetailsUseCase: sl()),
+    );
 
     /// UseCase
     sl.registerLazySingleton(() => FetchPaidFeesDetailsUseCase(sl()));
     sl.registerLazySingleton(() => FetchUnPaidFeesDetailsUseCase(sl()));
 
-
     /// Remote Data Source
     sl.registerLazySingleton<FeesRemoteDataSource>(
-          () => FeesRemoteDataSourceImpl(),
+      () => FeesRemoteDataSourceImpl(),
     );
 
     /// Repository
     sl.registerLazySingleton<FeesRepository>(
-          () => FeesRepositoryImpl(remoteDataSource: sl()),
+      () => FeesRepositoryImpl(remoteDataSource: sl()),
+    );
+    // ------------------- FEED -------------------
+
+    sl.registerFactory(() => FeedCubit(fetchFeedUseCase: sl()));
+
+    sl.registerLazySingleton(() => FetchFeedUseCase(sl()));
+
+    sl.registerLazySingleton<FeedRemoteDataSource>(
+      () => FeedRemoteDataSourceImpl(),
     );
 
+    sl.registerLazySingleton<FeedRepository>(
+      () => FeedRepositoryImpl(remoteDataSource: sl()),
+    ); // ------------------- MARKLIST -------------------
+
+    sl.registerFactory(
+      () => MarklistCubit(
+        fetchExamTermsUseCase: sl(),
+        fetchMarkListUseCase: sl(),
+      ),
+    );
+
+    sl.registerLazySingleton(() => FetchExamTermsUseCase(sl()));
+    sl.registerLazySingleton(() => FetchMarkListUseCase(sl()));
+
+    sl.registerLazySingleton<MarkListRemoteDataSource>(
+      () => MarkListRemoteDataSourceImpl(),
+    );
+
+    sl.registerLazySingleton<MarkListRepository>(
+      () => MarkListRepositoryImpl(sl()),
+    );
+
+    /// ------------------- MATERIALS -------------------
+
+    sl.registerFactory(() => MaterialCubit(fetchMaterialUseCase: sl()));
+
+    sl.registerLazySingleton(() => FetchMaterialUseCase(sl()));
+
+    sl.registerLazySingleton<MaterialRemoteDataSource>(
+      () => MaterialRemoteDataSourceImpl(),
+    );
+
+    sl.registerLazySingleton<MaterialRepository>(
+      () => MaterialRepositoryImpl(sl()),
+    );
   }
 }

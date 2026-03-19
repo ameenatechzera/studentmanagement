@@ -1,139 +1,151 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:studentmanagement/fetaures/marklist/domain/parameter/fetch_marklist_parameter.dart';
+import 'package:studentmanagement/fetaures/marklist/presentation/cubit/marklist_cubit.dart';
 
 class MarklistExpansionScreen extends StatelessWidget {
-  const MarklistExpansionScreen({super.key});
+  final String examTermId;
+
+  const MarklistExpansionScreen({super.key, required this.examTermId});
 
   @override
   Widget build(BuildContext context) {
+    Future.microtask(() {
+      context.read<MarklistCubit>().fetchMarkList(
+        FetchMarkListParameter(
+          branchId: 1,
+          accYear: "2025-2026",
+          standardId: 1,
+          divisionId: 1,
+          examTermId: examTermId,
+          admno: "KG-1218",
+        ),
+      );
+    });
+
     return Scaffold(
       appBar: AppBar(title: const Text("Mark List")),
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            // HEADER ROW
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-              decoration: BoxDecoration(
-                color: Colors.pink.shade50,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Row(
-                children: const [
-                  Expanded(
-                    flex: 1,
-                    child: Text(
-                      "Sl",
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                      ),
+        child: BlocBuilder<MarklistCubit, MarklistState>(
+          builder: (context, state) {
+            if (state is MarkListLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            if (state is MarkListError) {
+              return Center(child: Text(state.message));
+            }
+
+            if (state is MarkListLoaded) {
+              final data = state.response.data ?? [];
+
+              if (data.isEmpty) {
+                return const Center(child: Text("No Data Found"));
+              }
+
+              return Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 12,
+                      horizontal: 12,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.pink.shade50,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      children: const [
+                        Expanded(flex: 1, child: Text("Sl")),
+                        SizedBox(width: 10),
+                        Expanded(flex: 4, child: Text("Subject")),
+                        Expanded(flex: 3, child: Text("Mark Obtained")),
+                        Expanded(flex: 2, child: Text("Total Mark")),
+                      ],
                     ),
                   ),
-                  SizedBox(width: 10),
+
+                  /// 🔹 LIST
                   Expanded(
-                    flex: 4,
-                    child: Text(
-                      "Subject",
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                      ),
+                    child: ListView.builder(
+                      itemCount: data.length,
+                      itemBuilder: (context, index) {
+                        final item = data[index];
+                        final isEven = index.isEven;
+
+                        return Container(
+                          padding: EdgeInsets.symmetric(
+                            vertical: isEven ? 20 : 12,
+                            horizontal: 12,
+                          ),
+                          color: isEven ? Colors.white : Colors.pink.shade50,
+                          child: Row(
+                            children: [
+                              Expanded(flex: 1, child: Text("${index + 1}")),
+
+                              Expanded(
+                                flex: 3,
+                                child: Text(item.subjectName ?? "-"),
+                              ),
+
+                              Expanded(
+                                flex: 2,
+                                child: Center(
+                                  child: Text(
+                                    "${item.te ?? 0} + ${item.ce ?? 0}",
+                                  ),
+                                ),
+                              ),
+
+                              Expanded(
+                                flex: 2,
+                                child: Center(
+                                  child: Text(
+                                    ((int.tryParse(item.te ?? "0") ?? 0) +
+                                            (int.tryParse(item.ce ?? "0") ?? 0))
+                                        .toString(),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
                     ),
                   ),
-                  Expanded(
-                    flex: 3,
-                    child: Text(
-                      "Mark Obtained",
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
+
+                  const SizedBox(height: 20),
+
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFC4005F),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4),
+                        ),
                       ),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 2,
-                    child: Text(
-                      "Total Mark",
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.download, color: Colors.white),
+                          SizedBox(width: 10),
+                          Text(
+                            'Download',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ],
                       ),
                     ),
                   ),
                 ],
-              ),
-            ),
+              );
+            }
 
-            // TABLE ROWS
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: 10, // static data
-              itemBuilder: (context, index) {
-                final isEven = index.isEven;
-
-                return Container(
-                  padding: EdgeInsets.symmetric(
-                    vertical: isEven ? 20 : 12,
-                    horizontal: 12,
-                  ),
-                  color: isEven ? Colors.white : Colors.pink.shade50,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        flex: 1,
-                        child: Text(
-                          "${index + 1}",
-                          style: const TextStyle(fontSize: 13),
-                        ),
-                      ),
-                      const Expanded(
-                        flex: 3,
-                        child: Text(
-                          "Malayalam",
-                          style: TextStyle(fontSize: 13),
-                        ),
-                      ),
-                      const Expanded(
-                        flex: 2,
-                        child: Center(
-                          child: Text("70", style: TextStyle(fontSize: 13)),
-                        ),
-                      ),
-                      const Expanded(
-                        flex: 2,
-                        child: Center(
-                          child: Text("100", style: TextStyle(fontSize: 13)),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-            SizedBox(height: 50),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFFC4005F),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.download, color: Colors.white),
-                    SizedBox(width: 10),
-                    Text('Download', style: TextStyle(color: Colors.white)),
-                  ],
-                ),
-              ),
-            ),
-          ],
+            return const SizedBox();
+          },
         ),
       ),
     );

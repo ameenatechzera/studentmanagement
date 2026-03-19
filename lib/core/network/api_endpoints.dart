@@ -37,4 +37,24 @@ class ApiConstants {
   static String getFeesUnPaidServerPath(String baseUrl) {
     return '$baseUrl/getUnpaidfee-byadmno';
   }
+
+  /// Returns the full URL for Fees / Get Fees UnPaid
+  static String getFeedPath(String baseUrl) {
+    return '$baseUrl/feed-report';
+  }
+
+  /// Returns the full URL for examterms
+  static String getExamTermPath(String baseUrl) {
+    return '$baseUrl/ExamTerms/1';
+  }
+
+  /// Returns the full URL for fetchingmarklist
+  static String getMarkListPath(String baseUrl) {
+    return '$baseUrl/single-student-marklist-term-type';
+  }
+
+  /// Returns the full URL for fetchingmaterials
+  static String getMaterialsPath(String baseUrl) {
+    return '$baseUrl/class-wise-material-get';
+  }
 }
