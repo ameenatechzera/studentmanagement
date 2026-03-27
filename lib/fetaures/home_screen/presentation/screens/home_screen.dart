@@ -1,39 +1,7 @@
-// import 'package:flutter/material.dart';
-// import 'package:studentmanagement/fetaures/authentication/domain/entities/login_entity.dart';
-// import 'package:studentmanagement/fetaures/home_screen/presentation/widgets/header_cristal.dart';
-// import 'package:studentmanagement/fetaures/home_screen/presentation/widgets/post_card_cristal.dart';
-// import 'package:studentmanagement/fetaures/home_screen/presentation/widgets/sidenavigation.dart';
 
-// class HomeScreen extends StatelessWidget {
-//   final LoginResponseResult? loginResponse;
-
-//   const HomeScreen( {super.key, this.loginResponse});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       drawer: SideNavigationBar(),
-//       appBar: AppBar(title: const Text("Home")),
-//       //bottomNavigationBar: const CustomBottomBar(),
-//       body: SafeArea(
-//         child: Column(
-//           children: [
-//             const HeaderSection(),
-//             const SizedBox(height: 10),
-//             Expanded(
-//               child: ListView(
-//                 padding: const EdgeInsets.symmetric(horizontal: 16),
-//                 children: const [PostCard(), SizedBox(height: 16), PostCard()],
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:studentmanagement/core/appdata/appdata.dart';
 import 'package:studentmanagement/fetaures/home_screen/domain/parameters/fetchfeed_parameter.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/cubit/feed_cubit.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/widgets/post_card_cristal.dart';
@@ -55,9 +23,9 @@ class _HomeScreenState extends State<HomeScreen> {
     /// 🔹 Call API
     context.read<FeedCubit>().fetchFeeds(
       FetchFeedParameter(
-        accYear: "2025-2026",
-        standardId: "1",
-        divisionId: "1",
+        accYear: AppData.accYear!,
+        standardId: AppData.studentStdId!,
+        divisionId: AppData.studentDivId!,
       ),
     );
   }

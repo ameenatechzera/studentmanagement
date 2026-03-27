@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:studentmanagement/fetaures/authentication/data/models/accountDetailsModel.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/entities/login_entity.dart';
 
 final ValueNotifier<int> itemTapBehaviorNotifier = ValueNotifier<int>(1);
@@ -84,6 +85,39 @@ class SharedPreferenceHelper {
     await prefs.remove(_tokenKey);
   }
 
+  //Save Account list while switch
+
+  static Future<void> saveNewAccount(AccountDetails account) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    List<String> data = prefs.getStringList('accounts') ?? [];
+    print('dataInsertion ${data}');
+
+    bool exists = data.any((item) {
+      final decoded = jsonDecode(item);
+      return decoded['admissionNo'] == account.admissionNo;
+    });
+
+    if (!exists) {
+      data.add(jsonEncode(account.toJson()));
+      await prefs.setStringList('accounts', data);
+    }
+  }
+
+  //fetch List
+
+  Future<List<AccountDetails>> getAccounts() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    List<String> data = prefs.getStringList('accounts') ?? [];
+
+    return data.map((e) => AccountDetails.fromJson(jsonDecode(e))).toList();
+  }
+//Clear account details
+  static Future<void> clearAccounts() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('accounts', []);
+  }
   // //printer
   // Future<bool> saveSelectedPrinter(String selectedPrinter) async {
   //   final prefs = await SharedPreferences.getInstance();

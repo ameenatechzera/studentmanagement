@@ -12,6 +12,7 @@ class FeedCubit extends Cubit<FeedState> {
   FeedCubit({required this.fetchFeedUseCase}) : super(FeedInitial());
 
   Future<void> fetchFeeds(FetchFeedParameter params) async {
+    print('fetchFeeds ${params.toJson()}');
     emit(FeedLoading());
 
     final result = await fetchFeedUseCase(params);

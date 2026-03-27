@@ -85,8 +85,8 @@ class TimeTableScreen extends StatelessWidget {
                         context.read<TimetableCubit>().fetchTimeTable(
                           FetchTimeTableParameter(
                             accYear: "2025-2026",
-                            standardId: 3,
-                            divisionId: 1,
+                            standardId: 12,
+                            divisionId: 2,
                             branchId: 1,
                           ),
                         );

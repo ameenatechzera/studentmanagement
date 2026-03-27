@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:studentmanagement/core/appdata/appdata.dart';
 
 class HeaderSection extends StatelessWidget {
   const HeaderSection({super.key});
@@ -17,7 +18,7 @@ class HeaderSection extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 12),
-          const Expanded(
+           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -25,9 +26,9 @@ class HeaderSection extends StatelessWidget {
                     style: TextStyle(
                         fontSize: 14, color: Colors.black54)),
                 SizedBox(height: 2),
-                Text("Haris Rahman",
+                Text(AppData.studentName!,
                     style:
-                    TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
               ],
             ),
           ),

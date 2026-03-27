@@ -15,7 +15,7 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
 
   @override
   Future<FetchFeedResponseModel> fetchFeeds(FetchFeedParameter params) async {
-    print('📘 Fetch Feed Called');
+    print('📘 Fetch Feed Called ${params.toJson()}');
 
     try {
       /// 🔹 Get Base URL
@@ -26,6 +26,7 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
 
       /// 🔹 Build API URL
       final url = ApiConstants.getFeedPath(baseUrl);
+      print('path $url');
 
       /// 🔹 Get Token
       final token = await SharedPreferenceHelper().getToken() ?? "";

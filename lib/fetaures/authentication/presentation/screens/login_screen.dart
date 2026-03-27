@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:studentmanagement/core/appdata/appdata.dart';
 import 'package:studentmanagement/core/utils/widgets/app_snackbar.dart';
+import 'package:studentmanagement/fetaures/authentication/data/models/accountDetailsModel.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/parameters/deviceRegisterRequest.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/parameters/login_params.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/bloc/logincubit/login_cubit.dart';
@@ -91,6 +93,15 @@ class _LoginScreenState extends State<LoginScreen> {
                       await sharedPrefHelper.saveLoginResponse(
                         state.loginResponse,
                       );
+                      AppData.admissionNo = state.loginResponse.student!.admno.toString();
+                      AppData.studentName = state.loginResponse.student!.name.toString();
+                      AppData.studentStdId = state.loginResponse.student!.currentStudentStandardId.toString();
+                      AppData.studentDivId = state.loginResponse.student!.currentStudentDivisionId.toString();
+                      AppData.accYear = state.loginResponse.student!.accYear.toString();
+                      await SharedPreferenceHelper.saveNewAccount(AccountDetails(admissionNo: state.loginResponse.student!.admno.toString(),
+                          dob: state.loginResponse.student!.dob.toString(), stdId: state.loginResponse.student!.stdonAdm.toString(),
+                          divId: state.loginResponse.student!.divonAdm.toString(), accYear:state.loginResponse.student!.accYear.toString(),
+                          name: state.loginResponse.student!.name));
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) {
