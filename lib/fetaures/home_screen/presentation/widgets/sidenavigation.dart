@@ -28,26 +28,34 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
   }
   @override
   Widget build(BuildContext context) {
-
     return Drawer(
       width: MediaQuery.of(context).size.width * 0.80,
       child: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _headerSection(),
-            const SizedBox(height: 10),
-            _accountSwitchSectionO(context),
-            const Divider(height: 30),
-            _menuItem(Icons.home_rounded, "Home", () {}),
-            _menuItem(Icons.person_outline, "Profile", () {}),
-            _menuItem(Icons.notifications_none, "Notifications", () {}),
-            _menuItem(Icons.settings_outlined, "Settings", () {}),
-            const Spacer(),
-            const Divider(),
-            _menuItem(Icons.logout, "Logout", () {}),
-            const SizedBox(height: 10),
-          ],
+        child: SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: MediaQuery.of(context).size.height,
+            ),
+            child: IntrinsicHeight(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _headerSection(),
+                  const SizedBox(height: 10),
+                  _accountSwitchSectionO(context),
+                  const Divider(height: 30),
+                  _menuItem(Icons.home_rounded, "Home", () {}),
+                  _menuItem(Icons.person_outline, "Profile", () {}),
+                  _menuItem(Icons.notifications_none, "Notifications", () {}),
+                  _menuItem(Icons.settings_outlined, "Settings", () {}),
+                  const Spacer(),
+                  const Divider(),
+                  _menuItem(Icons.logout, "Logout", () {}),
+                  const SizedBox(height: 10),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );

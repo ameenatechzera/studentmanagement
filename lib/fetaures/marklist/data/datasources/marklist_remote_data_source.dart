@@ -70,6 +70,7 @@ class MarkListRemoteDataSourceImpl implements MarkListRemoteDataSource {
     FetchMarkListParameter params,
   ) async {
     print('📘 Fetch MarkList Called');
+    print('FetchMarkListParameter ${params.toJson()}');
 
     try {
       /// 🔹 Get Base URL

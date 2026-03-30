@@ -19,7 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-
+  print('AccYear ${AppData.accYear!}');
     /// 🔹 Call API
     context.read<FeedCubit>().fetchFeeds(
       FetchFeedParameter(
@@ -32,6 +32,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    context.read<FeedCubit>().fetchFeeds(
+      FetchFeedParameter(
+        accYear: AppData.accYear!,
+        standardId: AppData.studentStdId!,
+        divisionId: AppData.studentDivId!,
+      ),
+    );
     return Scaffold(
       drawer: SideNavigationBar(),
       appBar: AppBar(title: const Text("Home")),

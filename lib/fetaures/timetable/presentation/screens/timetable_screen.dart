@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:studentmanagement/core/appdata/appdata.dart';
 import 'package:studentmanagement/fetaures/timetable/domain/parameters/fetch_timetable_parameter.dart';
 import 'package:studentmanagement/fetaures/timetable/presentation/cubit/timetable_cubit.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -84,9 +85,9 @@ class TimeTableScreen extends StatelessWidget {
                             focused; // Call API when date changes
                         context.read<TimetableCubit>().fetchTimeTable(
                           FetchTimeTableParameter(
-                            accYear: "2025-2026",
-                            standardId: 12,
-                            divisionId: 2,
+                            accYear: AppData.accYear!,
+                            standardId: AppData.studentStdId!,
+                            divisionId: AppData.studentDivId!,
                             branchId: 1,
                           ),
                         );

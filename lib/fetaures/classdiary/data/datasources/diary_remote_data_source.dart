@@ -16,6 +16,7 @@ class DiaryRemoteDataSourceImpl implements DiaryRemoteDataSource {
   @override
   Future<FetchDiaryResponseModel> fetchDiary(FetchDiaryParameter params) async {
     print('📘 Fetch Diary Called');
+    print('FetchDiaryParameter ${params.toJson()}');
 
     try {
       /// 🔹 Get Base URL
@@ -27,6 +28,7 @@ class DiaryRemoteDataSourceImpl implements DiaryRemoteDataSource {
       /// 🔹 Build API URL
       final url = ApiConstants.getDiaryFetchPath(baseUrl);
       final token = await SharedPreferenceHelper().getToken() ?? "";
+      print('token $token');
 
       /// 🔹 POST Request
       final response = await dio.post(

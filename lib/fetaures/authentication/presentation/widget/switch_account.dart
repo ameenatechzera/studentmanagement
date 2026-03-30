@@ -80,6 +80,7 @@ class AddAccount extends StatelessWidget {
                   AppData.studentStdId = state.loginResponse.student!.currentStudentStandardId.toString();
                   AppData.studentDivId = state.loginResponse.student!.currentStudentDivisionId.toString();
                   AppData.accYear = state.loginResponse.student!.accYear.toString();
+                  print('AppData.accYear ${AppData.accYear}');
                   await SharedPreferenceHelper.saveNewAccount(AccountDetails(admissionNo: state.loginResponse.student!.admno.toString(),
                       dob: state.loginResponse.student!.dob.toString(), stdId: state.loginResponse.student!.stdonAdm.toString(),
                       divId: state.loginResponse.student!.divonAdm.toString(), accYear:state.loginResponse.student!.accYear.toString(),

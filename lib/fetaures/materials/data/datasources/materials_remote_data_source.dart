@@ -18,6 +18,7 @@ class MaterialRemoteDataSourceImpl implements MaterialRemoteDataSource {
   @override
   Future<FetchMaterialResponseModel> fetchMaterials(params) async {
     print('📘 Fetch Materials Called');
+    print('params ${params.toJson()}');
 
     try {
       /// 🔹 Get Base URL
