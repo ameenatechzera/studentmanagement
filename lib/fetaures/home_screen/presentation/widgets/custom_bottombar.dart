@@ -16,7 +16,6 @@ class CustomBottomBar extends StatelessWidget {
       _NavItem(icon: Icons.home, label: 'Home'),
       _NavItem(icon: Icons.school_outlined, label: 'Student'),
       _NavItem(icon: Icons.notifications_outlined, label: 'Notifications'),
-      _NavItem(icon: Icons.settings_outlined, label: 'Settings'),
     ];
 
     return SafeArea(

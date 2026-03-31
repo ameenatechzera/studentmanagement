@@ -2,6 +2,8 @@ import 'package:equatable/equatable.dart';
 
 import 'package:equatable/equatable.dart';
 
+import 'package:equatable/equatable.dart';
+
 class LoginResponseResult extends Equatable {
   LoginResponseResult({
     required this.status,
@@ -65,10 +67,11 @@ class LoginResponseResult extends Equatable {
 
 class Student extends Equatable {
   Student({
-    required this.admno,
     required this.admissionId,
     required this.accYear,
-    required this.sectionName,
+    required this.admno,
+    required this.scode,
+    required this.sectionId,
     required this.name,
     required this.gender,
     required this.aadharNo,
@@ -79,11 +82,11 @@ class Student extends Equatable {
     required this.occupation,
     required this.houseName,
     required this.street,
-    required this.place,
-    required this.post,
-    required this.nationality,
-    required this.state,
-    required this.district,
+    required this.placeId,
+    required this.postId,
+    required this.districtId,
+    required this.stateId,
+    required this.nationalityId,
     required this.landPhone,
     required this.mobile,
     required this.email,
@@ -93,22 +96,26 @@ class Student extends Equatable {
     required this.doj,
     required this.dob,
     required this.bloodGroup,
-    required this.religion,
-    required this.category,
-    required this.caste,
-    required this.stdonAdm,
-    required this.divonAdm,
+    required this.religionId,
+    required this.categoryId,
+    required this.casteId,
+    required this.stdIdonAdm,
+    required this.divIdonAdm,
     required this.madrassaAdmNo,
-    required this.madrassaStd,
-    required this.madrassaDiv,
-    required this.medium,
-    required this.firstLan,
-    required this.secondLan,
-    required this.motherTongue,
+    required this.madrassaStdid,
+    required this.madrassaDivId,
+    required this.mediumId,
+    required this.firstLanId,
+    required this.secondLanId,
+    required this.motherTongueId,
     required this.deformity,
     required this.identityMark1,
     required this.identityMark2,
-    required this.consessionType,
+    required this.tcNumber,
+    required this.tcDate,
+    required this.tcStdId,
+    required this.tcDivId,
+    required this.consessionTypeId,
     required this.relativeStatus,
     required this.busStatus,
     required this.activeStatus,
@@ -125,6 +132,7 @@ class Student extends Equatable {
     required this.sportsState,
     required this.sportsNational,
     required this.previousClass,
+    required this.hostelStatus,
     required this.dobInWords,
     required this.placeofBirth,
     required this.branchId,
@@ -132,14 +140,15 @@ class Student extends Equatable {
     required this.createdUser,
     required this.modifiedDate,
     required this.modifiedUser,
-    required this.stdIdOnAdm,
-    required this.divIdOnAdm,
+    required this.passportNo,
+    required this.passportExpiry,
+    required this.iqamaNo,
+    required this.iqamaExpiry,
+    required this.fatherIqamaNo,
+    required this.motherIqamaNo,
     required this.currentStudentDivisionId,
     required this.currentStudentStandardId,
   });
-
-  final int admno;
-  static const String admnoKey = "Admno";
 
   final int admissionId;
   static const String admissionIdKey = "AdmissionId";
@@ -147,8 +156,14 @@ class Student extends Equatable {
   final String accYear;
   static const String accYearKey = "AccYear";
 
-  final String sectionName;
-  static const String sectionNameKey = "SectionName";
+  final String admno;
+  static const String admnoKey = "Admno";
+
+  final String scode;
+  static const String scodeKey = "Scode";
+
+  final String sectionId;
+  static const String sectionIdKey = "SectionId";
 
   final String name;
   static const String nameKey = "Name";
@@ -156,44 +171,44 @@ class Student extends Equatable {
   final String gender;
   static const String genderKey = "Gender";
 
-  final String aadharNo;
+  final dynamic aadharNo;
   static const String aadharNoKey = "AadharNo";
 
   final String father;
   static const String fatherKey = "Father";
 
-  final String mother;
+  final dynamic mother;
   static const String motherKey = "Mother";
 
-  final String guardian;
+  final dynamic guardian;
   static const String guardianKey = "Guardian";
 
-  final String relation;
+  final dynamic relation;
   static const String relationKey = "Relation";
 
-  final String occupation;
+  final dynamic occupation;
   static const String occupationKey = "Occupation";
 
   final String houseName;
   static const String houseNameKey = "HouseName";
 
-  final String street;
+  final dynamic street;
   static const String streetKey = "Street";
 
-  final String place;
-  static const String placeKey = "Place";
+  final dynamic placeId;
+  static const String placeIdKey = "PlaceId";
 
-  final String post;
-  static const String postKey = "Post";
+  final dynamic postId;
+  static const String postIdKey = "PostId";
 
-  final String nationality;
-  static const String nationalityKey = "Nationality";
+  final dynamic districtId;
+  static const String districtIdKey = "DistrictId";
 
-  final String state;
-  static const String stateKey = "State";
+  final dynamic stateId;
+  static const String stateIdKey = "StateId";
 
-  final String district;
-  static const String districtKey = "District";
+  final dynamic nationalityId;
+  static const String nationalityIdKey = "NationalityId";
 
   final dynamic landPhone;
   static const String landPhoneKey = "LandPhone";
@@ -201,64 +216,64 @@ class Student extends Equatable {
   final String mobile;
   static const String mobileKey = "Mobile";
 
-  final dynamic email;
+  final String email;
   static const String emailKey = "Email";
 
   final dynamic preTcNo;
   static const String preTcNoKey = "PreTcNo";
 
-  final DateTime? preTcDate;
+  final dynamic preTcDate;
   static const String preTcDateKey = "PreTcDate";
 
   final dynamic pretcSchool;
   static const String pretcSchoolKey = "PretcSchool";
 
-  final DateTime? doj;
+  final String? doj;
   static const String dojKey = "DOJ";
 
-  final DateTime? dob;
+  final String? dob;
   static const String dobKey = "DOB";
 
   final dynamic bloodGroup;
   static const String bloodGroupKey = "BloodGroup";
 
-  final String religion;
-  static const String religionKey = "Religion";
+  final dynamic religionId;
+  static const String religionIdKey = "ReligionId";
 
-  final String category;
-  static const String categoryKey = "Category";
+  final dynamic categoryId;
+  static const String categoryIdKey = "CategoryId";
 
-  final String caste;
-  static const String casteKey = "Caste";
+  final dynamic casteId;
+  static const String casteIdKey = "CasteId";
 
-  final String stdonAdm;
-  static const String stdonAdmKey = "StdonAdm";
+  final String stdIdonAdm;
+  static const String stdIdonAdmKey = "StdIdonAdm";
 
-  final String divonAdm;
-  static const String divonAdmKey = "DivonAdm";
+  final String divIdonAdm;
+  static const String divIdonAdmKey = "DivIdonAdm";
 
   final dynamic madrassaAdmNo;
   static const String madrassaAdmNoKey = "MadrassaAdmNo";
 
-  final String madrassaStd;
-  static const String madrassaStdKey = "MadrassaStd";
+  final dynamic madrassaStdid;
+  static const String madrassaStdidKey = "MadrassaStdid";
 
-  final String madrassaDiv;
-  static const String madrassaDivKey = "MadrassaDiv";
+  final dynamic madrassaDivId;
+  static const String madrassaDivIdKey = "MadrassaDivId";
 
-  final String medium;
-  static const String mediumKey = "Medium";
+  final dynamic mediumId;
+  static const String mediumIdKey = "MediumId";
 
-  final String firstLan;
-  static const String firstLanKey = "FirstLan";
+  final dynamic firstLanId;
+  static const String firstLanIdKey = "FirstLanId";
 
-  final String secondLan;
-  static const String secondLanKey = "SecondLan";
+  final dynamic secondLanId;
+  static const String secondLanIdKey = "SecondLanId";
 
-  final String motherTongue;
-  static const String motherTongueKey = "MotherTongue";
+  final dynamic motherTongueId;
+  static const String motherTongueIdKey = "MotherTongueId";
 
-  final String deformity;
+  final dynamic deformity;
   static const String deformityKey = "Deformity";
 
   final dynamic identityMark1;
@@ -267,8 +282,20 @@ class Student extends Equatable {
   final dynamic identityMark2;
   static const String identityMark2Key = "IdentityMark2";
 
-  final String consessionType;
-  static const String consessionTypeKey = "ConsessionType";
+  final dynamic tcNumber;
+  static const String tcNumberKey = "TcNumber";
+
+  final dynamic tcDate;
+  static const String tcDateKey = "TcDate";
+
+  final dynamic tcStdId;
+  static const String tcStdIdKey = "TcStdId";
+
+  final dynamic tcDivId;
+  static const String tcDivIdKey = "TcDivId";
+
+  final dynamic consessionTypeId;
+  static const String consessionTypeIdKey = "ConsessionTypeId";
 
   final bool relativeStatus;
   static const String relativeStatusKey = "RelativeStatus";
@@ -279,7 +306,7 @@ class Student extends Equatable {
   final String activeStatus;
   static const String activeStatusKey = "ActiveStatus";
 
-  final DateTime? vaccinationDate;
+  final dynamic vaccinationDate;
   static const String vaccinationDateKey = "VaccinationDate";
 
   final dynamic motherMobile;
@@ -291,43 +318,46 @@ class Student extends Equatable {
   final dynamic accountNo;
   static const String accountNoKey = "AccountNo";
 
-  final dynamic artsSchool;
+  final String artsSchool;
   static const String artsSchoolKey = "ArtsSchool";
 
-  final dynamic artsDistrict;
+  final String artsDistrict;
   static const String artsDistrictKey = "ArtsDistrict";
 
-  final dynamic artsState;
+  final String artsState;
   static const String artsStateKey = "ArtsState";
 
-  final dynamic artsNational;
+  final String artsNational;
   static const String artsNationalKey = "ArtsNational";
 
-  final dynamic sportsSchool;
+  final String sportsSchool;
   static const String sportsSchoolKey = "SportsSchool";
 
-  final dynamic sportsDistrict;
+  final String sportsDistrict;
   static const String sportsDistrictKey = "SportsDistrict";
 
-  final dynamic sportsState;
+  final String sportsState;
   static const String sportsStateKey = "SportsState";
 
-  final dynamic sportsNational;
+  final String sportsNational;
   static const String sportsNationalKey = "SportsNational";
 
   final dynamic previousClass;
   static const String previousClassKey = "PreviousClass";
 
-  final dynamic dobInWords;
+  final bool hostelStatus;
+  static const String hostelStatusKey = "HostelStatus";
+
+  final String dobInWords;
   static const String dobInWordsKey = "DOBInWords";
 
-  final dynamic placeofBirth;
+  final String placeofBirth;
   static const String placeofBirthKey = "PlaceofBirth";
 
   final int branchId;
   static const String branchIdKey = "branchId";
 
-  final DateTime? createdDate;
+  final String? createdDate;
   static const String createdDateKey = "CreatedDate";
 
   final String createdUser;
@@ -339,97 +369,120 @@ class Student extends Equatable {
   final dynamic modifiedUser;
   static const String modifiedUserKey = "ModifiedUser";
 
-  final int stdIdOnAdm;
-  static const String stdIdOnAdmKey = "StdIdOnAdm";
+  final dynamic passportNo;
+  static const String passportNoKey = "PassportNo";
 
-  final int divIdOnAdm;
-  static const String divIdOnAdmKey = "DivIdOnAdm";
+  final dynamic passportExpiry;
+  static const String passportExpiryKey = "PassportExpiry";
 
-  final int currentStudentDivisionId;
+  final dynamic iqamaNo;
+  static const String iqamaNoKey = "IqamaNo";
+
+  final dynamic iqamaExpiry;
+  static const String iqamaExpiryKey = "IqamaExpiry";
+
+  final dynamic fatherIqamaNo;
+  static const String fatherIqamaNoKey = "FatherIqamaNo";
+
+  final dynamic motherIqamaNo;
+  static const String motherIqamaNoKey = "MotherIqamaNo";
+
+  final String currentStudentDivisionId;
   static const String currentStudentDivisionIdKey = "currentStudentDivisionId";
 
-  final int currentStudentStandardId;
+  final String currentStudentStandardId;
   static const String currentStudentStandardIdKey = "currentStudentStandardId";
 
 
   Student copyWith({
-    int? admno,
     int? admissionId,
     String? accYear,
-    String? sectionName,
+    String? admno,
+    String? scode,
+    String? sectionId,
     String? name,
     String? gender,
-    String? aadharNo,
+    dynamic? aadharNo,
     String? father,
-    String? mother,
-    String? guardian,
-    String? relation,
-    String? occupation,
+    dynamic? mother,
+    dynamic? guardian,
+    dynamic? relation,
+    dynamic? occupation,
     String? houseName,
-    String? street,
-    String? place,
-    String? post,
-    String? nationality,
-    String? state,
-    String? district,
+    dynamic? street,
+    dynamic? placeId,
+    dynamic? postId,
+    dynamic? districtId,
+    dynamic? stateId,
+    dynamic? nationalityId,
     dynamic? landPhone,
     String? mobile,
-    dynamic? email,
+    String? email,
     dynamic? preTcNo,
-    DateTime? preTcDate,
+    dynamic? preTcDate,
     dynamic? pretcSchool,
-    DateTime? doj,
-    DateTime? dob,
+    String? doj,
+    String? dob,
     dynamic? bloodGroup,
-    String? religion,
-    String? category,
-    String? caste,
-    String? stdonAdm,
-    String? divonAdm,
+    dynamic? religionId,
+    dynamic? categoryId,
+    dynamic? casteId,
+    String? stdIdonAdm,
+    String? divIdonAdm,
     dynamic? madrassaAdmNo,
-    String? madrassaStd,
-    String? madrassaDiv,
-    String? medium,
-    String? firstLan,
-    String? secondLan,
-    String? motherTongue,
-    String? deformity,
+    dynamic? madrassaStdid,
+    dynamic? madrassaDivId,
+    dynamic? mediumId,
+    dynamic? firstLanId,
+    dynamic? secondLanId,
+    dynamic? motherTongueId,
+    dynamic? deformity,
     dynamic? identityMark1,
     dynamic? identityMark2,
-    String? consessionType,
+    dynamic? tcNumber,
+    dynamic? tcDate,
+    dynamic? tcStdId,
+    dynamic? tcDivId,
+    dynamic? consessionTypeId,
     bool? relativeStatus,
     bool? busStatus,
     String? activeStatus,
-    DateTime? vaccinationDate,
+    dynamic? vaccinationDate,
     dynamic? motherMobile,
     dynamic? bankName,
     dynamic? accountNo,
-    dynamic? artsSchool,
-    dynamic? artsDistrict,
-    dynamic? artsState,
-    dynamic? artsNational,
-    dynamic? sportsSchool,
-    dynamic? sportsDistrict,
-    dynamic? sportsState,
-    dynamic? sportsNational,
+    String? artsSchool,
+    String? artsDistrict,
+    String? artsState,
+    String? artsNational,
+    String? sportsSchool,
+    String? sportsDistrict,
+    String? sportsState,
+    String? sportsNational,
     dynamic? previousClass,
-    dynamic? dobInWords,
-    dynamic? placeofBirth,
+    bool? hostelStatus,
+    String? dobInWords,
+    String? placeofBirth,
     int? branchId,
-    DateTime? createdDate,
+    String? createdDate,
     String? createdUser,
     dynamic? modifiedDate,
     dynamic? modifiedUser,
-    int? stdIdOnAdm,
-    int? divIdOnAdm,
-    int? currentStudentDivisionId,
-    int? currentStudentStandardId,
+    dynamic? passportNo,
+    dynamic? passportExpiry,
+    dynamic? iqamaNo,
+    dynamic? iqamaExpiry,
+    dynamic? fatherIqamaNo,
+    dynamic? motherIqamaNo,
+    String? currentStudentDivisionId,
+    String? currentStudentStandardId,
   }) {
     return Student(
-      admno: admno ?? this.admno,
       admissionId: admissionId ?? this.admissionId,
       accYear: accYear ?? this.accYear,
-      sectionName: sectionName ?? this.sectionName,
+      admno: admno ?? this.admno,
+      scode: scode ?? this.scode,
+      sectionId: sectionId ?? this.sectionId,
       name: name ?? this.name,
       gender: gender ?? this.gender,
       aadharNo: aadharNo ?? this.aadharNo,
@@ -440,11 +493,11 @@ class Student extends Equatable {
       occupation: occupation ?? this.occupation,
       houseName: houseName ?? this.houseName,
       street: street ?? this.street,
-      place: place ?? this.place,
-      post: post ?? this.post,
-      nationality: nationality ?? this.nationality,
-      state: state ?? this.state,
-      district: district ?? this.district,
+      placeId: placeId ?? this.placeId,
+      postId: postId ?? this.postId,
+      districtId: districtId ?? this.districtId,
+      stateId: stateId ?? this.stateId,
+      nationalityId: nationalityId ?? this.nationalityId,
       landPhone: landPhone ?? this.landPhone,
       mobile: mobile ?? this.mobile,
       email: email ?? this.email,
@@ -454,22 +507,26 @@ class Student extends Equatable {
       doj: doj ?? this.doj,
       dob: dob ?? this.dob,
       bloodGroup: bloodGroup ?? this.bloodGroup,
-      religion: religion ?? this.religion,
-      category: category ?? this.category,
-      caste: caste ?? this.caste,
-      stdonAdm: stdonAdm ?? this.stdonAdm,
-      divonAdm: divonAdm ?? this.divonAdm,
+      religionId: religionId ?? this.religionId,
+      categoryId: categoryId ?? this.categoryId,
+      casteId: casteId ?? this.casteId,
+      stdIdonAdm: stdIdonAdm ?? this.stdIdonAdm,
+      divIdonAdm: divIdonAdm ?? this.divIdonAdm,
       madrassaAdmNo: madrassaAdmNo ?? this.madrassaAdmNo,
-      madrassaStd: madrassaStd ?? this.madrassaStd,
-      madrassaDiv: madrassaDiv ?? this.madrassaDiv,
-      medium: medium ?? this.medium,
-      firstLan: firstLan ?? this.firstLan,
-      secondLan: secondLan ?? this.secondLan,
-      motherTongue: motherTongue ?? this.motherTongue,
+      madrassaStdid: madrassaStdid ?? this.madrassaStdid,
+      madrassaDivId: madrassaDivId ?? this.madrassaDivId,
+      mediumId: mediumId ?? this.mediumId,
+      firstLanId: firstLanId ?? this.firstLanId,
+      secondLanId: secondLanId ?? this.secondLanId,
+      motherTongueId: motherTongueId ?? this.motherTongueId,
       deformity: deformity ?? this.deformity,
       identityMark1: identityMark1 ?? this.identityMark1,
       identityMark2: identityMark2 ?? this.identityMark2,
-      consessionType: consessionType ?? this.consessionType,
+      tcNumber: tcNumber ?? this.tcNumber,
+      tcDate: tcDate ?? this.tcDate,
+      tcStdId: tcStdId ?? this.tcStdId,
+      tcDivId: tcDivId ?? this.tcDivId,
+      consessionTypeId: consessionTypeId ?? this.consessionTypeId,
       relativeStatus: relativeStatus ?? this.relativeStatus,
       busStatus: busStatus ?? this.busStatus,
       activeStatus: activeStatus ?? this.activeStatus,
@@ -486,6 +543,7 @@ class Student extends Equatable {
       sportsState: sportsState ?? this.sportsState,
       sportsNational: sportsNational ?? this.sportsNational,
       previousClass: previousClass ?? this.previousClass,
+      hostelStatus: hostelStatus ?? this.hostelStatus,
       dobInWords: dobInWords ?? this.dobInWords,
       placeofBirth: placeofBirth ?? this.placeofBirth,
       branchId: branchId ?? this.branchId,
@@ -493,8 +551,12 @@ class Student extends Equatable {
       createdUser: createdUser ?? this.createdUser,
       modifiedDate: modifiedDate ?? this.modifiedDate,
       modifiedUser: modifiedUser ?? this.modifiedUser,
-      stdIdOnAdm: stdIdOnAdm ?? this.stdIdOnAdm,
-      divIdOnAdm: divIdOnAdm ?? this.divIdOnAdm,
+      passportNo: passportNo ?? this.passportNo,
+      passportExpiry: passportExpiry ?? this.passportExpiry,
+      iqamaNo: iqamaNo ?? this.iqamaNo,
+      iqamaExpiry: iqamaExpiry ?? this.iqamaExpiry,
+      fatherIqamaNo: fatherIqamaNo ?? this.fatherIqamaNo,
+      motherIqamaNo: motherIqamaNo ?? this.motherIqamaNo,
       currentStudentDivisionId: currentStudentDivisionId ?? this.currentStudentDivisionId,
       currentStudentStandardId: currentStudentStandardId ?? this.currentStudentStandardId,
     );
@@ -502,85 +564,96 @@ class Student extends Equatable {
 
   factory Student.fromJson(Map<String, dynamic> json){
     return Student(
-      admno: json["Admno"] ?? 0,
       admissionId: json["AdmissionId"] ?? 0,
       accYear: json["AccYear"] ?? "",
-      sectionName: json["SectionName"] ?? "",
+      admno: json["Admno"] ?? "",
+      scode: json["Scode"] ?? "",
+      sectionId: json["SectionId"] ?? "",
       name: json["Name"] ?? "",
       gender: json["Gender"] ?? "",
-      aadharNo: json["AadharNo"] ?? "",
+      aadharNo: json["AadharNo"],
       father: json["Father"] ?? "",
-      mother: json["Mother"] ?? "",
-      guardian: json["Guardian"] ?? "",
-      relation: json["Relation"] ?? "",
-      occupation: json["Occupation"] ?? "",
+      mother: json["Mother"],
+      guardian: json["Guardian"],
+      relation: json["Relation"],
+      occupation: json["Occupation"],
       houseName: json["HouseName"] ?? "",
-      street: json["Street"] ?? "",
-      place: json["Place"] ?? "",
-      post: json["Post"] ?? "",
-      nationality: json["Nationality"] ?? "",
-      state: json["State"] ?? "",
-      district: json["District"] ?? "",
+      street: json["Street"],
+      placeId: json["PlaceId"],
+      postId: json["PostId"],
+      districtId: json["DistrictId"],
+      stateId: json["StateId"],
+      nationalityId: json["NationalityId"],
       landPhone: json["LandPhone"],
       mobile: json["Mobile"] ?? "",
-      email: json["Email"],
+      email: json["Email"] ?? "",
       preTcNo: json["PreTcNo"],
-      preTcDate: DateTime.tryParse(json["PreTcDate"] ?? ""),
+      preTcDate: json["PreTcDate"],
       pretcSchool: json["PretcSchool"],
-      doj: DateTime.tryParse(json["DOJ"] ?? ""),
-      dob: DateTime.tryParse(json["DOB"] ?? ""),
+      doj:json["DOJ"] ?? "",
+      dob: json["DOB"] ?? "",
       bloodGroup: json["BloodGroup"],
-      religion: json["Religion"] ?? "",
-      category: json["Category"] ?? "",
-      caste: json["Caste"] ?? "",
-      stdonAdm: json["StdonAdm"] ?? "",
-      divonAdm: json["DivonAdm"] ?? "",
+      religionId: json["ReligionId"],
+      categoryId: json["CategoryId"],
+      casteId: json["CasteId"],
+      stdIdonAdm: json["StdIdonAdm"] ?? "",
+      divIdonAdm: json["DivIdonAdm"] ?? "",
       madrassaAdmNo: json["MadrassaAdmNo"],
-      madrassaStd: json["MadrassaStd"] ?? "",
-      madrassaDiv: json["MadrassaDiv"] ?? "",
-      medium: json["Medium"] ?? "",
-      firstLan: json["FirstLan"] ?? "",
-      secondLan: json["SecondLan"] ?? "",
-      motherTongue: json["MotherTongue"] ?? "",
-      deformity: json["Deformity"] ?? "",
+      madrassaStdid: json["MadrassaStdid"],
+      madrassaDivId: json["MadrassaDivId"],
+      mediumId: json["MediumId"],
+      firstLanId: json["FirstLanId"],
+      secondLanId: json["SecondLanId"],
+      motherTongueId: json["MotherTongueId"],
+      deformity: json["Deformity"],
       identityMark1: json["IdentityMark1"],
       identityMark2: json["IdentityMark2"],
-      consessionType: json["ConsessionType"] ?? "",
+      tcNumber: json["TcNumber"],
+      tcDate: json["TcDate"],
+      tcStdId: json["TcStdId"],
+      tcDivId: json["TcDivId"],
+      consessionTypeId: json["ConsessionTypeId"],
       relativeStatus: json["RelativeStatus"] ?? false,
       busStatus: json["BusStatus"] ?? false,
       activeStatus: json["ActiveStatus"] ?? "",
-      vaccinationDate: DateTime.tryParse(json["VaccinationDate"] ?? ""),
+      vaccinationDate: json["VaccinationDate"],
       motherMobile: json["MotherMobile"],
       bankName: json["BankName"],
       accountNo: json["AccountNo"],
-      artsSchool: json["ArtsSchool"],
-      artsDistrict: json["ArtsDistrict"],
-      artsState: json["ArtsState"],
-      artsNational: json["ArtsNational"],
-      sportsSchool: json["SportsSchool"],
-      sportsDistrict: json["SportsDistrict"],
-      sportsState: json["SportsState"],
-      sportsNational: json["SportsNational"],
+      artsSchool: json["ArtsSchool"] ?? "",
+      artsDistrict: json["ArtsDistrict"] ?? "",
+      artsState: json["ArtsState"] ?? "",
+      artsNational: json["ArtsNational"] ?? "",
+      sportsSchool: json["SportsSchool"] ?? "",
+      sportsDistrict: json["SportsDistrict"] ?? "",
+      sportsState: json["SportsState"] ?? "",
+      sportsNational: json["SportsNational"] ?? "",
       previousClass: json["PreviousClass"],
-      dobInWords: json["DOBInWords"],
-      placeofBirth: json["PlaceofBirth"],
+      hostelStatus: json["HostelStatus"] ?? false,
+      dobInWords: json["DOBInWords"] ?? "",
+      placeofBirth: json["PlaceofBirth"] ?? "",
       branchId: json["branchId"] ?? 0,
-      createdDate: DateTime.tryParse(json["CreatedDate"] ?? ""),
+      createdDate: json["CreatedDate"] ?? "",
       createdUser: json["CreatedUser"] ?? "",
       modifiedDate: json["ModifiedDate"],
       modifiedUser: json["ModifiedUser"],
-      stdIdOnAdm: json["StdIdOnAdm"] ?? 0,
-      divIdOnAdm: json["DivIdOnAdm"] ?? 0,
-      currentStudentDivisionId: json["currentStudentDivisionId"] ?? 0,
-      currentStudentStandardId: json["currentStudentStandardId"] ?? 0,
+      passportNo: json["PassportNo"],
+      passportExpiry: json["PassportExpiry"],
+      iqamaNo: json["IqamaNo"],
+      iqamaExpiry: json["IqamaExpiry"],
+      fatherIqamaNo: json["FatherIqamaNo"],
+      motherIqamaNo: json["MotherIqamaNo"],
+      currentStudentDivisionId: json["currentStudentDivisionId"] ?? "",
+      currentStudentStandardId: json["currentStudentStandardId"] ?? "",
     );
   }
 
   Map<String, dynamic> toJson() => {
-    "Admno": admno,
     "AdmissionId": admissionId,
     "AccYear": accYear,
-    "SectionName": sectionName,
+    "Admno": admno,
+    "Scode": scode,
+    "SectionId": sectionId,
     "Name": name,
     "Gender": gender,
     "AadharNo": aadharNo,
@@ -591,40 +664,44 @@ class Student extends Equatable {
     "Occupation": occupation,
     "HouseName": houseName,
     "Street": street,
-    "Place": place,
-    "Post": post,
-    "Nationality": nationality,
-    "State": state,
-    "District": district,
+    "PlaceId": placeId,
+    "PostId": postId,
+    "DistrictId": districtId,
+    "StateId": stateId,
+    "NationalityId": nationalityId,
     "LandPhone": landPhone,
     "Mobile": mobile,
     "Email": email,
     "PreTcNo": preTcNo,
-    "PreTcDate": preTcDate?.toIso8601String(),
+    "PreTcDate": preTcDate,
     "PretcSchool": pretcSchool,
-    "DOJ": doj?.toIso8601String(),
-    "DOB": dob?.toIso8601String(),
+    "DOJ": doj,
+    "DOB": dob,
     "BloodGroup": bloodGroup,
-    "Religion": religion,
-    "Category": category,
-    "Caste": caste,
-    "StdonAdm": stdonAdm,
-    "DivonAdm": divonAdm,
+    "ReligionId": religionId,
+    "CategoryId": categoryId,
+    "CasteId": casteId,
+    "StdIdonAdm": stdIdonAdm,
+    "DivIdonAdm": divIdonAdm,
     "MadrassaAdmNo": madrassaAdmNo,
-    "MadrassaStd": madrassaStd,
-    "MadrassaDiv": madrassaDiv,
-    "Medium": medium,
-    "FirstLan": firstLan,
-    "SecondLan": secondLan,
-    "MotherTongue": motherTongue,
+    "MadrassaStdid": madrassaStdid,
+    "MadrassaDivId": madrassaDivId,
+    "MediumId": mediumId,
+    "FirstLanId": firstLanId,
+    "SecondLanId": secondLanId,
+    "MotherTongueId": motherTongueId,
     "Deformity": deformity,
     "IdentityMark1": identityMark1,
     "IdentityMark2": identityMark2,
-    "ConsessionType": consessionType,
+    "TcNumber": tcNumber,
+    "TcDate": tcDate,
+    "TcStdId": tcStdId,
+    "TcDivId": tcDivId,
+    "ConsessionTypeId": consessionTypeId,
     "RelativeStatus": relativeStatus,
     "BusStatus": busStatus,
     "ActiveStatus": activeStatus,
-    "VaccinationDate": vaccinationDate?.toIso8601String(),
+    "VaccinationDate": vaccinationDate,
     "MotherMobile": motherMobile,
     "BankName": bankName,
     "AccountNo": accountNo,
@@ -637,26 +714,32 @@ class Student extends Equatable {
     "SportsState": sportsState,
     "SportsNational": sportsNational,
     "PreviousClass": previousClass,
+    "HostelStatus": hostelStatus,
     "DOBInWords": dobInWords,
     "PlaceofBirth": placeofBirth,
     "branchId": branchId,
-    "CreatedDate": createdDate?.toIso8601String(),
+    "CreatedDate": createdDate,
     "CreatedUser": createdUser,
     "ModifiedDate": modifiedDate,
     "ModifiedUser": modifiedUser,
-    "StdIdOnAdm": stdIdOnAdm,
-    "DivIdOnAdm": divIdOnAdm,
+    "PassportNo": passportNo,
+    "PassportExpiry": passportExpiry,
+    "IqamaNo": iqamaNo,
+    "IqamaExpiry": iqamaExpiry,
+    "FatherIqamaNo": fatherIqamaNo,
+    "MotherIqamaNo": motherIqamaNo,
     "currentStudentDivisionId": currentStudentDivisionId,
     "currentStudentStandardId": currentStudentStandardId,
   };
 
   @override
   String toString(){
-    return "$admno, $admissionId, $accYear, $sectionName, $name, $gender, $aadharNo, $father, $mother, $guardian, $relation, $occupation, $houseName, $street, $place, $post, $nationality, $state, $district, $landPhone, $mobile, $email, $preTcNo, $preTcDate, $pretcSchool, $doj, $dob, $bloodGroup, $religion, $category, $caste, $stdonAdm, $divonAdm, $madrassaAdmNo, $madrassaStd, $madrassaDiv, $medium, $firstLan, $secondLan, $motherTongue, $deformity, $identityMark1, $identityMark2, $consessionType, $relativeStatus, $busStatus, $activeStatus, $vaccinationDate, $motherMobile, $bankName, $accountNo, $artsSchool, $artsDistrict, $artsState, $artsNational, $sportsSchool, $sportsDistrict, $sportsState, $sportsNational, $previousClass, $dobInWords, $placeofBirth, $branchId, $createdDate, $createdUser, $modifiedDate, $modifiedUser, $stdIdOnAdm, $divIdOnAdm, $currentStudentDivisionId, $currentStudentStandardId, ";
+    return "$admissionId, $accYear, $admno, $scode, $sectionId, $name, $gender, $aadharNo, $father, $mother, $guardian, $relation, $occupation, $houseName, $street, $placeId, $postId, $districtId, $stateId, $nationalityId, $landPhone, $mobile, $email, $preTcNo, $preTcDate, $pretcSchool, $doj, $dob, $bloodGroup, $religionId, $categoryId, $casteId, $stdIdonAdm, $divIdonAdm, $madrassaAdmNo, $madrassaStdid, $madrassaDivId, $mediumId, $firstLanId, $secondLanId, $motherTongueId, $deformity, $identityMark1, $identityMark2, $tcNumber, $tcDate, $tcStdId, $tcDivId, $consessionTypeId, $relativeStatus, $busStatus, $activeStatus, $vaccinationDate, $motherMobile, $bankName, $accountNo, $artsSchool, $artsDistrict, $artsState, $artsNational, $sportsSchool, $sportsDistrict, $sportsState, $sportsNational, $previousClass, $hostelStatus, $dobInWords, $placeofBirth, $branchId, $createdDate, $createdUser, $modifiedDate, $modifiedUser, $passportNo, $passportExpiry, $iqamaNo, $iqamaExpiry, $fatherIqamaNo, $motherIqamaNo, $currentStudentDivisionId, $currentStudentStandardId, ";
   }
 
   @override
   List<Object?> get props => [
-    admno, admissionId, accYear, sectionName, name, gender, aadharNo, father, mother, guardian, relation, occupation, houseName, street, place, post, nationality, state, district, landPhone, mobile, email, preTcNo, preTcDate, pretcSchool, doj, dob, bloodGroup, religion, category, caste, stdonAdm, divonAdm, madrassaAdmNo, madrassaStd, madrassaDiv, medium, firstLan, secondLan, motherTongue, deformity, identityMark1, identityMark2, consessionType, relativeStatus, busStatus, activeStatus, vaccinationDate, motherMobile, bankName, accountNo, artsSchool, artsDistrict, artsState, artsNational, sportsSchool, sportsDistrict, sportsState, sportsNational, previousClass, dobInWords, placeofBirth, branchId, createdDate, createdUser, modifiedDate, modifiedUser, stdIdOnAdm, divIdOnAdm, currentStudentDivisionId, currentStudentStandardId, ];
+    admissionId, accYear, admno, scode, sectionId, name, gender, aadharNo, father, mother, guardian, relation, occupation, houseName, street, placeId, postId, districtId, stateId, nationalityId, landPhone, mobile, email, preTcNo, preTcDate, pretcSchool, doj, dob, bloodGroup, religionId, categoryId, casteId, stdIdonAdm, divIdonAdm, madrassaAdmNo, madrassaStdid, madrassaDivId, mediumId, firstLanId, secondLanId, motherTongueId, deformity, identityMark1, identityMark2, tcNumber, tcDate, tcStdId, tcDivId, consessionTypeId, relativeStatus, busStatus, activeStatus, vaccinationDate, motherMobile, bankName, accountNo, artsSchool, artsDistrict, artsState, artsNational, sportsSchool, sportsDistrict, sportsState, sportsNational, previousClass, hostelStatus, dobInWords, placeofBirth, branchId, createdDate, createdUser, modifiedDate, modifiedUser, passportNo, passportExpiry, iqamaNo, iqamaExpiry, fatherIqamaNo, motherIqamaNo, currentStudentDivisionId, currentStudentStandardId, ];
 }
+
 

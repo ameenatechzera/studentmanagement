@@ -20,6 +20,7 @@ class MaterialRemoteDataSourceImpl implements MaterialRemoteDataSource {
     print('📘 Fetch Materials Called');
     print('params ${params.toJson()}');
 
+
     try {
       /// 🔹 Get Base URL
       final baseUrl = await SharedPreferenceHelper().getBaseUrl();
@@ -29,7 +30,7 @@ class MaterialRemoteDataSourceImpl implements MaterialRemoteDataSource {
 
       /// 🔹 Build API URL
       final url = ApiConstants.getMaterialsPath(baseUrl);
-
+      print('url $url');
       /// 🔹 Get Token
       final token = await SharedPreferenceHelper().getToken() ?? "";
 

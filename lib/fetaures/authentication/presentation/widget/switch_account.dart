@@ -82,8 +82,8 @@ class AddAccount extends StatelessWidget {
                   AppData.accYear = state.loginResponse.student!.accYear.toString();
                   print('AppData.accYear ${AppData.accYear}');
                   await SharedPreferenceHelper.saveNewAccount(AccountDetails(admissionNo: state.loginResponse.student!.admno.toString(),
-                      dob: state.loginResponse.student!.dob.toString(), stdId: state.loginResponse.student!.stdonAdm.toString(),
-                      divId: state.loginResponse.student!.divonAdm.toString(), accYear:state.loginResponse.student!.accYear.toString(),
+                      dob: state.loginResponse.student!.dob.toString(), stdId: state.loginResponse.student!.currentStudentDivisionId.toString(),
+                      divId: state.loginResponse.student!.currentStudentDivisionId.toString(), accYear:state.loginResponse.student!.accYear.toString(),
                       name: state.loginResponse.student!.name));
                   Navigator.of(context).push(
                     MaterialPageRoute(

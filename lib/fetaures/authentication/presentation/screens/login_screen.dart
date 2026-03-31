@@ -34,8 +34,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    admNoCtrl.text = '1000';
-    dobCtrl.text = '2002-12-11';
+    admNoCtrl.text = 'KG1';
+    dobCtrl.text = '2026-03-31';
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -44,14 +44,16 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               children: [
                 SizedBox(height: 50),
-                Image.asset('assets/images/Group 46.png'),
+                Container(
+                  height: 150,
+                    child: Image.asset('assets/images/Group 46.png')),
                 SizedBox(height: 20),
 
                 Text(
                   'Login',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(height: 30),
+                SizedBox(height: 20),
 
                 /// EMAIL / USERNAME
                 TextFormField(
@@ -81,7 +83,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 /// pushes content up
                 // const Expanded(child: SizedBox()),
                 //  Spacer(),
-                SizedBox(height: 200),
+                SizedBox(height: 20),
                 BlocConsumer<LoginCubit, LoginState>(
                   listener: (context, state) async {
                     if (state is LoginSuccess) {
@@ -99,10 +101,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       AppData.studentDivId = state.loginResponse.student!.currentStudentDivisionId.toString();
                       AppData.accYear = state.loginResponse.student!.accYear.toString();
                       await SharedPreferenceHelper.saveNewAccount(AccountDetails(admissionNo: state.loginResponse.student!.admno.toString(),
-                          dob: state.loginResponse.student!.dob.toString(), stdId: state.loginResponse.student!.stdonAdm.toString(),
-                          divId: state.loginResponse.student!.divonAdm.toString(), accYear:state.loginResponse.student!.accYear.toString(),
+                          dob: state.loginResponse.student!.dob.toString(), stdId: state.loginResponse.student!.currentStudentStandardId.toString(),
+                          divId: state.loginResponse.student!.currentStudentDivisionId, accYear:state.loginResponse.student!.accYear.toString(),
                           name: state.loginResponse.student!.name));
-                      Navigator.of(context).push(
+                      Navigator.of(context).pushReplacement(
                         MaterialPageRoute(
                           builder: (context) {
                             return MainScreen(

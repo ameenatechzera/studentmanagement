@@ -29,6 +29,7 @@ class DiaryRemoteDataSourceImpl implements DiaryRemoteDataSource {
       final url = ApiConstants.getDiaryFetchPath(baseUrl);
       final token = await SharedPreferenceHelper().getToken() ?? "";
       print('token $token');
+      print('url $url');
 
       /// 🔹 POST Request
       final response = await dio.post(

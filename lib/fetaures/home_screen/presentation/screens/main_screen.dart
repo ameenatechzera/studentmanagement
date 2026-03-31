@@ -23,7 +23,6 @@ class _MainScreenState extends State<MainScreen> {
       const HomeScreen(),
       StudentScreen(loginResponse: widget.loginResponse),
       const NotificationScreen(),
-      const SettingsScreen(),
     ];
 
     return Scaffold(
