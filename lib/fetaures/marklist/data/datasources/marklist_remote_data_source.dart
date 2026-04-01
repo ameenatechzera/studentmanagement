@@ -70,6 +70,7 @@ class MarkListRemoteDataSourceImpl implements MarkListRemoteDataSource {
     FetchMarkListParameter params,
   ) async {
     print('📘 Fetch MarkList Called');
+    print('FetchMarkListParameter ${params.toJson()}');
 
     try {
       /// 🔹 Get Base URL
@@ -80,6 +81,8 @@ class MarkListRemoteDataSourceImpl implements MarkListRemoteDataSource {
 
       /// 🔹 Build API URL
       final url = ApiConstants.getMarkListPath(baseUrl);
+      print('url $url');
+      print('params ${params.toJson()}');
 
       /// 🔹 Get Token
       final token = await SharedPreferenceHelper().getToken() ?? "";

@@ -18,7 +18,6 @@ class ForthSplashScreen extends StatelessWidget {
                 // SizedBox(height: 10),
                 Image.asset('assets/images/Group 41.png'),
                 SizedBox(height: 10),
-
                 Text(
                   'Ready to Begin?',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),

@@ -46,8 +46,8 @@ class StudentScreen extends StatelessWidget {
                 name: loginResponse!.student!.name,
                 phone: loginResponse!.student!.landPhone.toString(),
                 classNo: loginResponse!.student!.previousClass.toString(),
-                std: loginResponse!.student!.stdonAdm,
-                rollNo: loginResponse!.student!.admno.toString(),
+                std: loginResponse!.student!.currentStudentStandardId.toString(),
+                rollNo: loginResponse!.student!.currentStudentDivisionId.toString(),
               ),
               const SizedBox(height: 20),
 

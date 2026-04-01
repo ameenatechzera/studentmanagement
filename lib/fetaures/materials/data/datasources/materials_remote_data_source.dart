@@ -18,6 +18,8 @@ class MaterialRemoteDataSourceImpl implements MaterialRemoteDataSource {
   @override
   Future<FetchMaterialResponseModel> fetchMaterials(params) async {
     print('📘 Fetch Materials Called');
+    print('params ${params.toJson()}');
+
 
     try {
       /// 🔹 Get Base URL
@@ -28,7 +30,7 @@ class MaterialRemoteDataSourceImpl implements MaterialRemoteDataSource {
 
       /// 🔹 Build API URL
       final url = ApiConstants.getMaterialsPath(baseUrl);
-
+      print('url $url');
       /// 🔹 Get Token
       final token = await SharedPreferenceHelper().getToken() ?? "";
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:studentmanagement/core/appdata/appdata.dart';
 import 'package:studentmanagement/fetaures/marklist/domain/parameter/fetch_marklist_parameter.dart';
 import 'package:studentmanagement/fetaures/marklist/presentation/cubit/marklist_cubit.dart';
 
@@ -14,11 +15,11 @@ class MarklistExpansionScreen extends StatelessWidget {
       context.read<MarklistCubit>().fetchMarkList(
         FetchMarkListParameter(
           branchId: 1,
-          accYear: "2025-2026",
-          standardId: 1,
-          divisionId: 1,
+          accYear: AppData.accYear!,
+          standardId: AppData.studentStdId!.toString(),
+          divisionId: AppData.studentDivId!.toString(),
           examTermId: examTermId,
-          admno: "KG-1218",
+          admno: AppData.admissionNo!.toString(),
         ),
       );
     });

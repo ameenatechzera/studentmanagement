@@ -1,8 +1,8 @@
 class FetchMarkListParameter {
   final int branchId;
   final String accYear;
-  final int standardId;
-  final int divisionId;
+  final String standardId;
+  final String divisionId;
   final String examTermId;
   final String admno;
 

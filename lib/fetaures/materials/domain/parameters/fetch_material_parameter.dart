@@ -1,8 +1,8 @@
 class FetchMaterialParameter {
   final int branchId;
   final String accYear;
-  final int standardId;
-  final int divisionId;
+  final String standardId;
+  final String divisionId;
 
   FetchMaterialParameter({
     required this.branchId,

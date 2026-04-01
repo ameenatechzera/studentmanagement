@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:studentmanagement/core/appdata/appdata.dart';
 import 'package:studentmanagement/fetaures/classdiary/domain/parameters/fetch_diary_parameter.dart';
 import 'package:studentmanagement/fetaures/classdiary/presentation/cubit/diary_cubit.dart';
 import 'package:studentmanagement/fetaures/materials/presentation/widgets/materials_widget.dart';
@@ -17,7 +18,7 @@ class AllClassDiaryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<DiaryCubit>().fetchDiary(
-        FetchDiaryParameter(admNo: "1000", accYear: "2025-2026"),
+        FetchDiaryParameter(admNo: AppData.admissionNo!, accYear: AppData.accYear!),
       );
     });
     return Scaffold(
@@ -89,6 +90,9 @@ class AllClassDiaryScreen extends StatelessWidget {
               separatorBuilder: (context, index) => const SizedBox(height: 10),
               itemBuilder: (context, index) {
                 final diary = diaryList[index];
+                String desc = diary.description ?? '';
+                String st_diaryHead = desc.length > 8 ? desc.substring(0, 8) : desc;
+                st_diaryHead = st_diaryHead+'...';
                 return ValueListenableBuilder<int?>(
                   valueListenable: expandedIndexNotifier,
                   builder: (_, expandedIndex, __) {
@@ -124,7 +128,7 @@ class AllClassDiaryScreen extends StatelessWidget {
                             ),
                             subtitle: Padding(
                               padding: const EdgeInsets.only(top: 8.0),
-                              child: Text(diary.description!),
+                              child: Text(st_diaryHead),
                             ),
                             trailing: Padding(
                               padding: const EdgeInsets.only(top: 8.0),

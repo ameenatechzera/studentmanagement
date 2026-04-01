@@ -1,7 +1,7 @@
 class FetchTimeTableParameter {
   final String accYear;
-  final int standardId;
-  final int divisionId;
+  final String standardId;
+  final String divisionId;
   final int branchId;
 
   const FetchTimeTableParameter({

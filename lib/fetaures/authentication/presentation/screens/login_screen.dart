@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:studentmanagement/core/appdata/appdata.dart';
 import 'package:studentmanagement/core/utils/widgets/app_snackbar.dart';
+import 'package:studentmanagement/fetaures/authentication/data/models/accountDetailsModel.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/parameters/deviceRegisterRequest.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/parameters/login_params.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/bloc/logincubit/login_cubit.dart';
@@ -32,8 +34,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    admNoCtrl.text = '1000';
-    dobCtrl.text = '2002-12-11';
+    admNoCtrl.text = 'KG1';
+    dobCtrl.text = '2026-03-31';
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -42,14 +44,16 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               children: [
                 SizedBox(height: 50),
-                Image.asset('assets/images/Group 46.png'),
+                Container(
+                  height: 150,
+                    child: Image.asset('assets/images/Group 46.png')),
                 SizedBox(height: 20),
 
                 Text(
                   'Login',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(height: 30),
+                SizedBox(height: 20),
 
                 /// EMAIL / USERNAME
                 TextFormField(
@@ -79,7 +83,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 /// pushes content up
                 // const Expanded(child: SizedBox()),
                 //  Spacer(),
-                SizedBox(height: 200),
+                SizedBox(height: 20),
                 BlocConsumer<LoginCubit, LoginState>(
                   listener: (context, state) async {
                     if (state is LoginSuccess) {
@@ -91,7 +95,16 @@ class _LoginScreenState extends State<LoginScreen> {
                       await sharedPrefHelper.saveLoginResponse(
                         state.loginResponse,
                       );
-                      Navigator.of(context).push(
+                      AppData.admissionNo = state.loginResponse.student!.admno.toString();
+                      AppData.studentName = state.loginResponse.student!.name.toString();
+                      AppData.studentStdId = state.loginResponse.student!.currentStudentStandardId.toString();
+                      AppData.studentDivId = state.loginResponse.student!.currentStudentDivisionId.toString();
+                      AppData.accYear = state.loginResponse.student!.accYear.toString();
+                      await SharedPreferenceHelper.saveNewAccount(AccountDetails(admissionNo: state.loginResponse.student!.admno.toString(),
+                          dob: state.loginResponse.student!.dob.toString(), stdId: state.loginResponse.student!.currentStudentStandardId.toString(),
+                          divId: state.loginResponse.student!.currentStudentDivisionId, accYear:state.loginResponse.student!.accYear.toString(),
+                          name: state.loginResponse.student!.name));
+                      Navigator.of(context).pushReplacement(
                         MaterialPageRoute(
                           builder: (context) {
                             return MainScreen(

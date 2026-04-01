@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:studentmanagement/core/appdata/appdata.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/screens/second_splash.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/screens/main_screen.dart';
 import 'package:studentmanagement/services/shared_preference_helper.dart';
@@ -28,6 +29,11 @@ class _MainSplashScreenState extends State<MainSplashScreen> {
     final sharedPrefHelper = SharedPreferenceHelper();
 
     final loginResponse = await sharedPrefHelper.getLoginResponse();
+    AppData.admissionNo = loginResponse?.student!.admno.toString();
+    AppData.studentName = loginResponse?.student!.name.toString();;
+    AppData.studentStdId = loginResponse?.student!.currentStudentStandardId.toString();;
+    AppData.studentDivId = loginResponse?.student!.currentStudentDivisionId.toString();
+    AppData.accYear = loginResponse?.student!.accYear.toString();
 
     await Future.delayed(const Duration(seconds: 2));
 
