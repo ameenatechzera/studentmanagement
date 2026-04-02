@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:studentmanagement/fetaures/authentication/data/models/accountDetailsModel.dart';
+import 'package:studentmanagement/fetaures/authentication/data/models/account_details_model.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/entities/login_entity.dart';
 
 final ValueNotifier<int> itemTapBehaviorNotifier = ValueNotifier<int>(1);
@@ -113,7 +113,8 @@ class SharedPreferenceHelper {
 
     return data.map((e) => AccountDetails.fromJson(jsonDecode(e))).toList();
   }
-//Clear account details
+
+  //Clear account details
   static Future<void> clearAccounts() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setStringList('accounts', []);

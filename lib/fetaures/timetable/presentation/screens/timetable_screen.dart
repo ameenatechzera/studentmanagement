@@ -5,11 +5,33 @@ import 'package:studentmanagement/fetaures/timetable/domain/parameters/fetch_tim
 import 'package:studentmanagement/fetaures/timetable/presentation/cubit/timetable_cubit.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-class TimeTableScreen extends StatelessWidget {
-  TimeTableScreen({super.key});
+class TimeTableScreen extends StatefulWidget {
+  const TimeTableScreen({super.key});
 
+  @override
+  State<TimeTableScreen> createState() => _TimeTableScreenState();
+}
+
+class _TimeTableScreenState extends State<TimeTableScreen> {
   final ValueNotifier<DateTime> _focusedDay = ValueNotifier(DateTime.now());
+
   final ValueNotifier<DateTime> _selectedDay = ValueNotifier(DateTime.now());
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      context.read<TimetableCubit>().fetchTimeTable(
+        FetchTimeTableParameter(
+          accYear: AppData.accYear!,
+          standardId: AppData.studentStdId!,
+          divisionId: AppData.studentDivId!,
+          branchId: 1,
+        ),
+      );
+    });
+  }
+
   String _getWeekDayName(DateTime date) {
     switch (date.weekday) {
       case DateTime.monday:

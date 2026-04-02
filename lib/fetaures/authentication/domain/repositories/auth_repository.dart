@@ -1,8 +1,8 @@
 import 'package:studentmanagement/core/utils/typedef.dart';
-import 'package:studentmanagement/fetaures/authentication/domain/entities/deviceRegisterResult.dart';
+import 'package:studentmanagement/fetaures/authentication/domain/entities/device_register_result.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/entities/login_entity.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/entities/register_server_response_entity.dart';
-import 'package:studentmanagement/fetaures/authentication/domain/parameters/deviceRegisterRequest.dart';
+import 'package:studentmanagement/fetaures/authentication/domain/parameters/device_register_request.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/parameters/login_params.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/parameters/register_server_params.dart';
 

@@ -1,11 +1,7 @@
 import 'package:equatable/equatable.dart';
 
-import 'package:equatable/equatable.dart';
-
-import 'package:equatable/equatable.dart';
-
 class LoginResponseResult extends Equatable {
-  LoginResponseResult({
+  const LoginResponseResult({
     required this.status,
     required this.message,
     required this.token,
@@ -24,7 +20,6 @@ class LoginResponseResult extends Equatable {
   final Student? student;
   static const String studentKey = "student";
 
-
   LoginResponseResult copyWith({
     bool? status,
     String? message,
@@ -39,12 +34,14 @@ class LoginResponseResult extends Equatable {
     );
   }
 
-  factory LoginResponseResult.fromJson(Map<String, dynamic> json){
+  factory LoginResponseResult.fromJson(Map<String, dynamic> json) {
     return LoginResponseResult(
       status: json["status"] ?? false,
       message: json["message"] ?? "",
       token: json["token"] ?? "",
-      student: json["student"] == null ? null : Student.fromJson(json["student"]),
+      student: json["student"] == null
+          ? null
+          : Student.fromJson(json["student"]),
     );
   }
 
@@ -56,13 +53,12 @@ class LoginResponseResult extends Equatable {
   };
 
   @override
-  String toString(){
+  String toString() {
     return "$status, $message, $token, $student, ";
   }
 
   @override
-  List<Object?> get props => [
-    status, message, token, student, ];
+  List<Object?> get props => [status, message, token, student];
 }
 
 class Student extends Equatable {
@@ -393,7 +389,6 @@ class Student extends Equatable {
   final String currentStudentStandardId;
   static const String currentStudentStandardIdKey = "currentStudentStandardId";
 
-
   Student copyWith({
     int? admissionId,
     String? accYear,
@@ -402,55 +397,55 @@ class Student extends Equatable {
     String? sectionId,
     String? name,
     String? gender,
-    dynamic? aadharNo,
+    dynamic aadharNo,
     String? father,
-    dynamic? mother,
-    dynamic? guardian,
-    dynamic? relation,
-    dynamic? occupation,
+    dynamic mother,
+    dynamic guardian,
+    dynamic relation,
+    dynamic occupation,
     String? houseName,
-    dynamic? street,
-    dynamic? placeId,
-    dynamic? postId,
-    dynamic? districtId,
-    dynamic? stateId,
-    dynamic? nationalityId,
-    dynamic? landPhone,
+    dynamic street,
+    dynamic placeId,
+    dynamic postId,
+    dynamic districtId,
+    dynamic stateId,
+    dynamic nationalityId,
+    dynamic landPhone,
     String? mobile,
     String? email,
-    dynamic? preTcNo,
-    dynamic? preTcDate,
-    dynamic? pretcSchool,
+    dynamic preTcNo,
+    dynamic preTcDate,
+    dynamic pretcSchool,
     String? doj,
     String? dob,
-    dynamic? bloodGroup,
-    dynamic? religionId,
-    dynamic? categoryId,
-    dynamic? casteId,
+    dynamic bloodGroup,
+    dynamic religionId,
+    dynamic categoryId,
+    dynamic casteId,
     String? stdIdonAdm,
     String? divIdonAdm,
-    dynamic? madrassaAdmNo,
-    dynamic? madrassaStdid,
-    dynamic? madrassaDivId,
-    dynamic? mediumId,
-    dynamic? firstLanId,
-    dynamic? secondLanId,
-    dynamic? motherTongueId,
-    dynamic? deformity,
-    dynamic? identityMark1,
-    dynamic? identityMark2,
-    dynamic? tcNumber,
-    dynamic? tcDate,
-    dynamic? tcStdId,
-    dynamic? tcDivId,
-    dynamic? consessionTypeId,
+    dynamic madrassaAdmNo,
+    dynamic madrassaStdid,
+    dynamic madrassaDivId,
+    dynamic mediumId,
+    dynamic firstLanId,
+    dynamic secondLanId,
+    dynamic motherTongueId,
+    dynamic deformity,
+    dynamic identityMark1,
+    dynamic identityMark2,
+    dynamic tcNumber,
+    dynamic tcDate,
+    dynamic tcStdId,
+    dynamic tcDivId,
+    dynamic consessionTypeId,
     bool? relativeStatus,
     bool? busStatus,
     String? activeStatus,
-    dynamic? vaccinationDate,
-    dynamic? motherMobile,
-    dynamic? bankName,
-    dynamic? accountNo,
+    dynamic vaccinationDate,
+    dynamic motherMobile,
+    dynamic bankName,
+    dynamic accountNo,
     String? artsSchool,
     String? artsDistrict,
     String? artsState,
@@ -459,21 +454,21 @@ class Student extends Equatable {
     String? sportsDistrict,
     String? sportsState,
     String? sportsNational,
-    dynamic? previousClass,
+    dynamic previousClass,
     bool? hostelStatus,
     String? dobInWords,
     String? placeofBirth,
     int? branchId,
     String? createdDate,
     String? createdUser,
-    dynamic? modifiedDate,
-    dynamic? modifiedUser,
-    dynamic? passportNo,
-    dynamic? passportExpiry,
-    dynamic? iqamaNo,
-    dynamic? iqamaExpiry,
-    dynamic? fatherIqamaNo,
-    dynamic? motherIqamaNo,
+    dynamic modifiedDate,
+    dynamic modifiedUser,
+    dynamic passportNo,
+    dynamic passportExpiry,
+    dynamic iqamaNo,
+    dynamic iqamaExpiry,
+    dynamic fatherIqamaNo,
+    dynamic motherIqamaNo,
     String? currentStudentDivisionId,
     String? currentStudentStandardId,
   }) {
@@ -557,12 +552,14 @@ class Student extends Equatable {
       iqamaExpiry: iqamaExpiry ?? this.iqamaExpiry,
       fatherIqamaNo: fatherIqamaNo ?? this.fatherIqamaNo,
       motherIqamaNo: motherIqamaNo ?? this.motherIqamaNo,
-      currentStudentDivisionId: currentStudentDivisionId ?? this.currentStudentDivisionId,
-      currentStudentStandardId: currentStudentStandardId ?? this.currentStudentStandardId,
+      currentStudentDivisionId:
+          currentStudentDivisionId ?? this.currentStudentDivisionId,
+      currentStudentStandardId:
+          currentStudentStandardId ?? this.currentStudentStandardId,
     );
   }
 
-  factory Student.fromJson(Map<String, dynamic> json){
+  factory Student.fromJson(Map<String, dynamic> json) {
     return Student(
       admissionId: json["AdmissionId"] ?? 0,
       accYear: json["AccYear"] ?? "",
@@ -590,7 +587,7 @@ class Student extends Equatable {
       preTcNo: json["PreTcNo"],
       preTcDate: json["PreTcDate"],
       pretcSchool: json["PretcSchool"],
-      doj:json["DOJ"] ?? "",
+      doj: json["DOJ"] ?? "",
       dob: json["DOB"] ?? "",
       bloodGroup: json["BloodGroup"],
       religionId: json["ReligionId"],
@@ -733,13 +730,92 @@ class Student extends Equatable {
   };
 
   @override
-  String toString(){
+  String toString() {
     return "$admissionId, $accYear, $admno, $scode, $sectionId, $name, $gender, $aadharNo, $father, $mother, $guardian, $relation, $occupation, $houseName, $street, $placeId, $postId, $districtId, $stateId, $nationalityId, $landPhone, $mobile, $email, $preTcNo, $preTcDate, $pretcSchool, $doj, $dob, $bloodGroup, $religionId, $categoryId, $casteId, $stdIdonAdm, $divIdonAdm, $madrassaAdmNo, $madrassaStdid, $madrassaDivId, $mediumId, $firstLanId, $secondLanId, $motherTongueId, $deformity, $identityMark1, $identityMark2, $tcNumber, $tcDate, $tcStdId, $tcDivId, $consessionTypeId, $relativeStatus, $busStatus, $activeStatus, $vaccinationDate, $motherMobile, $bankName, $accountNo, $artsSchool, $artsDistrict, $artsState, $artsNational, $sportsSchool, $sportsDistrict, $sportsState, $sportsNational, $previousClass, $hostelStatus, $dobInWords, $placeofBirth, $branchId, $createdDate, $createdUser, $modifiedDate, $modifiedUser, $passportNo, $passportExpiry, $iqamaNo, $iqamaExpiry, $fatherIqamaNo, $motherIqamaNo, $currentStudentDivisionId, $currentStudentStandardId, ";
   }
 
   @override
   List<Object?> get props => [
-    admissionId, accYear, admno, scode, sectionId, name, gender, aadharNo, father, mother, guardian, relation, occupation, houseName, street, placeId, postId, districtId, stateId, nationalityId, landPhone, mobile, email, preTcNo, preTcDate, pretcSchool, doj, dob, bloodGroup, religionId, categoryId, casteId, stdIdonAdm, divIdonAdm, madrassaAdmNo, madrassaStdid, madrassaDivId, mediumId, firstLanId, secondLanId, motherTongueId, deformity, identityMark1, identityMark2, tcNumber, tcDate, tcStdId, tcDivId, consessionTypeId, relativeStatus, busStatus, activeStatus, vaccinationDate, motherMobile, bankName, accountNo, artsSchool, artsDistrict, artsState, artsNational, sportsSchool, sportsDistrict, sportsState, sportsNational, previousClass, hostelStatus, dobInWords, placeofBirth, branchId, createdDate, createdUser, modifiedDate, modifiedUser, passportNo, passportExpiry, iqamaNo, iqamaExpiry, fatherIqamaNo, motherIqamaNo, currentStudentDivisionId, currentStudentStandardId, ];
+    admissionId,
+    accYear,
+    admno,
+    scode,
+    sectionId,
+    name,
+    gender,
+    aadharNo,
+    father,
+    mother,
+    guardian,
+    relation,
+    occupation,
+    houseName,
+    street,
+    placeId,
+    postId,
+    districtId,
+    stateId,
+    nationalityId,
+    landPhone,
+    mobile,
+    email,
+    preTcNo,
+    preTcDate,
+    pretcSchool,
+    doj,
+    dob,
+    bloodGroup,
+    religionId,
+    categoryId,
+    casteId,
+    stdIdonAdm,
+    divIdonAdm,
+    madrassaAdmNo,
+    madrassaStdid,
+    madrassaDivId,
+    mediumId,
+    firstLanId,
+    secondLanId,
+    motherTongueId,
+    deformity,
+    identityMark1,
+    identityMark2,
+    tcNumber,
+    tcDate,
+    tcStdId,
+    tcDivId,
+    consessionTypeId,
+    relativeStatus,
+    busStatus,
+    activeStatus,
+    vaccinationDate,
+    motherMobile,
+    bankName,
+    accountNo,
+    artsSchool,
+    artsDistrict,
+    artsState,
+    artsNational,
+    sportsSchool,
+    sportsDistrict,
+    sportsState,
+    sportsNational,
+    previousClass,
+    hostelStatus,
+    dobInWords,
+    placeofBirth,
+    branchId,
+    createdDate,
+    createdUser,
+    modifiedDate,
+    modifiedUser,
+    passportNo,
+    passportExpiry,
+    iqamaNo,
+    iqamaExpiry,
+    fatherIqamaNo,
+    motherIqamaNo,
+    currentStudentDivisionId,
+    currentStudentStandardId,
+  ];
 }
-
-

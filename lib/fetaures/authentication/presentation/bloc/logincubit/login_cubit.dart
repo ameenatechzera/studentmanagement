@@ -1,13 +1,11 @@
-
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:studentmanagement/fetaures/authentication/domain/entities/deviceRegisterResult.dart';
+import 'package:studentmanagement/fetaures/authentication/domain/entities/device_register_result.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/entities/login_entity.dart';
-import 'package:studentmanagement/fetaures/authentication/domain/parameters/deviceRegisterRequest.dart';
+import 'package:studentmanagement/fetaures/authentication/domain/parameters/device_register_request.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/parameters/login_params.dart';
-import 'package:studentmanagement/fetaures/authentication/domain/usecases/deviceRegisterUseCase.dart';
+import 'package:studentmanagement/fetaures/authentication/domain/usecases/device_register_usecase.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/usecases/login_usecase.dart';
-
 
 part 'login_state.dart';
 
@@ -15,10 +13,12 @@ class LoginCubit extends Cubit<LoginState> {
   final LoginServerUseCase _loginUseCase;
   final CheckDeviceRegisterStatusUseCase _checkDeviceRegisterStatusUseCase;
 
-  LoginCubit({required LoginServerUseCase loginServerUseCase ,
-    required CheckDeviceRegisterStatusUseCase checkDeviceRegisterStatusUseCase})
-    : _loginUseCase = loginServerUseCase, _checkDeviceRegisterStatusUseCase = checkDeviceRegisterStatusUseCase,
-      super(LoginInitial());
+  LoginCubit({
+    required LoginServerUseCase loginServerUseCase,
+    required CheckDeviceRegisterStatusUseCase checkDeviceRegisterStatusUseCase,
+  }) : _loginUseCase = loginServerUseCase,
+       _checkDeviceRegisterStatusUseCase = checkDeviceRegisterStatusUseCase,
+       super(LoginInitial());
 
   Future<void> loginUser(LoginRequest loginRequest) async {
     emit(LoginLoading());
@@ -48,10 +48,10 @@ class LoginCubit extends Cubit<LoginState> {
       final result = await _checkDeviceRegisterStatusUseCase(request);
 
       result.fold(
-            (failure) {
+        (failure) {
           emit(DeviceRegisterStatusFailure(failure.message));
         },
-            (loginResponse) {
+        (loginResponse) {
           emit(DeviceRegisterStatusSuccess(loginResponse));
         },
       );

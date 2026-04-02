@@ -2,8 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studentmanagement/core/appdata/appdata.dart';
-import 'package:studentmanagement/fetaures/authentication/data/models/accountDetailsModel.dart';
-import 'package:studentmanagement/fetaures/authentication/domain/parameters/deviceRegisterRequest.dart';
+import 'package:studentmanagement/fetaures/authentication/data/models/account_details_model.dart';
+import 'package:studentmanagement/fetaures/authentication/domain/parameters/device_register_request.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/parameters/login_params.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/bloc/logincubit/login_cubit.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/screens/main_screen.dart';
@@ -75,16 +75,42 @@ class AddAccount extends StatelessWidget {
 
                   await sharedPrefHelper.setToken(state.loginResponse.token);
                   await sharedPrefHelper.saveLoginResponse(state.loginResponse);
-                  AppData.admissionNo = state.loginResponse.student!.admno.toString();
-                  AppData.studentName = state.loginResponse.student!.name.toString();
-                  AppData.studentStdId = state.loginResponse.student!.currentStudentStandardId.toString();
-                  AppData.studentDivId = state.loginResponse.student!.currentStudentDivisionId.toString();
-                  AppData.accYear = state.loginResponse.student!.accYear.toString();
+                  AppData.admissionNo = state.loginResponse.student!.admno
+                      .toString();
+                  AppData.studentName = state.loginResponse.student!.name
+                      .toString();
+                  AppData.studentStdId = state
+                      .loginResponse
+                      .student!
+                      .currentStudentStandardId
+                      .toString();
+                  AppData.studentDivId = state
+                      .loginResponse
+                      .student!
+                      .currentStudentDivisionId
+                      .toString();
+                  AppData.accYear = state.loginResponse.student!.accYear
+                      .toString();
                   print('AppData.accYear ${AppData.accYear}');
-                  await SharedPreferenceHelper.saveNewAccount(AccountDetails(admissionNo: state.loginResponse.student!.admno.toString(),
-                      dob: state.loginResponse.student!.dob.toString(), stdId: state.loginResponse.student!.currentStudentDivisionId.toString(),
-                      divId: state.loginResponse.student!.currentStudentDivisionId.toString(), accYear:state.loginResponse.student!.accYear.toString(),
-                      name: state.loginResponse.student!.name));
+                  await SharedPreferenceHelper.saveNewAccount(
+                    AccountDetails(
+                      admissionNo: state.loginResponse.student!.admno
+                          .toString(),
+                      dob: state.loginResponse.student!.dob.toString(),
+                      stdId: state
+                          .loginResponse
+                          .student!
+                          .currentStudentDivisionId
+                          .toString(),
+                      divId: state
+                          .loginResponse
+                          .student!
+                          .currentStudentDivisionId
+                          .toString(),
+                      accYear: state.loginResponse.student!.accYear.toString(),
+                      name: state.loginResponse.student!.name,
+                    ),
+                  );
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) {
@@ -97,7 +123,7 @@ class AddAccount extends StatelessWidget {
               builder: (context, state) {
                 return ElevatedButton(
                   onPressed: () {
-                   // Navigator.pop(context);
+                    // Navigator.pop(context);
                     context.read<LoginCubit>().loginUser(
                       LoginRequest(admno: admNoCtrl.text, dob: dobCtrl.text),
                     );

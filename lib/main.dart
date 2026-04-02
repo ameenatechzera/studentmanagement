@@ -20,13 +20,13 @@ import 'fetaures/fees/presentation/unPaidFee/un_paid_fee_cubit.dart';
 // late final AppDatabase appDb;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(
-      statusBarColor: AppColors.theme,
-      statusBarIconBrightness: Brightness.dark,
-      //statusBarBrightness: Brightness.dark,
-    ),
-  );
+  // SystemChrome.setSystemUIOverlayStyle(
+  //   const SystemUiOverlayStyle(
+  //     statusBarColor: AppColors.theme,
+  //     statusBarIconBrightness: Brightness.dark,
+  //     //statusBarBrightness: Brightness.dark,
+  //   ),
+  // );
   // appDb = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
   await ServiceLocator.init();
   final sharedPrefHelper = SharedPreferenceHelper();
@@ -36,9 +36,9 @@ void main() async {
   if (currentBaseUrl == null) {
     await sharedPrefHelper.setBaseUrl(
       // 'https://cristalofflineweb.techzera.in/Api/public/api',
-       //'https://test.cristaledu.com/Api/public/api',
+      //'https://test.cristaledu.com/Api/public/api',
       //'https://cristalwebonline.techzera.in/Api/public/api',
-      'https://online.cristaledu.com/Api/public/api'
+      'https://online.cristaledu.com/Api/public/api',
     );
   }
   runApp(MyApp());

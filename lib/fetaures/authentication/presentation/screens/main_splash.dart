@@ -16,13 +16,6 @@ class _MainSplashScreenState extends State<MainSplashScreen> {
   void initState() {
     super.initState();
     _checkLogin();
-    // Future.delayed(const Duration(seconds: 3), () {
-    //   AppNavigator.pushSlide(context: context, page: SecondSplashScreen());
-    // Navigator.pushReplacement(
-    //   context,
-    //   MaterialPageRoute(builder: (context) => const SecondSplashScreen()),
-    // );
-    // });
   }
 
   Future<void> _checkLogin() async {
@@ -30,9 +23,13 @@ class _MainSplashScreenState extends State<MainSplashScreen> {
 
     final loginResponse = await sharedPrefHelper.getLoginResponse();
     AppData.admissionNo = loginResponse?.student!.admno.toString();
-    AppData.studentName = loginResponse?.student!.name.toString();;
-    AppData.studentStdId = loginResponse?.student!.currentStudentStandardId.toString();;
-    AppData.studentDivId = loginResponse?.student!.currentStudentDivisionId.toString();
+    AppData.studentName = loginResponse?.student!.name.toString();
+    ;
+    AppData.studentStdId = loginResponse?.student!.currentStudentStandardId
+        .toString();
+    ;
+    AppData.studentDivId = loginResponse?.student!.currentStudentDivisionId
+        .toString();
     AppData.accYear = loginResponse?.student!.accYear.toString();
 
     await Future.delayed(const Duration(seconds: 2));
