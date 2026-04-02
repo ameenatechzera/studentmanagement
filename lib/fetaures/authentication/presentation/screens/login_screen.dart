@@ -1,11 +1,10 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studentmanagement/core/appdata/appdata.dart';
 import 'package:studentmanagement/core/utils/widgets/app_snackbar.dart';
-import 'package:studentmanagement/fetaures/authentication/data/models/accountDetailsModel.dart';
-import 'package:studentmanagement/fetaures/authentication/domain/parameters/deviceRegisterRequest.dart';
+import 'package:studentmanagement/fetaures/authentication/data/models/account_details_model.dart';
+import 'package:studentmanagement/fetaures/authentication/domain/parameters/device_register_request.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/parameters/login_params.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/bloc/logincubit/login_cubit.dart';
 import 'package:device_info_plus/device_info_plus.dart';
@@ -13,7 +12,7 @@ import 'package:studentmanagement/fetaures/home_screen/presentation/screens/main
 import 'package:studentmanagement/services/shared_preference_helper.dart';
 
 class LoginScreen extends StatefulWidget {
-  LoginScreen({super.key});
+  const LoginScreen({super.key});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -44,9 +43,10 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               children: [
                 SizedBox(height: 50),
-                Container(
+                SizedBox(
                   height: 150,
-                    child: Image.asset('assets/images/Group 46.png')),
+                  child: Image.asset('assets/images/Group 46.png'),
+                ),
                 SizedBox(height: 20),
 
                 Text(
@@ -95,15 +95,41 @@ class _LoginScreenState extends State<LoginScreen> {
                       await sharedPrefHelper.saveLoginResponse(
                         state.loginResponse,
                       );
-                      AppData.admissionNo = state.loginResponse.student!.admno.toString();
-                      AppData.studentName = state.loginResponse.student!.name.toString();
-                      AppData.studentStdId = state.loginResponse.student!.currentStudentStandardId.toString();
-                      AppData.studentDivId = state.loginResponse.student!.currentStudentDivisionId.toString();
-                      AppData.accYear = state.loginResponse.student!.accYear.toString();
-                      await SharedPreferenceHelper.saveNewAccount(AccountDetails(admissionNo: state.loginResponse.student!.admno.toString(),
-                          dob: state.loginResponse.student!.dob.toString(), stdId: state.loginResponse.student!.currentStudentStandardId.toString(),
-                          divId: state.loginResponse.student!.currentStudentDivisionId, accYear:state.loginResponse.student!.accYear.toString(),
-                          name: state.loginResponse.student!.name));
+                      AppData.admissionNo = state.loginResponse.student!.admno
+                          .toString();
+                      AppData.studentName = state.loginResponse.student!.name
+                          .toString();
+                      AppData.studentStdId = state
+                          .loginResponse
+                          .student!
+                          .currentStudentStandardId
+                          .toString();
+                      AppData.studentDivId = state
+                          .loginResponse
+                          .student!
+                          .currentStudentDivisionId
+                          .toString();
+                      AppData.accYear = state.loginResponse.student!.accYear
+                          .toString();
+                      await SharedPreferenceHelper.saveNewAccount(
+                        AccountDetails(
+                          admissionNo: state.loginResponse.student!.admno
+                              .toString(),
+                          dob: state.loginResponse.student!.dob.toString(),
+                          stdId: state
+                              .loginResponse
+                              .student!
+                              .currentStudentStandardId
+                              .toString(),
+                          divId: state
+                              .loginResponse
+                              .student!
+                              .currentStudentDivisionId,
+                          accYear: state.loginResponse.student!.accYear
+                              .toString(),
+                          name: state.loginResponse.student!.name,
+                        ),
+                      );
                       Navigator.of(context).pushReplacement(
                         MaterialPageRoute(
                           builder: (context) {

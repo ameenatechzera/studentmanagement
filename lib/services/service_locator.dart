@@ -2,7 +2,7 @@ import 'package:get_it/get_it.dart';
 import 'package:studentmanagement/fetaures/authentication/data/datasources/auth_remote_data_source.dart';
 import 'package:studentmanagement/fetaures/authentication/data/repositories/auth_repository_impl.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/repositories/auth_repository.dart';
-import 'package:studentmanagement/fetaures/authentication/domain/usecases/deviceRegisterUseCase.dart';
+import 'package:studentmanagement/fetaures/authentication/domain/usecases/device_register_usecase.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/usecases/login_usecase.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/bloc/logincubit/login_cubit.dart';
 import 'package:studentmanagement/fetaures/classdiary/data/datasources/diary_remote_data_source.dart';

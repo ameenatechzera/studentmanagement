@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studentmanagement/core/appdata/appdata.dart';
 import 'package:studentmanagement/fetaures/classdiary/domain/parameters/fetch_diary_parameter.dart';
 import 'package:studentmanagement/fetaures/classdiary/presentation/cubit/diary_cubit.dart';
+import 'package:studentmanagement/fetaures/materials/presentation/widgets/materials_widget.dart';
 
 final ValueNotifier<String> selectedSubject = ValueNotifier<String>(
   'Mathematics',
@@ -49,11 +50,11 @@ class AllClassDiaryScreen extends StatelessWidget {
                           return Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              _radioItem(context, 'Mathematics', value),
-                              _radioItem(context, 'Malayalam', value),
-                              _radioItem(context, 'Physics', value),
-                              _radioItem(context, 'Chemistry', value),
-                              _radioItem(context, 'Biology', value),
+                              radioItem(context, 'Mathematics', value),
+                              radioItem(context, 'Malayalam', value),
+                              radioItem(context, 'Physics', value),
+                              radioItem(context, 'Chemistry', value),
+                              radioItem(context, 'Biology', value),
                             ],
                           );
                         },
@@ -178,19 +179,4 @@ class AllClassDiaryScreen extends StatelessWidget {
       ),
     );
   }
-}
-
-Widget _radioItem(BuildContext context, String text, String groupValue) {
-  return RadioListTile<String>(
-    value: text,
-    groupValue: groupValue,
-    dense: true,
-    title: Text(text),
-    activeColor: const Color(0xFFC4005F),
-    contentPadding: EdgeInsets.zero,
-    onChanged: (val) {
-      selectedSubject.value = val!;
-      Navigator.pop(context);
-    },
-  );
 }

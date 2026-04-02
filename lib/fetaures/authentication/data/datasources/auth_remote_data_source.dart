@@ -1,24 +1,24 @@
-
-
 import 'package:dio/dio.dart';
 import 'package:studentmanagement/core/errors/error_message_model.dart';
 import 'package:studentmanagement/core/errors/exceptions.dart';
 import 'package:studentmanagement/core/network/api_endpoints.dart';
-import 'package:studentmanagement/fetaures/authentication/data/models/deviceRegisterMoidel.dart';
-import 'package:studentmanagement/fetaures/authentication/domain/entities/deviceRegisterResult.dart';
+import 'package:studentmanagement/fetaures/authentication/data/models/device_register_model.dart';
+import 'package:studentmanagement/fetaures/authentication/domain/entities/device_register_result.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/entities/login_entity.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/entities/register_server_response_entity.dart';
-import 'package:studentmanagement/fetaures/authentication/domain/parameters/deviceRegisterRequest.dart';
+import 'package:studentmanagement/fetaures/authentication/domain/parameters/device_register_request.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/parameters/login_params.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/parameters/register_server_params.dart';
 import 'package:studentmanagement/services/shared_preference_helper.dart';
 
 abstract class AuthRemoteDataSource {
   Future<RegisterResponseResult> registerServer(
-      RegisterServerRequest registerServerParams,
-      );
+    RegisterServerRequest registerServerParams,
+  );
   Future<LoginResponseResult> loginServer(LoginRequest loginRequest);
-  Future<DeviceRegisterResult> checkDeviceRegisterStatus(DeviceRegisterRequest request);
+  Future<DeviceRegisterResult> checkDeviceRegisterStatus(
+    DeviceRegisterRequest request,
+  );
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -26,8 +26,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<RegisterResponseResult> registerServer(
-      RegisterServerRequest registerServerParams,
-      ) async {
+    RegisterServerRequest registerServerParams,
+  ) async {
     // Load base URL safely
     final baseUrl = await SharedPreferenceHelper().getBaseUrl();
 
@@ -74,11 +74,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         data: params.toJson(),
         options: Options(
           contentType: "application/json",
-          headers: {
-            "Accept": "application/json",
-            "X-Database-Name":
-            dbName,
-          },
+          headers: {"Accept": "application/json", "X-Database-Name": dbName},
         ),
       );
 
@@ -100,7 +96,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<DeviceRegisterResult> checkDeviceRegisterStatus(DeviceRegisterRequest request) async {
+  Future<DeviceRegisterResult> checkDeviceRegisterStatus(
+    DeviceRegisterRequest request,
+  ) async {
     try {
       final baseUrl = await SharedPreferenceHelper().getBaseUrl();
       if (baseUrl == null || baseUrl.isEmpty) {
@@ -117,11 +115,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         data: request.toJson(),
         options: Options(
           contentType: "application/json",
-          headers: {
-            "Accept": "application/json",
-            "X-Database-Name":
-            dbName,
-          },
+          headers: {"Accept": "application/json", "X-Database-Name": dbName},
         ),
       );
 

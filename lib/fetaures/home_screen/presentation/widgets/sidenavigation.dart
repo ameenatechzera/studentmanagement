@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:studentmanagement/core/appdata/appdata.dart';
-import 'package:studentmanagement/fetaures/authentication/data/models/accountDetailsModel.dart';
+import 'package:studentmanagement/fetaures/authentication/data/models/account_details_model.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/parameters/login_params.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/bloc/logincubit/login_cubit.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/widget/switch_account.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/screens/main_screen.dart';
 
 class SideNavigationBar extends StatefulWidget {
-   SideNavigationBar({super.key});
+  SideNavigationBar({super.key});
 
   @override
   State<SideNavigationBar> createState() => _SideNavigationBarState();
@@ -26,6 +26,7 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
     super.initState();
     loadAccounts();
   }
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -69,20 +70,28 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
         children: [
           const CircleAvatar(
             radius: 28,
-            backgroundImage:
-            NetworkImage("https://randomuser.me/api/portraits/men/32.jpg"),
+            backgroundImage: NetworkImage(
+              "https://randomuser.me/api/portraits/men/32.jpg",
+            ),
           ),
           const SizedBox(width: 12),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text("Welcome",
-                  style: TextStyle(fontSize: 13, color: Colors.grey)),
+              const Text(
+                "Welcome",
+                style: TextStyle(fontSize: 13, color: Colors.grey),
+              ),
               const SizedBox(height: 4),
-              Text(AppData.studentName!,
-                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600)),
+              Text(
+                AppData.studentName!,
+                style: const TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ],
-          )
+          ),
         ],
       ),
     );
@@ -132,7 +141,6 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
     );
   }
 
-
   Widget _accountSwitchSectionO(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -151,14 +159,14 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
               padding: const EdgeInsets.only(bottom: 10),
               child: _accountTile(
                 name: acc.name ?? "No Name",
-                imageUrl:
-                "https://randomuser.me/api/portraits/men/32.jpg",
+                imageUrl: "https://randomuser.me/api/portraits/men/32.jpg",
                 isSelected: acc.admissionNo == selectedAdmissionNo,
                 onTap: () {
                   setState(() {
                     selectedAdmissionNo = acc.admissionNo;
                   });
-                }, accountData: acc,
+                },
+                accountData: acc,
               ),
             );
           }).toList(),
@@ -180,8 +188,8 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
     VoidCallback? onTap, // ✅ add this
   }) {
     return InkWell(
-      onTap: (){
-        AppData.admissionNo =accountData.admissionNo;
+      onTap: () {
+        AppData.admissionNo = accountData.admissionNo;
         AppData.studentName = accountData.name;
         AppData.studentStdId = accountData.stdId;
         AppData.studentDivId = accountData.divId;
@@ -189,57 +197,58 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
         AppData.dob = accountData.dob;
 
         context.read<LoginCubit>().loginUser(
-          LoginRequest(
-            admno: AppData.admissionNo!,
-            dob: AppData.dob!,
-          ),
+          LoginRequest(admno: AppData.admissionNo!, dob: AppData.dob!),
         );
-
       }, // ✅ handle tap
       child: BlocConsumer<LoginCubit, LoginState>(
-  listener: (context, state) {
-   if(state is LoginSuccess){
-     Navigator.of(context).push(
-       MaterialPageRoute(
-         builder: (context) {
-           return MainScreen(
-             loginResponse: state.loginResponse,
-           );
-         },
-       ),
-     );
-   }
-  },
-  builder: (context, state) {
-    return Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isSelected ? Colors.pinkAccent : Colors.grey.shade300,
-            width: isSelected ? 1.5 : 1,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.04),
-              blurRadius: 6,
-              offset: const Offset(0, 3),
-            )
-          ],
-        ),
-        child: Row(
-          children: [
-            CircleAvatar(radius: 24, backgroundImage: NetworkImage(imageUrl)),
-            const SizedBox(width: 14),
-            Text(name,
-                style:
-                const TextStyle(fontSize: 11, fontWeight: FontWeight.w500)),
-          ],
-        ),
-      );
-  },
-),
+        listener: (context, state) {
+          if (state is LoginSuccess) {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) {
+                  return MainScreen(loginResponse: state.loginResponse);
+                },
+              ),
+            );
+          }
+        },
+        builder: (context, state) {
+          return Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: isSelected ? Colors.pinkAccent : Colors.grey.shade300,
+                width: isSelected ? 1.5 : 1,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.04),
+                  blurRadius: 6,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 24,
+                  backgroundImage: NetworkImage(imageUrl),
+                ),
+                const SizedBox(width: 14),
+                Text(
+                  name,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -255,7 +264,7 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
             borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
           ),
           builder: (context) {
-            return  AddAccount();
+            return AddAccount();
           },
         );
       },
@@ -268,8 +277,10 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
             child: Icon(Icons.add, color: Colors.white, size: 18),
           ),
           SizedBox(width: 12),
-          Text("Add Account",
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
+          Text(
+            "Add Account",
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+          ),
         ],
       ),
     );
@@ -279,8 +290,10 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
   Widget _menuItem(IconData icon, String title, VoidCallback onTap) {
     return ListTile(
       leading: Icon(icon, color: Colors.grey[800]),
-      title: Text(title,
-          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
+      title: Text(
+        title,
+        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+      ),
       onTap: onTap,
       horizontalTitleGap: 10,
     );
@@ -290,9 +303,7 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
     final prefs = await SharedPreferences.getInstance();
     List<String> data = prefs.getStringList('accounts') ?? [];
 
-    accounts = data
-        .map((e) => AccountDetails.fromJson(jsonDecode(e)))
-        .toList();
+    accounts = data.map((e) => AccountDetails.fromJson(jsonDecode(e))).toList();
 
     print('accountsList_Admno ${accounts.first.name}');
 

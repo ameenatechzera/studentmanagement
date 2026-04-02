@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:studentmanagement/core/navigation/app_navigator.dart';
-import 'package:studentmanagement/fetaures/authentication/presentation/screens/login_screen.dart';
+import 'package:studentmanagement/fetaures/authentication/presentation/screens/register_screen.dart';
+import 'package:studentmanagement/fetaures/authentication/presentation/widget/dot.dart';
 
 class ForthSplashScreen extends StatelessWidget {
   const ForthSplashScreen({super.key});
@@ -42,34 +43,31 @@ class ForthSplashScreen extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        _dot(isActive: false), // current splash
+                        dot(isActive: false), // current splash
                         const SizedBox(width: 6),
-                        _dot(isActive: false),
+                        dot(isActive: false),
                         const SizedBox(width: 6),
-                        _dot(isActive: true),
+                        dot(isActive: true),
                       ],
                     ),
                     SizedBox(width: 20),
                     Expanded(
-                      child: Container(
-                        //width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            AppNavigator.pushSlide(
-                              context: context,
-                              page: LoginScreen(),
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFFC4005F),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(4),
-                            ),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          AppNavigator.pushSlide(
+                            context: context,
+                            page: RegisterScreen(),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFFC4005F),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(4),
                           ),
-                          child: Text(
-                            'Next',
-                            style: TextStyle(color: Colors.white),
-                          ),
+                        ),
+                        child: Text(
+                          'Next',
+                          style: TextStyle(color: Colors.white),
                         ),
                       ),
                     ),
@@ -79,17 +77,6 @@ class ForthSplashScreen extends StatelessWidget {
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _dot({required bool isActive}) {
-    return Container(
-      width: isActive ? 10 : 8,
-      height: isActive ? 10 : 8,
-      decoration: BoxDecoration(
-        color: isActive ? const Color(0xFFC4005F) : Colors.grey.shade400,
-        shape: BoxShape.circle,
       ),
     );
   }
