@@ -67,19 +67,24 @@ class PendingFee extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(height: 6),
-                            Text(
-                              fee.dueAmount,
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.red,
-                              ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  fee.feeMonth,
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.red,
+                                  ),
+                                ),
+                                Text(
+                                  fee.amount,
+                                  style: TextStyle(fontSize: 15, color: Colors.red),
+                                ),
+                              ],
                             ),
-                            const SizedBox(height: 6),
-                            Text(
-                              "Last Date On ${fee.dueDate!}",
-                              style: TextStyle(fontSize: 13, color: Colors.red),
-                            ),
+
                           ],
                         ),
                       ),

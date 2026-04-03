@@ -3,175 +3,182 @@ import 'package:equatable/equatable.dart';
 class PaidFeeResult extends Equatable {
   PaidFeeResult({
     required this.status,
-    required this.error,
+    required this.message,
     required this.data,
   });
 
-  final int status;
+  final bool status;
   static const String statusKey = "status";
 
-  final bool error;
-  static const String errorKey = "error";
+  final String message;
+  static const String messageKey = "message";
 
   final List<Datum> data;
   static const String dataKey = "data";
 
-  PaidFeeResult copyWith({int? status, bool? error, List<Datum>? data}) {
+
+  PaidFeeResult copyWith({
+    bool? status,
+    String? message,
+    List<Datum>? data,
+  }) {
     return PaidFeeResult(
       status: status ?? this.status,
-      error: error ?? this.error,
+      message: message ?? this.message,
       data: data ?? this.data,
     );
   }
 
-  factory PaidFeeResult.fromJson(Map<String, dynamic> json) {
+  factory PaidFeeResult.fromJson(Map<String, dynamic> json){
     return PaidFeeResult(
-      status: json["status"] ?? 0,
-      error: json["error"] ?? false,
-      data: json["data"] == null
-          ? []
-          : List<Datum>.from(json["data"]!.map((x) => Datum.fromJson(x))),
+      status: json["status"] ?? false,
+      message: json["message"] ?? "",
+      data: json["data"] == null ? [] : List<Datum>.from(json["data"]!.map((x) => Datum.fromJson(x))),
     );
   }
 
   Map<String, dynamic> toJson() => {
     "status": status,
-    "error": error,
-    "data": data.map((x) => x.toJson()).toList(),
+    "message": message,
+    "data": data.map((x) => x?.toJson()).toList(),
   };
 
   @override
-  String toString() {
-    return "$status, $error, $data, ";
-  }
-
-  @override
-  List<Object?> get props => [status, error, data];
-}
-
-class Datum extends Equatable {
-  Datum({
-    required this.admno,
-    required this.standard,
-    required this.division,
-    required this.stdonAdm,
-    required this.ledgerName,
-    required this.totalAmount,
-    required this.paidAmount,
-    required this.balanceAmount,
-    required this.feeMonth,
-    required this.name,
-    required this.dueDate,
-  });
-
-  final String admno;
-  static const String admnoKey = "Admno";
-
-  final String standard;
-  static const String standardKey = "Standard";
-
-  final String division;
-  static const String divisionKey = "Division";
-
-  final String stdonAdm;
-  static const String stdonAdmKey = "StdonAdm";
-
-  final String ledgerName;
-  static const String ledgerNameKey = "LedgerName";
-
-  final String totalAmount;
-  static const String totalAmountKey = "TotalAmount";
-
-  final String paidAmount;
-  static const String paidAmountKey = "PaidAmount";
-
-  final String balanceAmount;
-  static const String balanceAmountKey = "BalanceAmount";
-
-  final String feeMonth;
-  static const String feeMonthKey = "FeeMonth";
-
-  final String name;
-  static const String nameKey = "Name";
-
-  final String? dueDate;
-  static const String dueDateKey = "DueDate";
-
-  Datum copyWith({
-    String? admno,
-    String? standard,
-    String? division,
-    String? stdonAdm,
-    String? ledgerName,
-    String? totalAmount,
-    String? paidAmount,
-    String? balanceAmount,
-    String? feeMonth,
-    String? name,
-    String? dueDate,
-  }) {
-    return Datum(
-      admno: admno ?? this.admno,
-      standard: standard ?? this.standard,
-      division: division ?? this.division,
-      stdonAdm: stdonAdm ?? this.stdonAdm,
-      ledgerName: ledgerName ?? this.ledgerName,
-      totalAmount: totalAmount ?? this.totalAmount,
-      paidAmount: paidAmount ?? this.paidAmount,
-      balanceAmount: balanceAmount ?? this.balanceAmount,
-      feeMonth: feeMonth ?? this.feeMonth,
-      name: name ?? this.name,
-      dueDate: dueDate ?? this.dueDate,
-    );
-  }
-
-  factory Datum.fromJson(Map<String, dynamic> json) {
-    return Datum(
-      admno: json["Admno"] ?? "",
-      standard: json["Standard"] ?? "",
-      division: json["Division"] ?? "",
-      stdonAdm: json["StdonAdm"] ?? "",
-      ledgerName: json["LedgerName"] ?? "",
-      totalAmount: json["TotalAmount"] ?? "",
-      paidAmount: json["PaidAmount"] ?? "",
-      balanceAmount: json["BalanceAmount"] ?? "",
-      feeMonth: json["FeeMonth"] ?? "",
-      name: json["Name"] ?? "",
-      dueDate: json["DueDate"] ?? "",
-    );
-  }
-
-  Map<String, dynamic> toJson() => {
-    "Admno": admno,
-    "Standard": standard,
-    "Division": division,
-    "StdonAdm": stdonAdm,
-    "LedgerName": ledgerName,
-    "TotalAmount": totalAmount,
-    "PaidAmount": paidAmount,
-    "BalanceAmount": balanceAmount,
-    "FeeMonth": feeMonth,
-    "Name": name,
-    "DueDate": dueDate,
-  };
-
-  @override
-  String toString() {
-    return "$admno, $standard, $division, $stdonAdm, $ledgerName, $totalAmount, $paidAmount, $balanceAmount, $feeMonth, $name, $dueDate, ";
+  String toString(){
+    return "$status, $message, $data, ";
   }
 
   @override
   List<Object?> get props => [
-    admno,
-    standard,
-    division,
-    stdonAdm,
-    ledgerName,
-    totalAmount,
-    paidAmount,
-    balanceAmount,
-    feeMonth,
-    name,
-    dueDate,
-  ];
+    status, message, data, ];
+}
+
+class Datum extends Equatable {
+  Datum({
+    required this.feePaymentMasterId,
+    required this.receiptNo,
+    required this.date,
+    required this.paymentMode,
+    required this.totalPaidAmount,
+    required this.details,
+  });
+
+  final String feePaymentMasterId;
+  static const String feePaymentMasterIdKey = "FeePaymentMasterId";
+
+  final String receiptNo;
+  static const String receiptNoKey = "receiptNo";
+
+  final String? date;
+  static const String dateKey = "Date";
+
+  final String paymentMode;
+  static const String paymentModeKey = "paymentMode";
+
+  final String totalPaidAmount;
+  static const String totalPaidAmountKey = "totalPaidAmount";
+
+  final List<Detail> details;
+  static const String detailsKey = "details";
+
+
+  Datum copyWith({
+    String? feePaymentMasterId,
+    String? receiptNo,
+    String? date,
+    String? paymentMode,
+    String? totalPaidAmount,
+    List<Detail>? details,
+  }) {
+    return Datum(
+      feePaymentMasterId: feePaymentMasterId ?? this.feePaymentMasterId,
+      receiptNo: receiptNo ?? this.receiptNo,
+      date: date ?? this.date,
+      paymentMode: paymentMode ?? this.paymentMode,
+      totalPaidAmount: totalPaidAmount ?? this.totalPaidAmount,
+      details: details ?? this.details,
+    );
+  }
+
+  factory Datum.fromJson(Map<String, dynamic> json){
+    return Datum(
+      feePaymentMasterId: json["FeePaymentMasterId"] ?? "",
+      receiptNo: json["receiptNo"] ?? "",
+      date: json["Date"] ?? "",
+      paymentMode: json["paymentMode"] ?? "",
+      totalPaidAmount: json["totalPaidAmount"] ?? "",
+      details: json["details"] == null ? [] : List<Detail>.from(json["details"]!.map((x) => Detail.fromJson(x))),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    "FeePaymentMasterId": feePaymentMasterId,
+    "receiptNo": receiptNo,
+    "Date": date,
+    "paymentMode": paymentMode,
+    "totalPaidAmount": totalPaidAmount,
+    "details": details.map((x) => x?.toJson()).toList(),
+  };
+
+  @override
+  String toString(){
+    return "$feePaymentMasterId, $receiptNo, $date, $paymentMode, $totalPaidAmount, $details, ";
+  }
+
+  @override
+  List<Object?> get props => [
+    feePaymentMasterId, receiptNo, date, paymentMode, totalPaidAmount, details, ];
+}
+
+class Detail extends Equatable {
+  Detail({
+    required this.feeMonth,
+    required this.ledgerName,
+    required this.paidAmount,
+  });
+
+  final String feeMonth;
+  static const String feeMonthKey = "feeMonth";
+
+  final String ledgerName;
+  static const String ledgerNameKey = "ledgerName";
+
+  final int paidAmount;
+  static const String paidAmountKey = "paidAmount";
+
+
+  Detail copyWith({
+    String? feeMonth,
+    String? ledgerName,
+    int? paidAmount,
+  }) {
+    return Detail(
+      feeMonth: feeMonth ?? this.feeMonth,
+      ledgerName: ledgerName ?? this.ledgerName,
+      paidAmount: paidAmount ?? this.paidAmount,
+    );
+  }
+
+  factory Detail.fromJson(Map<String, dynamic> json){
+    return Detail(
+      feeMonth: json["feeMonth"] ?? "",
+      ledgerName: json["ledgerName"] ?? "",
+      paidAmount: json["paidAmount"] ?? 0,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    "feeMonth": feeMonth,
+    "ledgerName": ledgerName,
+    "paidAmount": paidAmount,
+  };
+
+  @override
+  String toString(){
+    return "$feeMonth, $ledgerName, $paidAmount, ";
+  }
+
+  @override
+  List<Object?> get props => [
+    feeMonth, ledgerName, paidAmount, ];
 }

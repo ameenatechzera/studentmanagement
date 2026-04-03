@@ -61,7 +61,7 @@ class _MainSplashScreenState extends State<MainSplashScreen> {
 
               /// TOP LOGO
               Image.asset(
-                'assets/images/a6fb42e4c9f5bc22db568a0987d1a371f0df1bf3.png',
+                'assets/images/fsp_logo.png',
                 height: 250,
               ),
 
@@ -69,7 +69,7 @@ class _MainSplashScreenState extends State<MainSplashScreen> {
 
               /// SCHOOL NAME
               const Text(
-                'Schools Namehere',
+                'First Step Preschool',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
@@ -81,7 +81,7 @@ class _MainSplashScreenState extends State<MainSplashScreen> {
 
               /// BOTTOM IMAGE / BRAND
               Image.asset(
-                'assets/images/079fdab992cfa5175f199dd2d2134e8f0a9f0af6.png',
+                'assets/images/cristal_horizontal.png',
                 height: 200,
                 fit: BoxFit.contain,
               ),

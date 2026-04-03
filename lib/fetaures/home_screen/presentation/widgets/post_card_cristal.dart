@@ -114,14 +114,12 @@ class PostCard extends StatelessWidget {
               children: [
                 const CircleAvatar(
                   radius: 16,
-                  backgroundImage: NetworkImage(
-                    "https://i.pravatar.cc/150?img=5",
-                  ),
+                  backgroundImage: AssetImage('assets/images/fsp_logo.png'),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    feed.createdUser ?? "Admin",
+                    "FSP",
                     style: const TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 14,

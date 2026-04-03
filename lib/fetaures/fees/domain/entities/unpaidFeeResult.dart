@@ -16,7 +16,12 @@ class UnpaidFeeResult extends Equatable {
   final List<Datum> data;
   static const String dataKey = "data";
 
-  UnpaidFeeResult copyWith({int? status, bool? error, List<Datum>? data}) {
+
+  UnpaidFeeResult copyWith({
+    int? status,
+    bool? error,
+    List<Datum>? data,
+  }) {
     return UnpaidFeeResult(
       status: status ?? this.status,
       error: error ?? this.error,
@@ -24,127 +29,159 @@ class UnpaidFeeResult extends Equatable {
     );
   }
 
-  factory UnpaidFeeResult.fromJson(Map<String, dynamic> json) {
+  factory UnpaidFeeResult.fromJson(Map<String, dynamic> json){
     return UnpaidFeeResult(
       status: json["status"] ?? 0,
       error: json["error"] ?? false,
-      data: json["data"] == null
-          ? []
-          : List<Datum>.from(json["data"]!.map((x) => Datum.fromJson(x))),
+      data: json["data"] == null ? [] : List<Datum>.from(json["data"]!.map((x) => Datum.fromJson(x))),
     );
   }
 
   Map<String, dynamic> toJson() => {
     "status": status,
     "error": error,
-    "data": data.map((x) => x.toJson()).toList(),
+    "data": data.map((x) => x?.toJson()).toList(),
   };
 
   @override
-  String toString() {
+  String toString(){
     return "$status, $error, $data, ";
   }
 
   @override
-  List<Object?> get props => [status, error, data];
+  List<Object?> get props => [
+    status, error, data, ];
 }
 
 class Datum extends Equatable {
   Datum({
-    required this.admno,
     required this.accYear,
+    required this.feeMonthId,
     required this.feeMonth,
+    required this.ledgerId,
     required this.ledgerName,
-    required this.totalAmount,
+    required this.amount,
     required this.paidAmount,
-    required this.dueAmount,
-    required this.dueDate,
+    required this.feePaymentDetailsId,
+    required this.taxId,
+    required this.taxName,
+    required this.taxAmt,
+    required this.floodCess,
+    required this.narration,
   });
-
-  final String admno;
-  static const String admnoKey = "Admno";
 
   final String accYear;
   static const String accYearKey = "AccYear";
 
+  final String feeMonthId;
+  static const String feeMonthIdKey = "FeeMonthId";
+
   final String feeMonth;
   static const String feeMonthKey = "FeeMonth";
+
+  final String ledgerId;
+  static const String ledgerIdKey = "LedgerId";
 
   final String ledgerName;
   static const String ledgerNameKey = "LedgerName";
 
-  final String totalAmount;
-  static const String totalAmountKey = "TotalAmount";
+  final String amount;
+  static const String amountKey = "Amount";
 
   final String paidAmount;
   static const String paidAmountKey = "PaidAmount";
 
-  final String dueAmount;
-  static const String dueAmountKey = "DueAmount";
+  final String feePaymentDetailsId;
+  static const String feePaymentDetailsIdKey = "FeePaymentDetailsId";
 
-  final String? dueDate;
-  static const String dueDateKey = "DueDate";
+  final dynamic taxId;
+  static const String taxIdKey = "taxId";
+
+  final dynamic taxName;
+  static const String taxNameKey = "taxName";
+
+  final String taxAmt;
+  static const String taxAmtKey = "TaxAmt";
+
+  final String floodCess;
+  static const String floodCessKey = "FloodCess";
+
+  final String narration;
+  static const String narrationKey = "Narration";
+
 
   Datum copyWith({
-    String? admno,
     String? accYear,
+    String? feeMonthId,
     String? feeMonth,
+    String? ledgerId,
     String? ledgerName,
-    String? totalAmount,
+    String? amount,
     String? paidAmount,
-    String? dueAmount,
-    String? dueDate,
+    String? feePaymentDetailsId,
+    dynamic? taxId,
+    dynamic? taxName,
+    String? taxAmt,
+    String? floodCess,
+    String? narration,
   }) {
     return Datum(
-      admno: admno ?? this.admno,
       accYear: accYear ?? this.accYear,
+      feeMonthId: feeMonthId ?? this.feeMonthId,
       feeMonth: feeMonth ?? this.feeMonth,
+      ledgerId: ledgerId ?? this.ledgerId,
       ledgerName: ledgerName ?? this.ledgerName,
-      totalAmount: totalAmount ?? this.totalAmount,
+      amount: amount ?? this.amount,
       paidAmount: paidAmount ?? this.paidAmount,
-      dueAmount: dueAmount ?? this.dueAmount,
-      dueDate: dueDate ?? this.dueDate,
+      feePaymentDetailsId: feePaymentDetailsId ?? this.feePaymentDetailsId,
+      taxId: taxId ?? this.taxId,
+      taxName: taxName ?? this.taxName,
+      taxAmt: taxAmt ?? this.taxAmt,
+      floodCess: floodCess ?? this.floodCess,
+      narration: narration ?? this.narration,
     );
   }
 
-  factory Datum.fromJson(Map<String, dynamic> json) {
+  factory Datum.fromJson(Map<String, dynamic> json){
     return Datum(
-      admno: json["Admno"] ?? "",
       accYear: json["AccYear"] ?? "",
+      feeMonthId: json["FeeMonthId"] ?? "",
       feeMonth: json["FeeMonth"] ?? "",
+      ledgerId: json["LedgerId"] ?? "",
       ledgerName: json["LedgerName"] ?? "",
-      totalAmount: json["TotalAmount"] ?? "",
+      amount: json["Amount"] ?? "",
       paidAmount: json["PaidAmount"] ?? "",
-      dueAmount: json["DueAmount"] ?? "",
-      dueDate: json["DueDate"] ?? "",
+      feePaymentDetailsId: json["FeePaymentDetailsId"] ?? "",
+      taxId: json["taxId"],
+      taxName: json["taxName"],
+      taxAmt: json["TaxAmt"] ?? "",
+      floodCess: json["FloodCess"] ?? "",
+      narration: json["Narration"] ?? "",
     );
   }
 
   Map<String, dynamic> toJson() => {
-    "Admno": admno,
     "AccYear": accYear,
+    "FeeMonthId": feeMonthId,
     "FeeMonth": feeMonth,
+    "LedgerId": ledgerId,
     "LedgerName": ledgerName,
-    "TotalAmount": totalAmount,
+    "Amount": amount,
     "PaidAmount": paidAmount,
-    "DueAmount": dueAmount,
-    "DueDate": dueDate,
+    "FeePaymentDetailsId": feePaymentDetailsId,
+    "taxId": taxId,
+    "taxName": taxName,
+    "TaxAmt": taxAmt,
+    "FloodCess": floodCess,
+    "Narration": narration,
   };
 
   @override
-  String toString() {
-    return "$admno, $accYear, $feeMonth, $ledgerName, $totalAmount, $paidAmount, $dueAmount, $dueDate, ";
+  String toString(){
+    return "$accYear, $feeMonthId, $feeMonth, $ledgerId, $ledgerName, $amount, $paidAmount, $feePaymentDetailsId, $taxId, $taxName, $taxAmt, $floodCess, $narration, ";
   }
 
   @override
   List<Object?> get props => [
-    admno,
-    accYear,
-    feeMonth,
-    ledgerName,
-    totalAmount,
-    paidAmount,
-    dueAmount,
-    dueDate,
-  ];
+    accYear, feeMonthId, feeMonth, ledgerId, ledgerName, amount, paidAmount, feePaymentDetailsId, taxId, taxName, taxAmt, floodCess, narration, ];
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:studentmanagement/core/appdata/appdata.dart';
 import 'package:studentmanagement/fetaures/fees/domain/parameters/paidFees_request.dart';
 import 'package:studentmanagement/fetaures/fees/presentation/bloc/fees_cubit.dart';
 import 'package:studentmanagement/fetaures/fees/presentation/unPaidFee/un_paid_fee_cubit.dart';
@@ -13,10 +14,10 @@ class FeesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     Future.microtask(() {
       context.read<FeesCubit>().fetchPaidFeesDetails(
-        PaidFeesRequest(accyear: '2018-2019', admno: '1000'),
+        PaidFeesRequest(accyear: AppData.accYear!, admno: AppData.admissionNo!),
       );
       context.read<UnPaidFeeCubit>().fetchUnPaidFeesDetails(
-        PaidFeesRequest(accyear: '2018-2019', admno: 'kg-591'),
+        PaidFeesRequest(accyear: AppData.accYear!, admno: AppData.admissionNo!),
       );
     });
 

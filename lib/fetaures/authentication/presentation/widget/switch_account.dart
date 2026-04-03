@@ -2,10 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studentmanagement/core/appdata/appdata.dart';
+import 'package:studentmanagement/core/utils/widgets/app_snackbar.dart';
 import 'package:studentmanagement/fetaures/authentication/data/models/account_details_model.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/parameters/device_register_request.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/parameters/login_params.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/bloc/logincubit/login_cubit.dart';
+import 'package:studentmanagement/fetaures/authentication/presentation/screens/loginSecond.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/screens/main_screen.dart';
 import 'package:studentmanagement/services/shared_preference_helper.dart';
 
@@ -59,8 +61,9 @@ class AddAccount extends StatelessWidget {
 
             TextField(
               controller: dobCtrl,
+              inputFormatters: [DateInputFormatter()],
               decoration: const InputDecoration(
-                labelText: 'Date of Birth',
+                labelText: 'DOB (DD-MM-YYYY)',
                 border: OutlineInputBorder(),
               ),
             ),
@@ -124,8 +127,17 @@ class AddAccount extends StatelessWidget {
                 return ElevatedButton(
                   onPressed: () {
                     // Navigator.pop(context);
+                    final apiDob = convertDobToApiFormat(
+                      dobCtrl.text.trim(),
+                    );
+
+                    if (apiDob.isEmpty) {
+                      showAppSnackBar(context, 'Invalid DOB format');
+                      return;
+                    }
+
                     context.read<LoginCubit>().loginUser(
-                      LoginRequest(admno: admNoCtrl.text, dob: dobCtrl.text),
+                      LoginRequest(admno: admNoCtrl.text, dob: apiDob),
                     );
                   },
                   style: ElevatedButton.styleFrom(
@@ -149,5 +161,16 @@ class AddAccount extends StatelessWidget {
         ),
       ),
     );
+  }
+  String convertDobToApiFormat(String input) {
+    final parts = input.split('-');
+
+    if (parts.length != 3) return '';
+
+    final day = parts[0].padLeft(2, '0');
+    final month = parts[1].padLeft(2, '0');
+    final year = parts[2];
+
+    return '$year-$month-$day';
   }
 }

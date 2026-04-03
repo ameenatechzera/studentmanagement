@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 import 'package:studentmanagement/core/appdata/appdata.dart';
 import 'package:studentmanagement/core/utils/widgets/app_snackbar.dart';
 import 'package:studentmanagement/fetaures/authentication/data/models/account_details_model.dart';
@@ -12,30 +12,85 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/screens/main_screen.dart';
 import 'package:studentmanagement/services/shared_preference_helper.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class LoginScreen_1 extends StatefulWidget {
+  const LoginScreen_1({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<LoginScreen_1> createState() => _LoginScreenState_1();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class DateInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue,
+      TextEditingValue newValue,
+      ) {
+    final isDeleting = newValue.text.length < oldValue.text.length;
+
+    if (isDeleting) {
+      return newValue;
+    }
+
+    String digits = newValue.text.replaceAll(RegExp(r'[^0-9]'), '');
+
+    if (digits.length > 8) {
+      return oldValue;
+    }
+
+    String formatted = '';
+
+    if (digits.length >= 2) {
+      formatted = digits.substring(0, 2) + '-';
+    } else {
+      formatted = digits;
+    }
+
+    if (digits.length > 2) {
+      if (digits.length >= 4) {
+        formatted += digits.substring(2, 4) + '-';
+      } else {
+        formatted += digits.substring(2);
+      }
+    }
+
+    if (digits.length > 4) {
+      formatted += digits.substring(4);
+    }
+
+    return TextEditingValue(
+      text: formatted,
+      selection: TextSelection.collapsed(offset: formatted.length),
+    );
+  }
+}
+
+String convertDobToApiFormat(String input) {
+  final parts = input.split('-');
+
+  if (parts.length != 3) return '';
+
+  final day = parts[0].padLeft(2, '0');
+  final month = parts[1].padLeft(2, '0');
+  final year = parts[2];
+
+  return '$year-$month-$day';
+}
+
+class _LoginScreenState_1 extends State<LoginScreen_1> {
   final TextEditingController admNoCtrl = TextEditingController();
 
   final TextEditingController dobCtrl = TextEditingController();
 
-  final _deviceIdController = TextEditingController();
+  final TextEditingController _deviceIdController = TextEditingController();
 
   @override
   void initState() {
     getDeviceId();
     super.initState();
-  }
 
+  }
   @override
   Widget build(BuildContext context) {
-    // admNoCtrl.text = 'FSP001';
-    // dobCtrl.text = '01-01-2000';
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -52,7 +107,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 Text(
                   'Login',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold,color: Colors.white),
                 ),
                 SizedBox(height: 20),
 
@@ -71,11 +126,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 /// PASSWORD
                 TextFormField(
-                  //obscureText: true,
                   controller: dobCtrl,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [DateInputFormatter()],
                   decoration: InputDecoration(
-                    labelText: 'DOB',
-                    hint: Text('dd-mm-yyyy'),
+                    labelText: 'DOB (DD-MM-YYYY)',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -144,12 +199,27 @@ class _LoginScreenState extends State<LoginScreen> {
                     }
                     if (state is DeviceRegisterStatusSuccess) {
                       if (state.registerResponse.data?.result == true) {
+                        final apiDob = convertDobToApiFormat(
+                          dobCtrl.text.trim(),
+                        );
+
+                        if (apiDob.isEmpty) {
+                          showAppSnackBar(context, 'Invalid DOB format');
+                          return;
+                        }
+
                         context.read<LoginCubit>().loginUser(
                           LoginRequest(
-                            admno: admNoCtrl.text,
-                            dob: dobCtrl.text,
+                            admno: admNoCtrl.text.trim(),
+                            dob: apiDob,
                           ),
                         );
+                        // context.read<LoginCubit>().loginUser(
+                        //   LoginRequest(
+                        //     admno: admNoCtrl.text,
+                        //     dob: dobCtrl.text,
+                        //   ),
+                        // );
                       } else {
                         showAppSnackBar(context, 'Device Not Registered..!');
                       }
@@ -158,7 +228,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       showAppSnackBar(context, state.error);
                     }
                     if (state is LoginFailure) {
-                      showAppSnackBar(context, state.error);
+                      showAppSnackBar(context, 'Invalid Credentials');
                     }
                   },
                   builder: (context, state) {
@@ -171,11 +241,18 @@ class _LoginScreenState extends State<LoginScreen> {
                           //     deviceId: _deviceIdController.text.toString(),
                           //   ),
                           // );
-                          String result = formatDate(dobCtrl.text.toString());
+                          final apiDob = convertDobToApiFormat(
+                            dobCtrl.text.trim(),
+                          );
+
+                          if (apiDob.isEmpty) {
+                            showAppSnackBar(context, 'Invalid DOB format');
+                            return;
+                          }
                           context.read<LoginCubit>().loginUser(
                             LoginRequest(
-                              admno: admNoCtrl.text,
-                              dob: result,
+                              admno: admNoCtrl.text.trim(),
+                              dob: apiDob,
                             ),
                           );
                         },
@@ -185,7 +262,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             borderRadius: BorderRadius.circular(4),
                           ),
                         ),
-                        child: Text('Login',style: TextStyle(color: Colors.white),),
+                        child: Text('Login'),
                       ),
                     );
                   },
@@ -215,11 +292,4 @@ class _LoginScreenState extends State<LoginScreen> {
 
     return 'unsupported-platform';
   }
-
-
-  String formatDate(String inputDate) {
-    DateTime date = DateFormat('dd-MM-yyyy').parse(inputDate);
-    return DateFormat('yyyy-MM-dd').format(date);
-  }
-
 }

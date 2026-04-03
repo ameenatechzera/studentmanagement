@@ -134,7 +134,7 @@ class AllClassDiaryScreen extends StatelessWidget {
                               padding: const EdgeInsets.only(top: 8.0),
                               child: Column(
                                 children: [
-                                  if (!isExpanded) Text(diary.diaryDate!),
+                             Text(diary.diaryDate!),
                                   const SizedBox(height: 10),
                                   InkWell(
                                     onTap: () {

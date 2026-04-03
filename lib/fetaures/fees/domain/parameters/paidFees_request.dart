@@ -5,5 +5,5 @@ class PaidFeesRequest {
 
   PaidFeesRequest({required this.accyear, required this.admno});
 
-  Map<String, dynamic> toJson() => {"AccYear": accyear, "Admno": admno};
+  Map<String, dynamic> toJson() => {"accyear": accyear, "admno": admno};
 }

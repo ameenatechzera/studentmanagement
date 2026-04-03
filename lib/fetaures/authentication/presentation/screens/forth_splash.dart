@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:studentmanagement/core/navigation/app_navigator.dart';
+import 'package:studentmanagement/fetaures/authentication/presentation/screens/login_screen.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/screens/register_screen.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/widget/dot.dart';
+
+import 'loginSecond.dart';
 
 class ForthSplashScreen extends StatelessWidget {
   const ForthSplashScreen({super.key});
@@ -56,7 +59,7 @@ class ForthSplashScreen extends StatelessWidget {
                         onPressed: () {
                           AppNavigator.pushSlide(
                             context: context,
-                            page: RegisterScreen(),
+                            page: LoginScreen_1(),
                           );
                         },
                         style: ElevatedButton.styleFrom(

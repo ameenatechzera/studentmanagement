@@ -30,7 +30,7 @@ class ApiConstants {
 
   /// Returns the full URL for Fees / Get Fees Paid
   static String getFeesPaidServerPath(String baseUrl) {
-    return '$baseUrl/get-paid-byaccyearandadmno';
+    return '$baseUrl/feePaidList';
   }
 
   /// Returns the full URL for Fees / Get Fees UnPaid

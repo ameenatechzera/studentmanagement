@@ -1,15 +1,19 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:studentmanagement/core/navigation/app_navigator.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/entities/login_entity.dart';
+import 'package:studentmanagement/fetaures/authentication/presentation/widget/switch_account.dart';
 import 'package:studentmanagement/fetaures/classdiary/presentation/screens/alldiary_screen.dart';
 import 'package:studentmanagement/fetaures/fees/presentation/screens/fees_screen.dart';
 import 'package:studentmanagement/fetaures/marklist/presentation/screens/marklist_screen.dart';
 import 'package:studentmanagement/fetaures/timetable/presentation/screens/timetable_screen.dart';
 import 'package:studentmanagement/fetaures/materials/presentation/screens/materials_screen.dart';
-
+import 'package:studentmanagement/fetaures/authentication/data/models/account_details_model.dart';
 final ValueNotifier<bool> showAllNotifications = ValueNotifier<bool>(false);
-
-class StudentScreen extends StatelessWidget {
+List<AccountDetails> accounts = [];
+class StudentScreen extends StatefulWidget {
   final LoginResponseResult? loginResponse;
   const StudentScreen({super.key, this.loginResponse});
   // demo notifications list (replace with API data)
@@ -30,8 +34,21 @@ class StudentScreen extends StatelessWidget {
       line2: "Due by today evening.",
     ),
   ];
+
+  @override
+  State<StudentScreen> createState() => _StudentScreenState();
+}
+
+class _StudentScreenState extends State<StudentScreen> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    loadAccounts();
+  }
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -43,48 +60,48 @@ class StudentScreen extends StatelessWidget {
             children: [
               // Student card
               _StudentInfoCard(
-                name: loginResponse!.student!.name,
-                phone: loginResponse!.student!.landPhone.toString(),
-                classNo: loginResponse!.student!.previousClass.toString(),
-                std: loginResponse!.student!.currentStudentStandardId.toString(),
-                rollNo: loginResponse!.student!.currentStudentDivisionId.toString(),
+                name: widget.loginResponse!.student!.name,
+                phone: widget.loginResponse!.student!.admno.toString(),
+                classNo: widget.loginResponse!.student!.studentStandard.toString() +' - '+widget.loginResponse!.student!.studentDivision.toString(),
+                std: widget.loginResponse!.student!.currentStudentStandardId.toString(),
+                rollNo: widget.loginResponse!.student!.currentStudentDivisionId.toString(),
               ),
               const SizedBox(height: 20),
 
               // Notification header + toggle
-              ValueListenableBuilder<bool>(
-                valueListenable: showAllNotifications,
-                builder: (context, expanded, _) {
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        "Notification",
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      InkWell(
-                        onTap: () {
-                          showAllNotifications.value = !expanded;
-                        },
-                        child: Text(
-                          expanded ? "Show Less" : "Show All",
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
-                  );
-                },
-              ),
-
-              const SizedBox(height: 18),
+              // ValueListenableBuilder<bool>(
+              //   valueListenable: showAllNotifications,
+              //   builder: (context, expanded, _) {
+              //     return Row(
+              //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //       children: [
+              //         const Text(
+              //           "Notification",
+              //           style: TextStyle(
+              //             color: Colors.black,
+              //             fontSize: 14,
+              //             fontWeight: FontWeight.w700,
+              //           ),
+              //         ),
+              //         InkWell(
+              //           onTap: () {
+              //             showAllNotifications.value = !expanded;
+              //           },
+              //           child: Text(
+              //             expanded ? "Show Less" : "Show All",
+              //             style: const TextStyle(
+              //               color: Colors.black,
+              //               fontSize: 12,
+              //               fontWeight: FontWeight.w600,
+              //             ),
+              //           ),
+              //         ),
+              //       ],
+              //     );
+              //   },
+              // ),
+              //
+              // const SizedBox(height: 18),
 
               // Notifications area
               ValueListenableBuilder<bool>(
@@ -93,9 +110,9 @@ class StudentScreen extends StatelessWidget {
                   if (!expanded) {
                     return Column(
                       children: [
-                        SizedBox(height: 22),
-                        _NotificationCard(),
-                        SizedBox(height: 22),
+                        //SizedBox(height: 22),
+                        //_NotificationCard(),
+                        //SizedBox(height: 22),
                       ],
                     );
                   }
@@ -103,13 +120,13 @@ class StudentScreen extends StatelessWidget {
                   return Column(
                     children: [
                       const SizedBox(height: 10),
-                      for (int i = 0; i < _notifications.length; i++)
+                      for (int i = 0; i < StudentScreen._notifications.length; i++)
                         Padding(
                           padding: EdgeInsets.only(
-                            bottom: i == _notifications.length - 1 ? 0 : 12,
+                            bottom: i == StudentScreen._notifications.length - 1 ? 0 : 12,
                           ),
                           child: _SingleNotificationCard(
-                            data: _notifications[i],
+                            data: StudentScreen._notifications[i],
                           ),
                         ),
                       const SizedBox(height: 22),
@@ -340,8 +357,8 @@ class _StudentInfoCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     _MiniStat(label: "Class", value: classNo),
-                    _MiniStat(label: "Std", value: std),
-                    _MiniStat(label: "Roll No", value: rollNo),
+                   // _MiniStat(label: "Std", value: std),
+                   // _MiniStat(label: "Roll No", value: rollNo),
                   ],
                 ),
               ],
@@ -389,173 +406,173 @@ class _MiniStat extends StatelessWidget {
   }
 }
 
-class _NotificationCard extends StatelessWidget {
-  const _NotificationCard();
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 2),
-      child: SizedBox(
-        height: 140,
-        width: double.infinity,
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Positioned(
-              left: 4,
-              right: 4,
-              top: -38,
-              height: 140,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(24),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(.6),
-                      blurRadius: 16,
-                      offset: const Offset(0, 8),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Positioned(
-              left: 2,
-              right: 2,
-              top: -19,
-              height: 70,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(.95),
-                  borderRadius: BorderRadius.circular(24),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(.4),
-                      blurRadius: 12,
-                      offset: const Offset(0, 6),
-                    ),
-                  ],
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(24),
-                  child: Opacity(
-                    opacity: 0.55,
-                    child: ClipRect(
-                      child: Align(
-                        alignment: Alignment.topCenter,
-                        heightFactor: 0.38,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 10,
-                          ),
-                          child: Row(
-                            children: [
-                              Container(
-                                height: 56,
-                                width: 56,
-                                decoration: const BoxDecoration(
-                                  color: Color(0xFFC10062),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Icon(
-                                  Icons.campaign_outlined,
-                                  color: Colors.white,
-                                  size: 30,
-                                ),
-                              ),
-                              const SizedBox(width: 16),
-                              const Text(
-                                "Impotent Announcement",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              left: 0,
-              right: 0,
-              top: 0,
-              height: 120,
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 18,
-                ),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFFD6E7),
-                  borderRadius: BorderRadius.circular(24),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      height: 56,
-                      width: 56,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFFC10062),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.campaign_outlined,
-                        color: Colors.white,
-                        size: 30,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    const Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "Impotent Announcement",
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          Text(
-                            "Please Note That Today Will Be A",
-                            style: TextStyle(
-                              fontSize: 13,
-                              height: 1.25,
-                              color: Color(0xFF4A4A4A),
-                            ),
-                          ),
-                          SizedBox(height: 4),
-                          Text(
-                            "Half-Day Of Classes.",
-                            style: TextStyle(
-                              fontSize: 13,
-                              height: 1.25,
-                              color: Color(0xFF4A4A4A),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
+// class _NotificationCard extends StatelessWidget {
+//   const _NotificationCard();
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Padding(
+//       padding: const EdgeInsets.symmetric(horizontal: 2),
+//       child: SizedBox(
+//         height: 140,
+//         width: double.infinity,
+//         child: Stack(
+//           clipBehavior: Clip.none,
+//           children: [
+//             Positioned(
+//               left: 4,
+//               right: 4,
+//               top: -38,
+//               height: 140,
+//               child: Container(
+//                 decoration: BoxDecoration(
+//                   color: Colors.white,
+//                   borderRadius: BorderRadius.circular(24),
+//                   boxShadow: [
+//                     BoxShadow(
+//                       color: Colors.black.withOpacity(.6),
+//                       blurRadius: 16,
+//                       offset: const Offset(0, 8),
+//                     ),
+//                   ],
+//                 ),
+//               ),
+//             ),
+//             Positioned(
+//               left: 2,
+//               right: 2,
+//               top: -19,
+//               height: 70,
+//               child: Container(
+//                 decoration: BoxDecoration(
+//                   color: Colors.white.withOpacity(.95),
+//                   borderRadius: BorderRadius.circular(24),
+//                   boxShadow: [
+//                     BoxShadow(
+//                       color: Colors.black.withOpacity(.4),
+//                       blurRadius: 12,
+//                       offset: const Offset(0, 6),
+//                     ),
+//                   ],
+//                 ),
+//                 child: ClipRRect(
+//                   borderRadius: BorderRadius.circular(24),
+//                   child: Opacity(
+//                     opacity: 0.55,
+//                     child: ClipRect(
+//                       child: Align(
+//                         alignment: Alignment.topCenter,
+//                         heightFactor: 0.38,
+//                         child: Container(
+//                           padding: const EdgeInsets.symmetric(
+//                             horizontal: 16,
+//                             vertical: 10,
+//                           ),
+//                           child: Row(
+//                             children: [
+//                               Container(
+//                                 height: 56,
+//                                 width: 56,
+//                                 decoration: const BoxDecoration(
+//                                   color: Color(0xFFC10062),
+//                                   shape: BoxShape.circle,
+//                                 ),
+//                                 child: const Icon(
+//                                   Icons.campaign_outlined,
+//                                   color: Colors.white,
+//                                   size: 30,
+//                                 ),
+//                               ),
+//                               const SizedBox(width: 16),
+//                               const Text(
+//                                 "Impotent Announcement",
+//                                 style: TextStyle(
+//                                   fontSize: 12,
+//                                   fontWeight: FontWeight.w700,
+//                                 ),
+//                               ),
+//                             ],
+//                           ),
+//                         ),
+//                       ),
+//                     ),
+//                   ),
+//                 ),
+//               ),
+//             ),
+//             Positioned(
+//               left: 0,
+//               right: 0,
+//               top: 0,
+//               height: 120,
+//               child: Container(
+//                 padding: const EdgeInsets.symmetric(
+//                   horizontal: 16,
+//                   vertical: 18,
+//                 ),
+//                 decoration: BoxDecoration(
+//                   color: const Color(0xFFFFD6E7),
+//                   borderRadius: BorderRadius.circular(24),
+//                 ),
+//                 child: Row(
+//                   children: [
+//                     Container(
+//                       height: 56,
+//                       width: 56,
+//                       decoration: const BoxDecoration(
+//                         color: Color(0xFFC10062),
+//                         shape: BoxShape.circle,
+//                       ),
+//                       child: const Icon(
+//                         Icons.campaign_outlined,
+//                         color: Colors.white,
+//                         size: 30,
+//                       ),
+//                     ),
+//                     const SizedBox(width: 16),
+//                     const Expanded(
+//                       child: Column(
+//                         crossAxisAlignment: CrossAxisAlignment.start,
+//                         mainAxisAlignment: MainAxisAlignment.center,
+//                         children: [
+//                           Text(
+//                             "Impotent Announcement",
+//                             style: TextStyle(
+//                               fontSize: 12,
+//                               fontWeight: FontWeight.w700,
+//                             ),
+//                           ),
+//                           SizedBox(height: 8),
+//                           Text(
+//                             "Please Note That Today Will Be A",
+//                             style: TextStyle(
+//                               fontSize: 13,
+//                               height: 1.25,
+//                               color: Color(0xFF4A4A4A),
+//                             ),
+//                           ),
+//                           SizedBox(height: 4),
+//                           Text(
+//                             "Half-Day Of Classes.",
+//                             style: TextStyle(
+//                               fontSize: 13,
+//                               height: 1.25,
+//                               color: Color(0xFF4A4A4A),
+//                             ),
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 class _SingleNotificationCard extends StatelessWidget {
   final _NotificationData data;
@@ -689,12 +706,13 @@ class AccountSwitchBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 30),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // ===== DRAG INDICATOR =====
+          /// DRAG INDICATOR
           Container(
             height: 4,
             width: 40,
@@ -706,7 +724,7 @@ class AccountSwitchBottomSheet extends StatelessWidget {
 
           const SizedBox(height: 16),
 
-          // ===== TITLE =====
+          /// TITLE
           const Text(
             "Account Switch",
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -714,17 +732,37 @@ class AccountSwitchBottomSheet extends StatelessWidget {
 
           const SizedBox(height: 20),
 
-          // ===== ACCOUNT LIST =====
-          _accountTile("Serin Johnson"),
-          const SizedBox(height: 12),
-          _accountTile("Anna Johnson"),
+          /// 🔥 DYNAMIC ACCOUNT LIST
+          ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: accounts.length,
+            itemBuilder: (context, index) {
+              final acc = accounts[index];
+
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: _accountTile(acc.name ?? "No Name"),
+              );
+            },
+          ),
 
           const SizedBox(height: 24),
 
-          // ===== ADD ACCOUNT =====
+          /// ADD ACCOUNT
           GestureDetector(
             onTap: () {
-              // add account action
+              Navigator.pop(context);
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true, // important for full height
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                ),
+                builder: (context) {
+                  return AddAccount();
+                },
+              );
             },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -775,4 +813,17 @@ class AccountSwitchBottomSheet extends StatelessWidget {
       ),
     );
   }
+
+}
+Future<void> loadAccounts() async {
+  final prefs = await SharedPreferences.getInstance();
+  List<String> data = prefs.getStringList('accounts') ?? [];
+
+  accounts = data.map((e) => AccountDetails.fromJson(jsonDecode(e))).toList();
+
+  print('accountsList_Admno ${accounts.first.name}');
+
+  // setState(() {
+  //   isLoading = false;
+  // });
 }

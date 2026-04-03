@@ -14,27 +14,27 @@ class HomeScreen extends StatefulWidget {
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
-
+final ScrollController _scrollController = ScrollController();
 class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
   print('AccYear ${AppData.accYear!}');
     /// 🔹 Call API
-    context.read<FeedCubit>().fetchFeeds(
-      FetchFeedParameter(
-        accYear: AppData.accYear!,
-        standardId: AppData.studentStdId!,
-        divisionId: AppData.studentDivId!,
-      ),
-    );
+
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels >=
+          _scrollController.position.maxScrollExtent - 200) {
+        loadMoreData(); // 👈 call API or add data
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     context.read<FeedCubit>().fetchFeeds(
       FetchFeedParameter(
-        accYear: AppData.accYear!,
+        //accYear: AppData.accYear!,
         standardId: AppData.studentStdId!,
         divisionId: AppData.studentDivId!,
       ),
@@ -68,9 +68,18 @@ class _HomeScreenState extends State<HomeScreen> {
                     }
 
                     return ListView.builder(
+                      controller: _scrollController,
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       itemCount: feeds.length,
+
                       itemBuilder: (context, index) {
+                        if (index == feeds.length) {
+                          return const Padding(
+                            padding: EdgeInsets.all(16),
+                            child: Center(child: CircularProgressIndicator()),
+                          );
+                        }
+
                         return Column(
                           children: [
                             PostCard(feed: feeds[index]),
@@ -87,6 +96,16 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  void loadMoreData() {
+    context.read<FeedCubit>().fetchFeeds(
+      FetchFeedParameter(
+       // accYear: AppData.accYear!,
+        standardId: AppData.studentStdId!,
+        divisionId: AppData.studentDivId!,
       ),
     );
   }

@@ -7,6 +7,8 @@ import 'package:studentmanagement/core/appdata/appdata.dart';
 import 'package:studentmanagement/fetaures/authentication/data/models/account_details_model.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/parameters/login_params.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/bloc/logincubit/login_cubit.dart';
+import 'package:studentmanagement/fetaures/authentication/presentation/screens/loginSecond.dart';
+import 'package:studentmanagement/fetaures/authentication/presentation/screens/login_screen.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/widget/switch_account.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/screens/main_screen.dart';
 
@@ -51,7 +53,16 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                   _menuItem(Icons.settings_outlined, "Settings", () {}),
                   const Spacer(),
                   const Divider(),
-                  _menuItem(Icons.logout, "Logout", () {}),
+                  _menuItem(Icons.logout, "Logout", () {
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                        builder: (context) {
+                          return LoginScreen_1();
+                        },
+
+                      ),
+                    );
+                  }),
                   const SizedBox(height: 10),
                 ],
               ),
@@ -69,10 +80,8 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
       child: Row(
         children: [
           const CircleAvatar(
-            radius: 28,
-            backgroundImage: NetworkImage(
-              "https://randomuser.me/api/portraits/men/32.jpg",
-            ),
+            radius: 30,
+            backgroundImage: AssetImage('assets/images/man.png'),
           ),
           const SizedBox(width: 12),
           Column(
@@ -159,7 +168,7 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
               padding: const EdgeInsets.only(bottom: 10),
               child: _accountTile(
                 name: acc.name ?? "No Name",
-                imageUrl: "https://randomuser.me/api/portraits/men/32.jpg",
+                imageUrl: "assets/images/man.png",
                 isSelected: acc.admissionNo == selectedAdmissionNo,
                 onTap: () {
                   setState(() {
@@ -234,7 +243,7 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
               children: [
                 CircleAvatar(
                   radius: 24,
-                  backgroundImage: NetworkImage(imageUrl),
+                  backgroundImage: AssetImage(imageUrl),
                 ),
                 const SizedBox(width: 14),
                 Text(

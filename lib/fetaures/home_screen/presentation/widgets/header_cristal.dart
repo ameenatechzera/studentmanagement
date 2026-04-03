@@ -12,10 +12,8 @@ class HeaderSection extends StatelessWidget {
       child: Row(
         children: [
           const CircleAvatar(
-            radius: 24,
-            backgroundImage: NetworkImage(
-              "https://i.pravatar.cc/150?img=3",
-            ),
+            radius: 30,
+            backgroundImage: AssetImage('assets/images/man.png'),
           ),
           const SizedBox(width: 12),
            Expanded(

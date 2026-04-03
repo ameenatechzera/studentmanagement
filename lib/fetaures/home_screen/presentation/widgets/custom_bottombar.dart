@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:studentmanagement/core/appdata/appdata.dart';
+import 'package:studentmanagement/fetaures/home_screen/domain/parameters/fetchfeed_parameter.dart';
+import 'package:studentmanagement/fetaures/home_screen/presentation/cubit/feed_cubit.dart';
 
 class CustomBottomBar extends StatelessWidget {
   final int selectedIndex;
@@ -13,9 +17,9 @@ class CustomBottomBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final items = [
-      _NavItem(icon: Icons.home, label: 'Home'),
-      _NavItem(icon: Icons.school_outlined, label: 'Student'),
-      _NavItem(icon: Icons.notifications_outlined, label: 'Notifications'),
+      _NavItem(icon: Icons.home, label: 'Home', size: 100),
+      _NavItem(icon: Icons.school_outlined, label: 'Student',size: 32),
+      _NavItem(icon: Icons.notifications_outlined, label: 'Notifications',size: 32),
     ];
 
     return SafeArea(
@@ -37,11 +41,28 @@ class CustomBottomBar extends StatelessWidget {
             final isSelected = selectedIndex == index;
 
             return GestureDetector(
-              onTap: () => onItemSelected(index),
+              // onTap: () => onItemSelected(index),
+              onTap: (){
+
+                if (index == 0 ) {
+                  context.read<FeedCubit>().fetchFeeds(
+                    FetchFeedParameter(
+                      //accYear: AppData.accYear!,
+                      standardId: AppData.studentStdId!,
+                      divisionId: AppData.studentDivId!,
+                    ),
+                  );
+                  onItemSelected(index);
+                }
+                else{
+                  onItemSelected(index);
+                }
+
+              },
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 250),
                 padding: EdgeInsets.symmetric(
-                  horizontal: isSelected ? 16 : 0,
+                  horizontal: isSelected ? 16 : 12,
                   vertical: 8,
                 ),
                 decoration: BoxDecoration(
@@ -53,7 +74,7 @@ class CustomBottomBar extends StatelessWidget {
                     Icon(
                       items[index].icon,
                       color: isSelected ? Colors.white : Colors.grey,
-                      size: 20,
+                      size: 23,
                     ),
                     if (isSelected) ...[
                       const SizedBox(width: 6),
@@ -79,6 +100,8 @@ class CustomBottomBar extends StatelessWidget {
 class _NavItem {
   final IconData icon;
   final String label;
+  final double size;
 
-  _NavItem({required this.icon, required this.label});
+
+  _NavItem({required this.icon, required this.label,this.size = 24});
 }
