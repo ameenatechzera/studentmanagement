@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studentmanagement/core/appdata/appdata.dart';
+import 'package:studentmanagement/core/config/colors.dart';
 import 'package:studentmanagement/core/utils/widgets/app_snackbar.dart';
 import 'package:studentmanagement/fetaures/authentication/data/models/account_details_model.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/parameters/device_register_request.dart';
@@ -11,6 +12,8 @@ import 'package:studentmanagement/fetaures/authentication/presentation/bloc/logi
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/screens/main_screen.dart';
 import 'package:studentmanagement/services/shared_preference_helper.dart';
+
+import '../../../../core/config/colors.dart';
 
 class LoginScreen_1 extends StatefulWidget {
   const LoginScreen_1({super.key});
@@ -168,6 +171,9 @@ class _LoginScreenState_1 extends State<LoginScreen_1> {
                           .toString();
                       AppData.accYear = state.loginResponse.student!.accYear
                           .toString();
+                      print('profileUrl ${state.loginResponse.student!.imageUrl.toString()}');
+                      AppData.profileUrl = state.loginResponse.student!.imageUrl
+                          .toString();
                       await SharedPreferenceHelper.saveNewAccount(
                         AccountDetails(
                           admissionNo: state.loginResponse.student!.admno
@@ -257,12 +263,12 @@ class _LoginScreenState_1 extends State<LoginScreen_1> {
                           );
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFFC4005F),
+                          backgroundColor: appThemeColor,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(4),
                           ),
                         ),
-                        child: Text('Login'),
+                        child: Text('Login',style: TextStyle(color: Colors.white),),
                       ),
                     );
                   },

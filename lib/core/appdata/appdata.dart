@@ -8,6 +8,7 @@ class AppData {
   static String? studentDivId;
   static String? accYear;
   static String? dob;
+  static String? profileUrl;
   // Simple global state manager
    static ValueNotifier<bool> showDeleteButtonNotifier = ValueNotifier(false);
 //final deleteButtonNotifier = ValueNotifier<bool>(false);

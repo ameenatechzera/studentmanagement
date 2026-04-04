@@ -142,6 +142,7 @@ class Student extends Equatable {
     required this.iqamaExpiry,
     required this.fatherIqamaNo,
     required this.motherIqamaNo,
+    required this.imageUrl,
     required this.currentStudentDivisionId,
     required this.currentStudentStandardId,
     required this.studentDivision,
@@ -258,6 +259,9 @@ class Student extends Equatable {
 
   final dynamic madrassaDivId;
   static const String madrassaDivIdKey = "MadrassaDivId";
+
+  final String imageUrl;
+  static const String imageUrlKey = "Image";
 
   final dynamic mediumId;
   static const String mediumIdKey = "MediumId";
@@ -481,6 +485,7 @@ class Student extends Equatable {
     dynamic motherIqamaNo,
     String? currentStudentDivisionId,
     String? currentStudentStandardId,
+    String? imageUrl,
     String? studentDivision,
     String? studentStandard
   }) {
@@ -568,7 +573,7 @@ class Student extends Equatable {
           currentStudentDivisionId ?? this.currentStudentDivisionId,
       currentStudentStandardId:
           currentStudentStandardId ?? this.currentStudentStandardId,
-
+      imageUrl : imageUrl ?? this.imageUrl,
       studentDivision : studentDivision ?? this.studentDivision,
       studentStandard : studentStandard ?? this.studentStandard,
     );
@@ -657,7 +662,7 @@ class Student extends Equatable {
       motherIqamaNo: json["MotherIqamaNo"],
       currentStudentDivisionId: json["currentStudentDivisionId"] ?? "",
       currentStudentStandardId: json["currentStudentStandardId"] ?? "",
-
+      imageUrl : json["Image"] ?? "",
       studentDivision: json["StudentDivision"] ?? "",
       studentStandard: json["StudentStandard"] ?? "",
     );
@@ -746,13 +751,14 @@ class Student extends Equatable {
     "currentStudentDivisionId": currentStudentDivisionId,
     "currentStudentStandardId": currentStudentStandardId,
     "StudentDivision": studentDivision,
+    'Image':imageUrl,
     "StudentStandard":studentStandard
   };
 
   @override
   String toString() {
     return "$admissionId, $accYear, $admno, $scode, $sectionId, $name, $gender, $aadharNo, $father, $mother, $guardian, $relation, $occupation, $houseName, $street, $placeId, $postId, $districtId, $stateId, $nationalityId, $landPhone, $mobile, $email, $preTcNo, $preTcDate, $pretcSchool, $doj, $dob, $bloodGroup, $religionId, $categoryId, $casteId, $stdIdonAdm, $divIdonAdm, $madrassaAdmNo, $madrassaStdid, $madrassaDivId, $mediumId, $firstLanId, $secondLanId, $motherTongueId, $deformity, $identityMark1, $identityMark2, $tcNumber, $tcDate, $tcStdId, $tcDivId, $consessionTypeId, $relativeStatus, $busStatus, $activeStatus, $vaccinationDate, $motherMobile, $bankName, $accountNo, $artsSchool, $artsDistrict, $artsState, $artsNational, $sportsSchool, $sportsDistrict, $sportsState, $sportsNational, $previousClass, $hostelStatus, $dobInWords, $placeofBirth, $branchId, $createdDate, $createdUser, $modifiedDate, $modifiedUser, $passportNo, $passportExpiry, $iqamaNo, $iqamaExpiry, $fatherIqamaNo,"
-        " $motherIqamaNo, $currentStudentDivisionId, $currentStudentStandardId, $studentDivision , $studentStandard ";
+        " $motherIqamaNo, $currentStudentDivisionId, $currentStudentStandardId, $imageUrl, $studentDivision , $studentStandard ";
   }
 
   @override
@@ -838,6 +844,7 @@ class Student extends Equatable {
     motherIqamaNo,
     currentStudentDivisionId,
     currentStudentStandardId,
+    imageUrl,
     studentDivision,
     studentStandard
   ];
