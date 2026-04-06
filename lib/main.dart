@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:studentmanagement/fetaures/authentication/presentation/screens/main_splash.dart';
 import 'package:studentmanagement/fetaures/classdiary/presentation/cubit/diary_cubit.dart';
 import 'package:studentmanagement/fetaures/fees/presentation/bloc/fees_cubit.dart';
@@ -11,9 +9,6 @@ import 'package:studentmanagement/fetaures/materials/presentation/cubit/material
 import 'package:studentmanagement/fetaures/timetable/presentation/cubit/timetable_cubit.dart';
 import 'package:studentmanagement/services/service_locator.dart';
 import 'package:studentmanagement/services/shared_preference_helper.dart';
-
-import 'core/theme/colors.dart';
-
 import 'fetaures/authentication/presentation/bloc/logincubit/login_cubit.dart';
 import 'fetaures/fees/presentation/unPaidFee/un_paid_fee_cubit.dart';
 
@@ -71,11 +66,11 @@ class MyApp extends StatelessWidget {
             elevation: 0,
             scrolledUnderElevation: 0,
             surfaceTintColor: Colors.transparent,
-            systemOverlayStyle: SystemUiOverlayStyle(
-              statusBarColor: AppColors.theme,
-              statusBarIconBrightness: Brightness.dark,
-              statusBarBrightness: Brightness.light,
-            ),
+            // systemOverlayStyle: SystemUiOverlayStyle(
+            //   statusBarColor: AppColors.theme,
+            //   statusBarIconBrightness: Brightness.dark,
+            //   statusBarBrightness: Brightness.light,
+            // ),
           ),
         ),
         home: const MainSplashScreen(),

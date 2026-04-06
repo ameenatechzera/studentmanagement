@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/entities/login_entity.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/screens/home_screen.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/screens/noti.dart';
-import 'package:studentmanagement/fetaures/home_screen/presentation/screens/settings.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/screens/student_screen.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/widgets/custom_bottombar.dart';
 

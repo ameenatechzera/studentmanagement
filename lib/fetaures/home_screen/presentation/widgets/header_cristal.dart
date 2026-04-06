@@ -8,7 +8,7 @@ class HeaderSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.only(left: 16.0, right: 16),
       child: Row(
         children: [
           const CircleAvatar(
@@ -16,23 +16,30 @@ class HeaderSection extends StatelessWidget {
             backgroundImage: AssetImage('assets/images/man.png'),
           ),
           const SizedBox(width: 12),
-           Expanded(
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Welcome",
-                    style: TextStyle(
-                        fontSize: 14, color: Colors.black54)),
+                Text("Welcome", style: TextStyle(fontSize: 14)),
                 SizedBox(height: 2),
-                Text(AppData.studentName!,
-                    style:
-                    TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                Text(
+                  AppData.studentName!,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    //color: Colors.white,
+                  ),
+                ),
               ],
             ),
           ),
           Stack(
             children: [
-              const Icon(Icons.notifications_none, size: 28),
+              const Icon(
+                Icons.notifications_none,
+                size: 28,
+                // color: Colors.white,
+              ),
               Positioned(
                 right: 0,
                 top: 0,
@@ -40,11 +47,13 @@ class HeaderSection extends StatelessWidget {
                   width: 8,
                   height: 8,
                   decoration: const BoxDecoration(
-                      color: Colors.pink, shape: BoxShape.circle),
+                    color: Colors.pink,
+                    shape: BoxShape.circle,
+                  ),
                 ),
-              )
+              ),
             ],
-          )
+          ),
         ],
       ),
     );

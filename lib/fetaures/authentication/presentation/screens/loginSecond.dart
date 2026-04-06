@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studentmanagement/core/appdata/appdata.dart';
+import 'package:studentmanagement/core/navigation/app_navigator.dart';
 import 'package:studentmanagement/core/utils/widgets/app_snackbar.dart';
 import 'package:studentmanagement/fetaures/authentication/data/models/account_details_model.dart';
-import 'package:studentmanagement/fetaures/authentication/domain/parameters/device_register_request.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/parameters/login_params.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/bloc/logincubit/login_cubit.dart';
 import 'package:device_info_plus/device_info_plus.dart';
@@ -22,9 +22,9 @@ class LoginScreen_1 extends StatefulWidget {
 class DateInputFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue,
-      TextEditingValue newValue,
-      ) {
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
     final isDeleting = newValue.text.length < oldValue.text.length;
 
     if (isDeleting) {
@@ -87,8 +87,8 @@ class _LoginScreenState_1 extends State<LoginScreen_1> {
   void initState() {
     getDeviceId();
     super.initState();
-
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -107,7 +107,11 @@ class _LoginScreenState_1 extends State<LoginScreen_1> {
 
                 Text(
                   'Login',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold,color: Colors.white),
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
                 SizedBox(height: 20),
 
@@ -187,15 +191,20 @@ class _LoginScreenState_1 extends State<LoginScreen_1> {
                           name: state.loginResponse.student!.name,
                         ),
                       );
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(
-                          builder: (context) {
-                            return MainScreen(
-                              loginResponse: state.loginResponse,
-                            );
-                          },
-                        ),
+                      AppNavigator.pushAndRemoveUntilSlide(
+                        context: context,
+                        page: MainScreen(loginResponse: state.loginResponse),
+                        predicate: (route) => false,
                       );
+                      // Navigator.of(context).pushReplacement(
+                      //   MaterialPageRoute(
+                      //     builder: (context) {
+                      //       return MainScreen(
+                      //         loginResponse: state.loginResponse,
+                      //       );
+                      //     },
+                      //   ),
+                      // );
                     }
                     if (state is DeviceRegisterStatusSuccess) {
                       if (state.registerResponse.data?.result == true) {

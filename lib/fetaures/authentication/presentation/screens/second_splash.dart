@@ -54,7 +54,7 @@ class SecondSplashScreen extends StatelessWidget {
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () {
-                          AppNavigator.pushSlide(
+                          AppNavigator.pushReplacementSlide(
                             context: context,
                             page: ThirdSplashScreen(),
                           );

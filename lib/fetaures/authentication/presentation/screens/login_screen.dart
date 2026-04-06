@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 import 'package:studentmanagement/core/appdata/appdata.dart';
 import 'package:studentmanagement/core/utils/widgets/app_snackbar.dart';
 import 'package:studentmanagement/fetaures/authentication/data/models/account_details_model.dart';
-import 'package:studentmanagement/fetaures/authentication/domain/parameters/device_register_request.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/parameters/login_params.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/bloc/logincubit/login_cubit.dart';
 import 'package:device_info_plus/device_info_plus.dart';
@@ -173,10 +172,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           // );
                           String result = formatDate(dobCtrl.text.toString());
                           context.read<LoginCubit>().loginUser(
-                            LoginRequest(
-                              admno: admNoCtrl.text,
-                              dob: result,
-                            ),
+                            LoginRequest(admno: admNoCtrl.text, dob: result),
                           );
                         },
                         style: ElevatedButton.styleFrom(
@@ -185,7 +181,10 @@ class _LoginScreenState extends State<LoginScreen> {
                             borderRadius: BorderRadius.circular(4),
                           ),
                         ),
-                        child: Text('Login',style: TextStyle(color: Colors.white),),
+                        child: Text(
+                          'Login',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
                     );
                   },
@@ -216,10 +215,8 @@ class _LoginScreenState extends State<LoginScreen> {
     return 'unsupported-platform';
   }
 
-
   String formatDate(String inputDate) {
     DateTime date = DateFormat('dd-MM-yyyy').parse(inputDate);
     return DateFormat('yyyy-MM-dd').format(date);
   }
-
 }

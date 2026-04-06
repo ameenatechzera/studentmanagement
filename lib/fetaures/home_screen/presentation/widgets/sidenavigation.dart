@@ -59,7 +59,6 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                         builder: (context) {
                           return LoginScreen_1();
                         },
-
                       ),
                     );
                   }),
@@ -241,10 +240,7 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
             ),
             child: Row(
               children: [
-                CircleAvatar(
-                  radius: 24,
-                  backgroundImage: AssetImage(imageUrl),
-                ),
+                CircleAvatar(radius: 24, backgroundImage: AssetImage(imageUrl)),
                 const SizedBox(width: 14),
                 Text(
                   name,

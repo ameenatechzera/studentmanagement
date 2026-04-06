@@ -1,85 +1,6 @@
-// import 'package:flutter/cupertino.dart';
-// import 'package:flutter/material.dart';
-
-// class PostCard extends StatelessWidget {
-//   const PostCard({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       decoration: BoxDecoration(
-//         color: Colors.white,
-//         borderRadius: BorderRadius.circular(16),
-//         boxShadow: [
-//           BoxShadow(
-//             color: Colors.black.withOpacity(0.05),
-//             blurRadius: 10,
-//             offset: const Offset(0, 4),
-//           ),
-//         ],
-//       ),
-//       child: Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         children: [
-//           // Top row
-//           Padding(
-//             padding: const EdgeInsets.all(12),
-//             child: Row(
-//               children: [
-//                 const CircleAvatar(
-//                   radius: 16,
-//                   backgroundImage: NetworkImage(
-//                     "https://i.pravatar.cc/150?img=5",
-//                   ),
-//                 ),
-//                 const SizedBox(width: 8),
-//                 const Expanded(
-//                   child: Text(
-//                     "Anna T",
-//                     style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-//                   ),
-//                 ),
-//                 Text(
-//                   "12 Minutes Ago",
-//                   style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-//                 ),
-//               ],
-//             ),
-//           ),
-
-//           // Image
-//           ClipRRect(
-//             borderRadius: BorderRadius.circular(12),
-//             child: Image.network(
-//               "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b",
-//               height: 200,
-//               width: double.infinity,
-//               fit: BoxFit.cover,
-//             ),
-//           ),
-
-//           // Title + Like
-//           Padding(
-//             padding: const EdgeInsets.all(12),
-//             child: Row(
-//               children: const [
-//                 Expanded(
-//                   child: Text(
-//                     "Annual Cultural Program",
-//                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-//                   ),
-//                 ),
-//                 Icon(Icons.favorite_border),
-//               ],
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
 import 'package:flutter/material.dart';
 import 'package:studentmanagement/fetaures/home_screen/domain/entities/fetchfeed_entity.dart';
+import 'package:studentmanagement/fetaures/home_screen/presentation/helper/homescreen_helper.dart';
 
 class PostCard extends StatelessWidget {
   final FeedDetails feed;
@@ -92,80 +13,111 @@ class PostCard extends StatelessWidget {
         ? feed.files!.first.image
         : null;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          /// 🔹 Top Row
-          Padding(
-            padding: const EdgeInsets.all(12),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // 🔹 Top Row
+        Container(
+          color: Colors.transparent,
+          child: Padding(
+            padding: const EdgeInsets.only(left: 10, right: 10),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const CircleAvatar(
                   radius: 16,
                   backgroundImage: AssetImage('assets/images/fsp_logo.png'),
                 ),
-                const SizedBox(width: 8),
+
+                const SizedBox(width: 10),
+
+                /// TEXT SECTION
                 Expanded(
-                  child: Text(
-                    "FSP",
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "FSP",
+                        style: TextStyle(
+                          // color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        TimeAgoHelper.getFeedTime(
+                          createdDate: feed.createdDate,
+                          modifiedDate: feed.modifiedDate,
+                        ),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          // color: Colors.white,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
+
+                /// RIGHT SIDE TIME (optional)
                 Text(
                   feed.createdTime ?? "",
-                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                  style: TextStyle(
+                    fontSize: 12,
+                    // color: Colors.white,
+                  ), // Colors.grey.shade600),
                 ),
               ],
             ),
           ),
+        ),
+        SizedBox(height: 10),
 
-          /// 🔹 Image (only if exists)
-          if (imageUrl != null)
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.network(
-                imageUrl,
-                height: 200,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
-            ),
+        /// 🔹 Image (only if exists)
+        if (imageUrl != null)
+          Image.network(
+            imageUrl,
+            height: 200,
+            width: double.infinity,
+            fit: BoxFit.cover,
+          ),
 
-          /// 🔹 Text
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    feed.feedText ?? "",
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
+        /// 🔹 Text
+        Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  feed.feedText ?? "",
+                  style: const TextStyle(
+                    //color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-                const Icon(Icons.favorite_border),
-              ],
-            ),
+              ),
+              // const Icon(Icons.favorite_border),
+            ],
           ),
-        ],
-      ),
+        ),
+        Row(
+          children: [
+            IconButton(
+              icon: Icon(Icons.favorite_border),
+              onPressed: () {},
+              // color: Colors.white,
+            ),
+            Text('30k'), // style: TextStyle(color: Colors.white)),
+            IconButton(
+              icon: Icon(Icons.send),
+              onPressed: () {},
+              //color: Colors.white,
+            ),
+            Text('20'), //style: TextStyle(color: Colors.white)),
+          ],
+        ),
+      ],
     );
   }
 }

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:studentmanagement/core/navigation/app_navigator.dart';
-import 'package:studentmanagement/fetaures/authentication/presentation/screens/login_screen.dart';
 
 import 'loginSecond.dart';
 
@@ -49,7 +48,10 @@ class RegisterScreen extends StatelessWidget {
                   ),
                 ),
                 onPressed: () {
-                  AppNavigator.pushSlide(context: context, page: LoginScreen_1());
+                  AppNavigator.pushSlide(
+                    context: context,
+                    page: LoginScreen_1(),
+                  );
                 },
                 child: const Text("Connect"),
               ),
