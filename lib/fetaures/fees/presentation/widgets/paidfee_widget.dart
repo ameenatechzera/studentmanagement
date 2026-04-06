@@ -78,7 +78,7 @@ class _PaidFeeState extends State<PaidFee> {
                               color: Colors.white,
                             ),
                           ),
-                          const SizedBox(width: 12),
+                          const SizedBox(width: 5),
 
                           Expanded(
                             child: Row(
@@ -87,18 +87,28 @@ class _PaidFeeState extends State<PaidFee> {
                                   flex: 1,
                                   child: Row(
                                     children: [
-                                      Text(
-                                        fee.receiptNo,
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600,
-                                        ),
+                                      Row(
+                                        children: [
+                                          Text('Recpt No : ',
+                                            style: const TextStyle(
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                          Text(
+                                              fee.receiptNo,
+                                            style: const TextStyle(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                       const SizedBox(width: 6),
                                       const Icon(
                                         Icons.check_circle,
                                         color: Colors.green,
-                                        size: 16,
+                                        size: 18,
                                       ),
                                     ],
                                   ),
@@ -109,7 +119,7 @@ class _PaidFeeState extends State<PaidFee> {
                                   child: Text(
                                     formatedDate ?? "",
                                     style: const TextStyle(
-                                      fontSize: 16,
+                                      fontSize: 13,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
@@ -131,33 +141,29 @@ class _PaidFeeState extends State<PaidFee> {
 
                       /// PAYMENT MODE
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text("Pay Mode  "),
+                          Row(
+                            children: [
+                              const Text("Pay Mode  "),
+                              Text(
+                                fee.paymentMode,
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+
                           Text(
-                            fee.paymentMode,
+                            fee.totalPaidAmount,
                             style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                         ],
-                      ),
-
-                      /// TOTAL
-                      Padding(
-                        padding: const EdgeInsets.only(right: 18.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Text(
-                              fee.totalPaidAmount,
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
                       ),
 
                       /// 🔥 SHOW DETAILS ONLY WHEN EXPANDED
@@ -176,10 +182,7 @@ class _PaidFeeState extends State<PaidFee> {
                             return Container(
                               margin: const EdgeInsets.only(bottom: 12),
                               padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: Colors.grey.shade50,
-                                borderRadius: BorderRadius.circular(14),
-                              ),
+
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [

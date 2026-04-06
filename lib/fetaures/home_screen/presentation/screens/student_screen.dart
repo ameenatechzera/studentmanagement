@@ -68,42 +68,6 @@ class _StudentScreenState extends State<StudentScreen> {
               ),
               const SizedBox(height: 20),
 
-              // Notification header + toggle
-              // ValueListenableBuilder<bool>(
-              //   valueListenable: showAllNotifications,
-              //   builder: (context, expanded, _) {
-              //     return Row(
-              //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //       children: [
-              //         const Text(
-              //           "Notification",
-              //           style: TextStyle(
-              //             color: Colors.black,
-              //             fontSize: 14,
-              //             fontWeight: FontWeight.w700,
-              //           ),
-              //         ),
-              //         InkWell(
-              //           onTap: () {
-              //             showAllNotifications.value = !expanded;
-              //           },
-              //           child: Text(
-              //             expanded ? "Show Less" : "Show All",
-              //             style: const TextStyle(
-              //               color: Colors.black,
-              //               fontSize: 12,
-              //               fontWeight: FontWeight.w600,
-              //             ),
-              //           ),
-              //         ),
-              //       ],
-              //     );
-              //   },
-              // ),
-              //
-              // const SizedBox(height: 18),
-
-              // Notifications area
               ValueListenableBuilder<bool>(
                 valueListenable: showAllNotifications,
                 builder: (context, expanded, _) {
@@ -148,7 +112,7 @@ class _StudentScreenState extends State<StudentScreen> {
 
               // Quick access grid (2 rows x 3 cols)
               Wrap(
-                spacing: 22,
+                spacing: 10,
                 runSpacing: 18,
                 children: [
                   _QuickAccessItem(
@@ -664,7 +628,7 @@ class _QuickAccessItem extends StatelessWidget {
     return SizedBox(
       width: 100,
       child: InkWell(
-        borderRadius: BorderRadius.circular(50),
+        borderRadius: BorderRadius.circular(10),
         onTap: onTap,
         child: Column(
           children: [

@@ -44,20 +44,20 @@ class CustomBottomBar extends StatelessWidget {
               // onTap: () => onItemSelected(index),
               onTap: (){
 
-                if (index == 0 ) {
-                  context.read<FeedCubit>().fetchFeeds(
-                    FetchFeedParameter(
-                      //accYear: AppData.accYear!,
-                      standardId: AppData.studentStdId!,
-                      divisionId: AppData.studentDivId!,
-                    ),
-                  );
-                  onItemSelected(index);
-                }
-                else{
-                  onItemSelected(index);
-                }
-
+                // if (index == 0 ) {
+                //   context.read<FeedCubit>().fetchFeeds(
+                //     FetchFeedParameter(
+                //       //accYear: AppData.accYear!,
+                //       standardId: AppData.studentStdId!,
+                //       divisionId: AppData.studentDivId!,
+                //     ),
+                //   );
+                //   onItemSelected(index);
+                // }
+                // else{
+                //   onItemSelected(index);
+                // }
+                onItemSelected(index);
               },
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 250),
