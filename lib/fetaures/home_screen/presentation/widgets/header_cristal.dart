@@ -11,9 +11,11 @@ class HeaderSection extends StatelessWidget {
       padding: const EdgeInsets.only(left: 16.0, right: 16),
       child: Row(
         children: [
-          const CircleAvatar(
-            radius: 30,
-            backgroundImage: AssetImage('assets/images/man.png'),
+          CircleAvatar(
+            radius: 25,
+            backgroundImage: NetworkImage(
+              AppData.profileUrl!,
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
