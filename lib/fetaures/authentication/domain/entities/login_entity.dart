@@ -62,7 +62,7 @@ class LoginResponseResult extends Equatable {
 }
 
 class Student extends Equatable {
-  Student({
+  const Student({
     required this.admissionId,
     required this.accYear,
     required this.admno,
@@ -401,8 +401,6 @@ class Student extends Equatable {
   final String studentStandard;
   static const String studentStandardKey = "StudentStandard";
 
-
-
   Student copyWith({
     int? admissionId,
     String? accYear,
@@ -487,7 +485,7 @@ class Student extends Equatable {
     String? currentStudentStandardId,
     String? imageUrl,
     String? studentDivision,
-    String? studentStandard
+    String? studentStandard,
   }) {
     return Student(
       admissionId: admissionId ?? this.admissionId,
@@ -573,9 +571,9 @@ class Student extends Equatable {
           currentStudentDivisionId ?? this.currentStudentDivisionId,
       currentStudentStandardId:
           currentStudentStandardId ?? this.currentStudentStandardId,
-      imageUrl : imageUrl ?? this.imageUrl,
-      studentDivision : studentDivision ?? this.studentDivision,
-      studentStandard : studentStandard ?? this.studentStandard,
+      imageUrl: imageUrl ?? this.imageUrl,
+      studentDivision: studentDivision ?? this.studentDivision,
+      studentStandard: studentStandard ?? this.studentStandard,
     );
   }
 
@@ -662,7 +660,7 @@ class Student extends Equatable {
       motherIqamaNo: json["MotherIqamaNo"],
       currentStudentDivisionId: json["currentStudentDivisionId"] ?? "",
       currentStudentStandardId: json["currentStudentStandardId"] ?? "",
-      imageUrl : json["Image"] ?? "",
+      imageUrl: json["Image"] ?? "",
       studentDivision: json["StudentDivision"] ?? "",
       studentStandard: json["StudentStandard"] ?? "",
     );
@@ -751,8 +749,8 @@ class Student extends Equatable {
     "currentStudentDivisionId": currentStudentDivisionId,
     "currentStudentStandardId": currentStudentStandardId,
     "StudentDivision": studentDivision,
-    'Image':imageUrl,
-    "StudentStandard":studentStandard
+    'Image': imageUrl,
+    "StudentStandard": studentStandard,
   };
 
   @override
@@ -846,6 +844,6 @@ class Student extends Equatable {
     currentStudentStandardId,
     imageUrl,
     studentDivision,
-    studentStandard
+    studentStandard,
   ];
 }

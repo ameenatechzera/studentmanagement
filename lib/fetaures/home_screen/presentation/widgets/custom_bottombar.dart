@@ -18,8 +18,12 @@ class CustomBottomBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final items = [
       _NavItem(icon: Icons.home, label: 'Home', size: 100),
-      _NavItem(icon: Icons.school_outlined, label: 'Student',size: 32),
-      _NavItem(icon: Icons.notifications_outlined, label: 'Notifications',size: 32),
+      _NavItem(icon: Icons.school_outlined, label: 'Student', size: 32),
+      _NavItem(
+        icon: Icons.notifications_outlined,
+        label: 'Notifications',
+        size: 32,
+      ),
     ];
 
     return SafeArea(
@@ -42,22 +46,22 @@ class CustomBottomBar extends StatelessWidget {
 
             return GestureDetector(
               // onTap: () => onItemSelected(index),
-              onTap: (){
-
-                if (index == 0 ) {
+              onTap: () {
+                if (index == 0) {
                   context.read<FeedCubit>().fetchFeeds(
                     FetchFeedParameter(
                       //accYear: AppData.accYear!,
                       standardId: AppData.studentStdId!,
                       divisionId: AppData.studentDivId!,
+                      fromDateTime: "2025-04-07 10:30:00",
+                      page: 1,
+                      perPage: 10,
                     ),
                   );
                   onItemSelected(index);
-                }
-                else{
+                } else {
                   onItemSelected(index);
                 }
-
               },
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 250),
@@ -102,6 +106,5 @@ class _NavItem {
   final String label;
   final double size;
 
-
-  _NavItem({required this.icon, required this.label,this.size = 24});
+  _NavItem({required this.icon, required this.label, this.size = 24});
 }

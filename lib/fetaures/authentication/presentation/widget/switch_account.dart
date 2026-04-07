@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studentmanagement/core/appdata/appdata.dart';
 import 'package:studentmanagement/core/utils/widgets/app_snackbar.dart';
 import 'package:studentmanagement/fetaures/authentication/data/models/account_details_model.dart';
-import 'package:studentmanagement/fetaures/authentication/domain/parameters/device_register_request.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/parameters/login_params.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/bloc/logincubit/login_cubit.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/screens/loginSecond.dart';
@@ -127,9 +126,7 @@ class AddAccount extends StatelessWidget {
                 return ElevatedButton(
                   onPressed: () {
                     // Navigator.pop(context);
-                    final apiDob = convertDobToApiFormat(
-                      dobCtrl.text.trim(),
-                    );
+                    final apiDob = convertDobToApiFormat(dobCtrl.text.trim());
 
                     if (apiDob.isEmpty) {
                       showAppSnackBar(context, 'Invalid DOB format');
@@ -162,6 +159,7 @@ class AddAccount extends StatelessWidget {
       ),
     );
   }
+
   String convertDobToApiFormat(String input) {
     final parts = input.split('-');
 

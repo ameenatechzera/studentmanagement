@@ -26,7 +26,10 @@ class _HomeScreenState extends State<HomeScreen> {
     context.read<FeedCubit>().fetchFeeds(
       FetchFeedParameter(
         standardId: AppData.studentStdId!,
-        divisionId: AppData.studentDivId!,
+        divisionId: "2", //AppData.studentDivId!,
+        fromDateTime: "2025-04-07 10:30:00",
+        page: 1,
+        perPage: 10,
       ),
     );
     _scrollController.addListener(() {
@@ -82,59 +85,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       );
                     }, childCount: feeds.length),
                   ),
-
-                  // /// 🔥 HARD CODED DUMMY POSTS (NO MODEL)
-                  // SliverToBoxAdapter(
-                  //   child: Column(
-                  //     children: List.generate(5, (index) {
-                  //       return Column(
-                  //         children: [
-                  //           Container(
-                  //             color: Colors.white,
-                  //             child: Column(
-                  //               crossAxisAlignment:
-                  //                   CrossAxisAlignment.start,
-                  //               children: [
-                  //                 /// top row
-                  //                 const ListTile(
-                  //                   leading: CircleAvatar(
-                  //                     backgroundImage: AssetImage(
-                  //                       'assets/images/fsp_logo.png',
-                  //                     ),
-                  //                   ),
-                  //                   title: Text("Dummy FSP"),
-                  //                   subtitle: Text("Just now"),
-                  //                 ),
-
-                  //                 /// image
-                  //                 Image.network(
-                  //                   "https://picsum.photos/500/300?random=$index",
-                  //                   width: double.infinity,
-                  //                   height: 200,
-                  //                   fit: BoxFit.cover,
-                  //                 ),
-
-                  //                 /// text
-                  //                 const Padding(
-                  //                   padding: EdgeInsets.all(12),
-                  //                   child: Text(
-                  //                     "This is dummy post for scrolling testing",
-                  //                     style: TextStyle(
-                  //                       fontWeight: FontWeight.w600,
-                  //                     ),
-                  //                   ),
-                  //                 ),
-                  //               ],
-                  //             ),
-                  //           ),
-                  //           const SizedBox(height: 16),
-                  //         ],
-                  //       );
-                  //     }),
-                  //   ),
-                  // ),
-
-                  // const SliverToBoxAdapter(child: SizedBox(height: 20)),
                 ],
               );
             }
@@ -152,6 +102,9 @@ class _HomeScreenState extends State<HomeScreen> {
         // accYear: AppData.accYear!,
         standardId: AppData.studentStdId!,
         divisionId: AppData.studentDivId!,
+        fromDateTime: "2025-04-07 10:30:00",
+        page: 1,
+        perPage: 10,
       ),
     );
   }

@@ -2,7 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:studentmanagement/core/errors/error_message_model.dart';
 import 'package:studentmanagement/core/errors/exceptions.dart';
 import 'package:studentmanagement/core/network/api_endpoints.dart';
-import 'package:studentmanagement/core/utils/widgets/app_snackbar.dart';
 import 'package:studentmanagement/fetaures/authentication/data/models/device_register_model.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/entities/device_register_result.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/entities/login_entity.dart';

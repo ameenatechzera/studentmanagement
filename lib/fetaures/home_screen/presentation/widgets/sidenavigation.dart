@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -8,7 +7,6 @@ import 'package:studentmanagement/fetaures/authentication/data/models/account_de
 import 'package:studentmanagement/fetaures/authentication/domain/parameters/login_params.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/bloc/logincubit/login_cubit.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/screens/loginSecond.dart';
-import 'package:studentmanagement/fetaures/authentication/presentation/screens/login_screen.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/widget/switch_account.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/screens/main_screen.dart';
 
@@ -105,49 +103,49 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
     );
   }
 
-  Widget _accountSwitchSection(BuildContext context) {
-    if (isLoading) {
-      return const Center(child: CircularProgressIndicator());
-    }
+  // Widget _accountSwitchSection(BuildContext context) {
+  //   if (isLoading) {
+  //     return const Center(child: CircularProgressIndicator());
+  //   }
 
-    if (accounts.isEmpty) {
-      return const Center(child: Text('No accounts found'));
-    }
+  //   if (accounts.isEmpty) {
+  //     return const Center(child: Text('No accounts found'));
+  //   }
 
-    return Container(
-      height: 250,
+  //   return Container(
+  //     height: 250,
 
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            "Account Switch",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 12),
+  //     child: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         const Text(
+  //           "Account Switch",
+  //           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+  //         ),
+  //         const SizedBox(height: 12),
 
-          /// 🔥 IMPORTANT
-          Expanded(
-            child: ListView.builder(
-              itemCount: accounts.length,
-              itemBuilder: (context, index) {
-                final acc = accounts[index];
+  //         /// 🔥 IMPORTANT
+  //         Expanded(
+  //           child: ListView.builder(
+  //             itemCount: accounts.length,
+  //             itemBuilder: (context, index) {
+  //               final acc = accounts[index];
 
-                return Card(
-                  child: ListTile(
-                    title: Text(acc.admissionNo ?? ''),
-                    subtitle: Text("DOB: ${acc.dob}"),
-                  ),
-                );
-              },
-            ),
-          ),
-          const SizedBox(height: 12),
-          _addAccountButton(context),
-        ],
-      ),
-    );
-  }
+  //               return Card(
+  //                 child: ListTile(
+  //                   title: Text(acc.admissionNo ?? ''),
+  //                   subtitle: Text("DOB: ${acc.dob}"),
+  //                 ),
+  //               );
+  //             },
+  //           ),
+  //         ),
+  //         const SizedBox(height: 12),
+  //         _addAccountButton(context),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget _accountSwitchSectionO(BuildContext context) {
     return Padding(
@@ -166,7 +164,7 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
             return Padding(
               padding: const EdgeInsets.only(bottom: 10),
               child: _accountTile(
-                name: acc.name ?? "No Name",
+                name: acc.name,
                 imageUrl: "assets/images/man.png",
                 isSelected: acc.admissionNo == selectedAdmissionNo,
                 onTap: () {

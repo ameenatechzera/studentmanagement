@@ -1,7 +1,7 @@
 import 'package:studentmanagement/fetaures/authentication/domain/entities/device_register_result.dart';
 
 class DeviceRegisterModel extends DeviceRegisterResult {
-  DeviceRegisterModel({
+  const DeviceRegisterModel({
     required super.status,
     required super.error,
     required super.data,

@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:studentmanagement/core/appdata/appdata.dart';
 
@@ -7,15 +6,21 @@ class HeaderSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("PROFILE URL 👉 ${AppData.profileUrl}");
     return Padding(
       padding: const EdgeInsets.only(left: 16.0, right: 16),
       child: Row(
         children: [
           CircleAvatar(
             radius: 25,
-            backgroundImage: NetworkImage(
-              AppData.profileUrl!,
-            ),
+            backgroundImage:
+                (AppData.profileUrl != null && AppData.profileUrl!.isNotEmpty)
+                ? NetworkImage(AppData.profileUrl!)
+                : null,
+            child: (AppData.profileUrl == null || AppData.profileUrl!.isEmpty)
+                ? const Icon(Icons.person)
+                : null,
+            //backgroundImage: NetworkImage(AppData.profileUrl ?? ''),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -25,7 +30,7 @@ class HeaderSection extends StatelessWidget {
                 Text("Welcome", style: TextStyle(fontSize: 14)),
                 SizedBox(height: 2),
                 Text(
-                  AppData.studentName!,
+                  AppData.studentName ?? 'No Name',
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,

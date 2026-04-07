@@ -11,8 +11,10 @@ import 'package:studentmanagement/fetaures/marklist/presentation/screens/marklis
 import 'package:studentmanagement/fetaures/timetable/presentation/screens/timetable_screen.dart';
 import 'package:studentmanagement/fetaures/materials/presentation/screens/materials_screen.dart';
 import 'package:studentmanagement/fetaures/authentication/data/models/account_details_model.dart';
+
 final ValueNotifier<bool> showAllNotifications = ValueNotifier<bool>(false);
 List<AccountDetails> accounts = [];
+
 class StudentScreen extends StatefulWidget {
   final LoginResponseResult? loginResponse;
   const StudentScreen({super.key, this.loginResponse});
@@ -46,9 +48,9 @@ class _StudentScreenState extends State<StudentScreen> {
     super.initState();
     loadAccounts();
   }
+
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -62,9 +64,14 @@ class _StudentScreenState extends State<StudentScreen> {
               _StudentInfoCard(
                 name: widget.loginResponse!.student!.name,
                 phone: widget.loginResponse!.student!.admno.toString(),
-                classNo: widget.loginResponse!.student!.studentStandard.toString() +' - '+widget.loginResponse!.student!.studentDivision.toString(),
-                std: widget.loginResponse!.student!.currentStudentStandardId.toString(),
-                rollNo: widget.loginResponse!.student!.currentStudentDivisionId.toString(),
+                classNo:
+                    '${widget.loginResponse!.student!.studentStandard} - ${widget.loginResponse!.student!.studentDivision}',
+                std: widget.loginResponse!.student!.currentStudentStandardId
+                    .toString(),
+                rollNo: widget.loginResponse!.student!.currentStudentDivisionId
+                    .toString(),
+                //gender: "female",
+                gender: widget.loginResponse!.student!.gender,
               ),
               const SizedBox(height: 20),
 
@@ -120,10 +127,16 @@ class _StudentScreenState extends State<StudentScreen> {
                   return Column(
                     children: [
                       const SizedBox(height: 10),
-                      for (int i = 0; i < StudentScreen._notifications.length; i++)
+                      for (
+                        int i = 0;
+                        i < StudentScreen._notifications.length;
+                        i++
+                      )
                         Padding(
                           padding: EdgeInsets.only(
-                            bottom: i == StudentScreen._notifications.length - 1 ? 0 : 12,
+                            bottom: i == StudentScreen._notifications.length - 1
+                                ? 0
+                                : 12,
                           ),
                           child: _SingleNotificationCard(
                             data: StudentScreen._notifications[i],
@@ -240,6 +253,7 @@ class _StudentInfoCard extends StatelessWidget {
   final String classNo;
   final String std;
   final String rollNo;
+  final String gender;
 
   const _StudentInfoCard({
     required this.name,
@@ -247,6 +261,7 @@ class _StudentInfoCard extends StatelessWidget {
     required this.classNo,
     required this.std,
     required this.rollNo,
+    required this.gender,
   });
 
   @override
@@ -299,8 +314,15 @@ class _StudentInfoCard extends StatelessWidget {
                     color: Colors.white.withOpacity(0.18),
                     border: Border.all(color: Colors.white24, width: 1),
                   ),
-                  child: const Center(
-                    child: Icon(Icons.person, color: Colors.white, size: 24),
+                  child: Center(
+                    child: Center(
+                      child: Icon(
+                        getGenderIcon(),
+                        color: Colors.white,
+                        size: 24,
+                      ),
+                    ),
+                    // child: Icon(Icons.person, color: Colors.white, size: 24),
                   ),
                 ),
               ),
@@ -357,8 +379,8 @@ class _StudentInfoCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     _MiniStat(label: "Class", value: classNo),
-                   // _MiniStat(label: "Std", value: std),
-                   // _MiniStat(label: "Roll No", value: rollNo),
+                    // _MiniStat(label: "Std", value: std),
+                    // _MiniStat(label: "Roll No", value: rollNo),
                   ],
                 ),
               ],
@@ -367,6 +389,18 @@ class _StudentInfoCard extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  IconData getGenderIcon() {
+    final g = (gender).toLowerCase().trim();
+
+    if (g == 'male') {
+      return Icons.male;
+    } else if (g == 'female') {
+      return Icons.female_rounded;
+    } else {
+      return Icons.person;
+    }
   }
 }
 
@@ -706,7 +740,6 @@ class AccountSwitchBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 30),
       child: Column(
@@ -742,7 +775,7 @@ class AccountSwitchBottomSheet extends StatelessWidget {
 
               return Padding(
                 padding: const EdgeInsets.only(bottom: 12),
-                child: _accountTile(acc.name ?? "No Name"),
+                child: _accountTile(acc.name),
               );
             },
           ),
@@ -813,8 +846,8 @@ class AccountSwitchBottomSheet extends StatelessWidget {
       ),
     );
   }
-
 }
+
 Future<void> loadAccounts() async {
   final prefs = await SharedPreferences.getInstance();
   List<String> data = prefs.getStringList('accounts') ?? [];

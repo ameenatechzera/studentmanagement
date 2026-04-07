@@ -33,8 +33,8 @@ void main() async {
       // 'https://cristalofflineweb.techzera.in/Api/public/api',
       //'https://test.cristaledu.com/Api/public/api',
       //'https://cristalwebonline.techzera.in/Api/public/api',
-      //'https://online.cristaledu.com/Api/public/api',
-      'https://fsp.cristaledu.com/Api/public/api',
+      'https://online.cristaledu.com/Api/public/api',
+      //'https://fsp.cristaledu.com/Api/public/api',
     );
   }
   runApp(MyApp());
