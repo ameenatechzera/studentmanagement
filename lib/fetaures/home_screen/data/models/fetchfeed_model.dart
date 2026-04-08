@@ -117,6 +117,7 @@ class FetchFeedResponseModel extends FetchFeedEntity {
     super.status,
     super.error,
     List<FeedDetailsModel>? super.data,
+    super.pagination,
     super.message,
   });
 
@@ -132,6 +133,9 @@ class FetchFeedResponseModel extends FetchFeedEntity {
                   (x) => FeedDetailsModel.fromJson(x as Map<String, dynamic>),
                 )
                 .toList(),
+      pagination: json['pagination'] != null
+          ? FeedPaginationModel.fromJson(json['pagination'])
+          : null,
     );
   }
 }
@@ -214,6 +218,40 @@ class FeedFileModel extends FeedFile {
       image: json['Image']?.toString(),
       createdDate: json['CreatedDate']?.toString(),
       createdUser: json['CreatedUser']?.toString(),
+    );
+  }
+}
+
+class FeedSubjectModel extends FeedSubject {
+  FeedSubjectModel({super.subjectId, super.subjectName, super.shortName});
+
+  factory FeedSubjectModel.fromJson(Map<String, dynamic> json) {
+    return FeedSubjectModel(
+      subjectId: json['SubjectId'],
+      subjectName: json['SubjectName'],
+      shortName: json['ShortName'],
+    );
+  }
+}
+
+class FeedPaginationModel extends FeedPagination {
+  FeedPaginationModel({
+    super.total,
+    super.perPage,
+    super.currentPage,
+    super.lastPage,
+    super.from,
+    super.to,
+  });
+
+  factory FeedPaginationModel.fromJson(Map<String, dynamic> json) {
+    return FeedPaginationModel(
+      total: json['total'],
+      perPage: json['per_page'],
+      currentPage: json['current_page'],
+      lastPage: json['last_page'],
+      from: json['from'],
+      to: json['to'],
     );
   }
 }

@@ -53,7 +53,7 @@ class CustomBottomBar extends StatelessWidget {
                       //accYear: AppData.accYear!,
                       standardId: AppData.studentStdId!,
                       divisionId: AppData.studentDivId!,
-                      fromDateTime: "2025-04-07 10:30:00",
+                      fromDateTime: "",
                       page: 1,
                       perPage: 10,
                     ),

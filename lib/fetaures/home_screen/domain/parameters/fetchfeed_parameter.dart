@@ -2,7 +2,7 @@ class FetchFeedParameter {
   //final String accYear;
   final String standardId;
   final String divisionId;
-  final String fromDateTime; // optional
+  final String fromDateTime;
   final int page;
   final int perPage;
 
