@@ -2,8 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:studentmanagement/core/errors/error_message_model.dart';
 import 'package:studentmanagement/core/errors/exceptions.dart';
 import 'package:studentmanagement/core/network/api_endpoints.dart';
-import 'package:studentmanagement/fetaures/fees/domain/entities/paidFeeResult.dart';
-import 'package:studentmanagement/fetaures/fees/domain/entities/unpaidFeeResult.dart';
+import 'package:studentmanagement/fetaures/fees/domain/entities/paid_fee_result.dart';
+import 'package:studentmanagement/fetaures/fees/domain/entities/unpaid%20fee_result.dart';
 import 'package:studentmanagement/fetaures/fees/domain/parameters/paidFees_request.dart';
 import 'package:studentmanagement/services/shared_preference_helper.dart';
 
@@ -11,7 +11,8 @@ abstract class FeesRemoteDataSource {
   Future<PaidFeeResult> fetchPaidFees(PaidFeesRequest request);
   Future<UnpaidFeeResult> fetchUnPaidFees(PaidFeesRequest request);
 }
-  class FeesRemoteDataSourceImpl implements FeesRemoteDataSource {
+
+class FeesRemoteDataSourceImpl implements FeesRemoteDataSource {
   Dio dio = Dio();
 
   @override
@@ -28,11 +29,13 @@ abstract class FeesRemoteDataSource {
 
     final response = await dio.post(
       ApiConstants.getFeesPaidServerPath(baseUrl),
-      options: Options(contentType: "application/json",
+      options: Options(
+        contentType: "application/json",
         headers: {
           "Accept": "application/json",
           "Authorization": "Bearer $token",
-        },),
+        },
+      ),
       data: request.toJson(),
     );
     print(response.data);
@@ -61,11 +64,13 @@ abstract class FeesRemoteDataSource {
 
     final response = await dio.post(
       ApiConstants.getFeesUnPaidServerPath(baseUrl),
-      options: Options(contentType: "application/json",
+      options: Options(
+        contentType: "application/json",
         headers: {
           "Accept": "application/json",
           "Authorization": "Bearer $token",
-        },),
+        },
+      ),
       data: request.toJson(),
     );
     print(response.data);
@@ -79,5 +84,4 @@ abstract class FeesRemoteDataSource {
       );
     }
   }
-
 }

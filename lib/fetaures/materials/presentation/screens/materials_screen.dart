@@ -1,10 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:studentmanagement/core/appdata/appdata.dart';
-import 'package:studentmanagement/core/navigation/app_navigator.dart';
-import 'package:studentmanagement/fetaures/materials/domain/parameters/fetch_material_parameter.dart';
-import 'package:studentmanagement/fetaures/materials/presentation/cubit/material_cubit.dart';
-import 'package:studentmanagement/fetaures/materials/presentation/screens/notes_expansion_screen.dart';
 import 'package:studentmanagement/fetaures/materials/presentation/widgets/materials_widget.dart';
 
 final ValueNotifier<String> selectedSubject = ValueNotifier<String>(
@@ -41,7 +35,7 @@ class MaterialsScreen extends StatelessWidget {
                 color: const Color.fromARGB(255, 208, 205, 205),
                 borderRadius: BorderRadius.circular(30),
               ),
-              
+
               child: PopupMenuButton(
                 icon: const Icon(Icons.filter_list),
                 shape: RoundedRectangleBorder(
@@ -76,10 +70,7 @@ class MaterialsScreen extends StatelessWidget {
         ],
       ),
 
-      body: 
-        Center(
-          child: Text('No Materials Found..!'),
-        )
+      body: Center(child: Text('No Materials Found..!')),
       // BlocBuilder<MaterialCubit, MaterialsState>(
       //   builder: (context, state) {
       //     if (state is MaterialLoading) {

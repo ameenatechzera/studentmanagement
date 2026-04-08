@@ -30,6 +30,7 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
 
       /// 🔹 Get Token
       final token = await SharedPreferenceHelper().getToken() ?? "";
+      print(token);
 
       /// 🔹 API CALL (GET or POST → based on your backend)
       final response = await dio.post(

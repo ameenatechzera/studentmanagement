@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:studentmanagement/core/navigation/app_navigator.dart';
 
-import 'loginSecond.dart';
+import 'login_screen.dart';
 
 class RegisterScreen extends StatelessWidget {
   const RegisterScreen({super.key});
@@ -48,10 +48,7 @@ class RegisterScreen extends StatelessWidget {
                   ),
                 ),
                 onPressed: () {
-                  AppNavigator.pushSlide(
-                    context: context,
-                    page: LoginScreen_1(),
-                  );
+                  AppNavigator.pushSlide(context: context, page: LoginScreen());
                 },
                 child: const Text("Connect"),
               ),

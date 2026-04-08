@@ -10,7 +10,9 @@ class PaidFee extends StatefulWidget {
   @override
   State<PaidFee> createState() => _PaidFeeState();
 }
+
 int? expandedIndex; // 👈 add this in your StatefulWidget
+
 class _PaidFeeState extends State<PaidFee> {
   @override
   Widget build(BuildContext context) {
@@ -23,7 +25,6 @@ class _PaidFeeState extends State<PaidFee> {
         if (state is FeesPaidSuccess) {
           final feesList = state.feePaidResult.data; // your API list
 
-
           return ListView.builder(
             itemCount: feesList.length,
             shrinkWrap: true,
@@ -31,12 +32,10 @@ class _PaidFeeState extends State<PaidFee> {
             itemBuilder: (context, index) {
               final fee = feesList[index];
 
-                String formatedDate = fee.date!;
+              String formatedDate = fee.date!;
               try {
-               formatedDate =formatDate(fee.date!);
-              }catch(_){
-
-              }
+                formatedDate = formatDate(fee.date!);
+              } catch (_) {}
               final isExpanded = expandedIndex == index;
 
               return GestureDetector(
@@ -89,14 +88,15 @@ class _PaidFeeState extends State<PaidFee> {
                                     children: [
                                       Row(
                                         children: [
-                                          Text('Recpt No : ',
+                                          Text(
+                                            'Recpt No : ',
                                             style: const TextStyle(
                                               fontSize: 11,
                                               fontWeight: FontWeight.w600,
                                             ),
                                           ),
                                           Text(
-                                              fee.receiptNo,
+                                            fee.receiptNo,
                                             style: const TextStyle(
                                               fontSize: 15,
                                               fontWeight: FontWeight.w600,
@@ -117,7 +117,7 @@ class _PaidFeeState extends State<PaidFee> {
                                 Expanded(
                                   flex: 1,
                                   child: Text(
-                                    formatedDate ?? "",
+                                    formatedDate,
                                     style: const TextStyle(
                                       fontSize: 13,
                                       fontWeight: FontWeight.w600,
@@ -184,7 +184,8 @@ class _PaidFeeState extends State<PaidFee> {
                               padding: const EdgeInsets.all(16),
 
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   AmountColumn(
                                     title: "Month",
@@ -394,6 +395,7 @@ class _PaidFeeState extends State<PaidFee> {
       },
     );
   }
+
   String formatDate(String inputDate) {
     DateTime date = DateTime.parse(inputDate);
     return DateFormat('dd-MM-yyyy').format(date);

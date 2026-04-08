@@ -4,8 +4,8 @@ import 'package:studentmanagement/core/errors/exceptions.dart';
 import 'package:studentmanagement/core/errors/failure.dart';
 import 'package:studentmanagement/core/utils/typedef.dart';
 import 'package:studentmanagement/fetaures/fees/data/datasources/fees_remote_data_sources.dart';
-import 'package:studentmanagement/fetaures/fees/domain/entities/paidFeeResult.dart';
-import 'package:studentmanagement/fetaures/fees/domain/entities/unpaidFeeResult.dart';
+import 'package:studentmanagement/fetaures/fees/domain/entities/paid_fee_result.dart';
+import 'package:studentmanagement/fetaures/fees/domain/entities/unpaid%20fee_result.dart';
 import 'package:studentmanagement/fetaures/fees/domain/parameters/paidFees_request.dart';
 import 'package:studentmanagement/fetaures/fees/domain/repositories/fees_repository.dart';
 
@@ -17,10 +17,7 @@ class FeesRepositoryImpl implements FeesRepository {
   @override
   ResultFuture<PaidFeeResult> fetchPaidFees(PaidFeesRequest request) async {
     try {
-      final result =
-      await remoteDataSource.fetchPaidFees(
-        request,
-      );
+      final result = await remoteDataSource.fetchPaidFees(request);
 
       return Right(result);
     } on ServerException catch (failure) {
@@ -33,10 +30,7 @@ class FeesRepositoryImpl implements FeesRepository {
   @override
   ResultFuture<UnpaidFeeResult> fetchUnPaidFees(PaidFeesRequest request) async {
     try {
-      final result =
-          await remoteDataSource.fetchUnPaidFees(
-        request,
-      );
+      final result = await remoteDataSource.fetchUnPaidFees(request);
 
       return Right(result);
     } on ServerException catch (failure) {
