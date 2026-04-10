@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:studentmanagement/fetaures/attendence/presentation/cubit/attendence_cubit.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/screens/main_splash.dart';
 import 'package:studentmanagement/fetaures/classdiary/presentation/cubit/diary_cubit.dart';
 import 'package:studentmanagement/fetaures/fees/presentation/bloc/fees_cubit.dart';
@@ -55,6 +56,7 @@ class MyApp extends StatelessWidget {
         BlocProvider<FeedCubit>(create: (_) => sl<FeedCubit>()),
         BlocProvider<MarklistCubit>(create: (_) => sl<MarklistCubit>()),
         BlocProvider<MaterialCubit>(create: (_) => sl<MaterialCubit>()),
+        BlocProvider<AttendenceCubit>(create: (_) => sl<AttendenceCubit>()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

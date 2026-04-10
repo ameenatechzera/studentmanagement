@@ -57,4 +57,16 @@ class ApiConstants {
   static String getMaterialsPath(String baseUrl) {
     return '$baseUrl/class-wise-material-get';
   }
+
+  /// Returns the full URL for attendecereportbydate
+
+  static String getAttendanceReportByDatePath(String baseUrl) {
+    return '$baseUrl/student-wise-attendance-report-bydate';
+  }
+
+  /// Returns the full URL for attendecereportbymonth
+
+  static String getAttendanceReportByMonthPath(String baseUrl) {
+    return '$baseUrl/student-wise-attendance-report-bymonth';
+  }
 }
