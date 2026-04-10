@@ -27,8 +27,7 @@ class SecondSplashScreen extends StatelessWidget {
 
                 Center(
                   child: Text(
-                    'Manage everything easily in one place — fast,'
-                    'simple, and secure.',
+                   'Track Your Child Easily',
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       fontSize: 18,

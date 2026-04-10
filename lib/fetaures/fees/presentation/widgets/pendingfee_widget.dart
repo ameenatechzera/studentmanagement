@@ -67,21 +67,30 @@ class PendingFee extends StatelessWidget {
                                   style: TextStyle(
                                     fontSize: 15,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.red,
+                                    color: Colors.black,
                                   ),
                                 ),
                                 Text(
-                                  fee.amount,
+                                  "",
                                   style: TextStyle(fontSize: 15, color: Colors.red),
                                 ),
                               ],
                             ),
-                            Text(
-                              fee.ledgerName,
-                              style: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                              ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  fee.ledgerName,
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                Text(
+                                  fee.amount,
+                                  style: TextStyle(fontSize: 15, color: Colors.black),
+                                ),
+                              ],
                             ),
                             const SizedBox(height: 6),
 

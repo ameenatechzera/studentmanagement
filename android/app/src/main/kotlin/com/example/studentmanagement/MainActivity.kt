@@ -1,4 +1,4 @@
-package com.example.studentmanagement
+package com.techzera.studentmanagement
 
 import io.flutter.embedding.android.FlutterActivity
 
