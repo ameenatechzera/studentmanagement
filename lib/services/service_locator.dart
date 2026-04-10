@@ -1,4 +1,10 @@
 import 'package:get_it/get_it.dart';
+import 'package:studentmanagement/fetaures/attendence/data/datasources/attendencereport_remote_data_source.dart';
+import 'package:studentmanagement/fetaures/attendence/data/repositories/attendence_repository_impl.dart';
+import 'package:studentmanagement/fetaures/attendence/domain/repositories/attendence_repository.dart';
+import 'package:studentmanagement/fetaures/attendence/domain/usecases/attendence_reportbydate_usecase.dart';
+import 'package:studentmanagement/fetaures/attendence/domain/usecases/attendence_reportbymonth_usecase.dart';
+import 'package:studentmanagement/fetaures/attendence/presentation/cubit/attendence_cubit.dart';
 import 'package:studentmanagement/fetaures/authentication/data/datasources/auth_remote_data_source.dart';
 import 'package:studentmanagement/fetaures/authentication/data/repositories/auth_repository_impl.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/repositories/auth_repository.dart';
@@ -162,6 +168,27 @@ class ServiceLocator {
 
     sl.registerLazySingleton<MaterialRepository>(
       () => MaterialRepositoryImpl(sl()),
+    );
+
+    /// ------------------- ATTENDECE BY DATE -------------------
+    // ✅ Cubit
+    sl.registerFactory(
+      () => AttendenceCubit(
+        dateUseCase: sl(),
+        monthUseCase: sl(), // AttendanceReportByDateUseCase
+        // AttendanceReportByMonthUseCase
+      ),
+    );
+
+    sl.registerLazySingleton(() => AttendanceReportByDateUseCase(sl()));
+    sl.registerLazySingleton(() => AttendanceReportByMonthUseCase(sl()));
+
+    sl.registerLazySingleton<AttendanceRemoteDataSource>(
+      () => AttendanceRemoteDataSourceImpl(),
+    );
+
+    sl.registerLazySingleton<AttendanceRepository>(
+      () => AttendanceRepositoryImpl(remoteDataSource: sl()),
     );
   }
 }

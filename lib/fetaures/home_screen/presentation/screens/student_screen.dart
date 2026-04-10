@@ -1,8 +1,11 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:studentmanagement/core/navigation/app_navigator.dart';
+import 'package:studentmanagement/fetaures/attendence/domain/parameters/attendence_reportbydate_parameter.dart';
+import 'package:studentmanagement/fetaures/attendence/presentation/cubit/attendence_cubit.dart';
 import 'package:studentmanagement/fetaures/attendence/presentation/screens/attendence_screen.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/entities/login_entity.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/widget/switch_account.dart';
@@ -45,9 +48,17 @@ class StudentScreen extends StatefulWidget {
 class _StudentScreenState extends State<StudentScreen> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     loadAccounts();
+    context.read<AttendenceCubit>().getAttendanceReportByDate(
+      AttendanceReportByDateParameter(
+        admno: "PKG7",
+        date: "2026-04-04",
+        accYear: "2026-2027",
+        branchId: 1,
+      ),
+    );
+    print(widget.loginResponse!.student!.admno);
   }
 
   @override
@@ -331,15 +342,70 @@ class _StudentInfoCard extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(height: 20),
 
+                const SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    _MiniStat(label: "Class", value: classNo),
+                    _MiniStat(label: "Class ", value: classNo),
+
                     // _MiniStat(label: "Std", value: std),
                     // _MiniStat(label: "Roll No", value: rollNo),
                   ],
+                ),
+                const SizedBox(height: 10),
+                BlocBuilder<AttendenceCubit, AttendenceState>(
+                  builder: (context, state) {
+                    if (state is AttendenceLoading) {
+                      return const Padding(
+                        padding: EdgeInsets.only(top: 8),
+                        child: SizedBox(
+                          height: 16,
+                          width: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        ),
+                      );
+                    } else if (state is AttendenceLoaded) {
+                      final list = state.response.data ?? [];
+
+                      if (list.isEmpty) {
+                        return const Text(
+                          'No Attendance Data',
+                          style: TextStyle(color: Colors.white),
+                        );
+                      }
+
+                      final attendance = list.first;
+
+                      return Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          attendance.status ?? '',
+                          style: TextStyle(
+                            color: _getStatusColor(attendance.status),
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      );
+                    } else if (state is AttendenceError) {
+                      return Text(
+                        state.message,
+                        style: const TextStyle(color: Colors.red, fontSize: 12),
+                      );
+                    }
+                    return SizedBox();
+                  },
                 ),
               ],
             ),
@@ -347,6 +413,21 @@ class _StudentInfoCard extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Color _getStatusColor(String? status) {
+    switch (status) {
+      case "Present":
+        return const Color(0xff22c55e); // green
+      case "Absent":
+        return const Color(0xffef4444); // red
+      case "Upcoming":
+        return Colors.blueGrey;
+      case "Not Marked":
+        return Colors.orange;
+      default:
+        return Colors.grey;
+    }
   }
 
   String getGenderImage() {
@@ -370,7 +451,7 @@ class _MiniStat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Row(
       //crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
@@ -381,7 +462,7 @@ class _MiniStat extends StatelessWidget {
             fontWeight: FontWeight.w600,
           ),
         ),
-        const SizedBox(height: 2),
+        const SizedBox(width: 2),
         Align(
           alignment: Alignment.center,
           child: Text(
