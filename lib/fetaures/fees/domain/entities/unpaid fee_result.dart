@@ -16,12 +16,7 @@ class UnpaidFeeResult extends Equatable {
   final List<Datum> data;
   static const String dataKey = "data";
 
-
-  UnpaidFeeResult copyWith({
-    int? status,
-    bool? error,
-    List<Datum>? data,
-  }) {
+  UnpaidFeeResult copyWith({int? status, bool? error, List<Datum>? data}) {
     return UnpaidFeeResult(
       status: status ?? this.status,
       error: error ?? this.error,
@@ -29,28 +24,29 @@ class UnpaidFeeResult extends Equatable {
     );
   }
 
-  factory UnpaidFeeResult.fromJson(Map<String, dynamic> json){
+  factory UnpaidFeeResult.fromJson(Map<String, dynamic> json) {
     return UnpaidFeeResult(
       status: json["status"] ?? 0,
       error: json["error"] ?? false,
-      data: json["data"] == null ? [] : List<Datum>.from(json["data"]!.map((x) => Datum.fromJson(x))),
+      data: json["data"] == null
+          ? []
+          : List<Datum>.from(json["data"]!.map((x) => Datum.fromJson(x))),
     );
   }
 
   Map<String, dynamic> toJson() => {
     "status": status,
     "error": error,
-    "data": data.map((x) => x?.toJson()).toList(),
+    "data": data.map((x) => x.toJson()).toList(),
   };
 
   @override
-  String toString(){
+  String toString() {
     return "$status, $error, $data, ";
   }
 
   @override
-  List<Object?> get props => [
-    status, error, data, ];
+  List<Object?> get props => [status, error, data];
 }
 
 class Datum extends Equatable {
@@ -109,7 +105,6 @@ class Datum extends Equatable {
   final String narration;
   static const String narrationKey = "Narration";
 
-
   Datum copyWith({
     String? accYear,
     String? feeMonthId,
@@ -119,8 +114,8 @@ class Datum extends Equatable {
     String? amount,
     String? paidAmount,
     String? feePaymentDetailsId,
-    dynamic? taxId,
-    dynamic? taxName,
+    dynamic taxId,
+    dynamic taxName,
     String? taxAmt,
     String? floodCess,
     String? narration,
@@ -142,7 +137,7 @@ class Datum extends Equatable {
     );
   }
 
-  factory Datum.fromJson(Map<String, dynamic> json){
+  factory Datum.fromJson(Map<String, dynamic> json) {
     return Datum(
       accYear: json["AccYear"] ?? "",
       feeMonthId: json["FeeMonthId"] ?? "",
@@ -177,11 +172,24 @@ class Datum extends Equatable {
   };
 
   @override
-  String toString(){
+  String toString() {
     return "$accYear, $feeMonthId, $feeMonth, $ledgerId, $ledgerName, $amount, $paidAmount, $feePaymentDetailsId, $taxId, $taxName, $taxAmt, $floodCess, $narration, ";
   }
 
   @override
   List<Object?> get props => [
-    accYear, feeMonthId, feeMonth, ledgerId, ledgerName, amount, paidAmount, feePaymentDetailsId, taxId, taxName, taxAmt, floodCess, narration, ];
+    accYear,
+    feeMonthId,
+    feeMonth,
+    ledgerId,
+    ledgerName,
+    amount,
+    paidAmount,
+    feePaymentDetailsId,
+    taxId,
+    taxName,
+    taxAmt,
+    floodCess,
+    narration,
+  ];
 }

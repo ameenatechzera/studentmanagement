@@ -16,12 +16,7 @@ class PaidFeeResult extends Equatable {
   final List<Datum> data;
   static const String dataKey = "data";
 
-
-  PaidFeeResult copyWith({
-    bool? status,
-    String? message,
-    List<Datum>? data,
-  }) {
+  PaidFeeResult copyWith({bool? status, String? message, List<Datum>? data}) {
     return PaidFeeResult(
       status: status ?? this.status,
       message: message ?? this.message,
@@ -29,28 +24,29 @@ class PaidFeeResult extends Equatable {
     );
   }
 
-  factory PaidFeeResult.fromJson(Map<String, dynamic> json){
+  factory PaidFeeResult.fromJson(Map<String, dynamic> json) {
     return PaidFeeResult(
       status: json["status"] ?? false,
       message: json["message"] ?? "",
-      data: json["data"] == null ? [] : List<Datum>.from(json["data"]!.map((x) => Datum.fromJson(x))),
+      data: json["data"] == null
+          ? []
+          : List<Datum>.from(json["data"]!.map((x) => Datum.fromJson(x))),
     );
   }
 
   Map<String, dynamic> toJson() => {
     "status": status,
     "message": message,
-    "data": data.map((x) => x?.toJson()).toList(),
+    "data": data.map((x) => x.toJson()).toList(),
   };
 
   @override
-  String toString(){
+  String toString() {
     return "$status, $message, $data, ";
   }
 
   @override
-  List<Object?> get props => [
-    status, message, data, ];
+  List<Object?> get props => [status, message, data];
 }
 
 class Datum extends Equatable {
@@ -81,7 +77,6 @@ class Datum extends Equatable {
   final List<Detail> details;
   static const String detailsKey = "details";
 
-
   Datum copyWith({
     String? feePaymentMasterId,
     String? receiptNo,
@@ -100,14 +95,16 @@ class Datum extends Equatable {
     );
   }
 
-  factory Datum.fromJson(Map<String, dynamic> json){
+  factory Datum.fromJson(Map<String, dynamic> json) {
     return Datum(
       feePaymentMasterId: json["FeePaymentMasterId"] ?? "",
       receiptNo: json["receiptNo"] ?? "",
       date: json["Date"] ?? "",
       paymentMode: json["paymentMode"] ?? "",
       totalPaidAmount: json["totalPaidAmount"] ?? "",
-      details: json["details"] == null ? [] : List<Detail>.from(json["details"]!.map((x) => Detail.fromJson(x))),
+      details: json["details"] == null
+          ? []
+          : List<Detail>.from(json["details"]!.map((x) => Detail.fromJson(x))),
     );
   }
 
@@ -117,21 +114,27 @@ class Datum extends Equatable {
     "Date": date,
     "paymentMode": paymentMode,
     "totalPaidAmount": totalPaidAmount,
-    "details": details.map((x) => x?.toJson()).toList(),
+    "details": details.map((x) => x.toJson()).toList(),
   };
 
   @override
-  String toString(){
+  String toString() {
     return "$feePaymentMasterId, $receiptNo, $date, $paymentMode, $totalPaidAmount, $details, ";
   }
 
   @override
   List<Object?> get props => [
-    feePaymentMasterId, receiptNo, date, paymentMode, totalPaidAmount, details, ];
+    feePaymentMasterId,
+    receiptNo,
+    date,
+    paymentMode,
+    totalPaidAmount,
+    details,
+  ];
 }
 
 class Detail extends Equatable {
-  Detail({
+  const Detail({
     required this.feeMonth,
     required this.ledgerName,
     required this.paidAmount,
@@ -146,12 +149,7 @@ class Detail extends Equatable {
   final int paidAmount;
   static const String paidAmountKey = "paidAmount";
 
-
-  Detail copyWith({
-    String? feeMonth,
-    String? ledgerName,
-    int? paidAmount,
-  }) {
+  Detail copyWith({String? feeMonth, String? ledgerName, int? paidAmount}) {
     return Detail(
       feeMonth: feeMonth ?? this.feeMonth,
       ledgerName: ledgerName ?? this.ledgerName,
@@ -159,7 +157,7 @@ class Detail extends Equatable {
     );
   }
 
-  factory Detail.fromJson(Map<String, dynamic> json){
+  factory Detail.fromJson(Map<String, dynamic> json) {
     return Detail(
       feeMonth: json["feeMonth"] ?? "",
       ledgerName: json["ledgerName"] ?? "",
@@ -174,11 +172,10 @@ class Detail extends Equatable {
   };
 
   @override
-  String toString(){
+  String toString() {
     return "$feeMonth, $ledgerName, $paidAmount, ";
   }
 
   @override
-  List<Object?> get props => [
-    feeMonth, ledgerName, paidAmount, ];
+  List<Object?> get props => [feeMonth, ledgerName, paidAmount];
 }

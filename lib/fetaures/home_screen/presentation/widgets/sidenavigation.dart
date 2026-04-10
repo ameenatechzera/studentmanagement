@@ -6,7 +6,7 @@ import 'package:studentmanagement/core/appdata/appdata.dart';
 import 'package:studentmanagement/fetaures/authentication/data/models/account_details_model.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/parameters/login_params.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/bloc/logincubit/login_cubit.dart';
-import 'package:studentmanagement/fetaures/authentication/presentation/screens/loginSecond.dart';
+import 'package:studentmanagement/fetaures/authentication/presentation/screens/login_screen.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/widget/switch_account.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/screens/main_screen.dart';
 
@@ -55,7 +55,7 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                     Navigator.of(context).pushReplacement(
                       MaterialPageRoute(
                         builder: (context) {
-                          return LoginScreen_1();
+                          return LoginScreen();
                         },
                       ),
                     );

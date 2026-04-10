@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:studentmanagement/core/navigation/app_navigator.dart';
+import 'package:studentmanagement/fetaures/attendence/presentation/screens/attendence_screen.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/entities/login_entity.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/widget/switch_account.dart';
 import 'package:studentmanagement/fetaures/classdiary/presentation/screens/alldiary_screen.dart';
@@ -51,6 +52,66 @@ class _StudentScreenState extends State<StudentScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final items = [
+      _QuickAccessItem(
+        label: "Fees",
+        icon: Icons.confirmation_number_outlined,
+        bubbleColor: Color(0xFFFFF3B0),
+        iconColor: Color(0xFF232323),
+        onTap: () {
+          AppNavigator.pushSlide(context: context, page: FeesScreen());
+        },
+      ),
+      _QuickAccessItem(
+        label: "Time Table",
+        icon: Icons.shield_outlined,
+        bubbleColor: Color(0xFFCFF8C6),
+        iconColor: Color(0xFF1F2B1F),
+        onTap: () {
+          AppNavigator.pushSlide(context: context, page: TimeTableScreen());
+        },
+      ),
+      _QuickAccessItem(
+        label: "Mark List",
+        icon: Icons.wallet_outlined,
+        bubbleColor: Color.fromARGB(255, 240, 135, 146),
+
+        // bubbleColor: Color(0xFFCFF8C6),
+        iconColor: Color(0xFF1F2B1F),
+        onTap: () {
+          AppNavigator.pushSlide(context: context, page: MarkListScreen());
+        },
+      ),
+      _QuickAccessItem(
+        label: "Material",
+        icon: Icons.grid_view_rounded,
+        bubbleColor: Color(0xFFBFD2FF),
+        iconColor: Color(0xFF1C2240),
+        onTap: () {
+          AppNavigator.pushSlide(context: context, page: MaterialsScreen());
+        },
+      ),
+      _QuickAccessItem(
+        label: "Class Diary",
+        icon: Icons.menu_book_rounded,
+        bubbleColor: Color(0xFFBFA6FF),
+        iconColor: Color(0xFF2A1E45),
+        onTap: () {
+          AppNavigator.pushSlide(context: context, page: AllClassDiaryScreen());
+        },
+      ),
+      _QuickAccessItem(
+        label: "Attendance",
+        icon: Icons.punch_clock,
+        bubbleColor: Color.fromARGB(255, 124, 225, 207),
+        // bubbleColor: Color(0xFFBFA6FF),
+        iconColor: Color(0xFF2A1E45),
+        onTap: () {
+          AppNavigator.pushSlide(context: context, page: AttendenceScreen());
+        },
+      ),
+    ];
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -123,72 +184,18 @@ class _StudentScreenState extends State<StudentScreen> {
               ),
               const SizedBox(height: 14),
 
-              // Quick access grid (2 rows x 3 cols)
-              Wrap(
-                spacing: 10,
-                runSpacing: 18,
-                children: [
-                  _QuickAccessItem(
-                    label: "Fees",
-                    icon: Icons.confirmation_number_outlined,
-                    bubbleColor: Color(0xFFFFF3B0),
-                    iconColor: Color(0xFF232323),
-                    onTap: () {
-                      AppNavigator.pushSlide(
-                        context: context,
-                        page: FeesScreen(),
-                      );
-                    },
-                  ),
-                  _QuickAccessItem(
-                    label: "Time Table",
-                    icon: Icons.shield_outlined,
-                    bubbleColor: Color(0xFFCFF8C6),
-                    iconColor: Color(0xFF1F2B1F),
-                    onTap: () {
-                      AppNavigator.pushSlide(
-                        context: context,
-                        page: TimeTableScreen(),
-                      );
-                    },
-                  ),
-                  _QuickAccessItem(
-                    label: "Mark List",
-                    icon: Icons.wallet_outlined,
-                    bubbleColor: Color(0xFFCFF8C6),
-                    iconColor: Color(0xFF1F2B1F),
-                    onTap: () {
-                      AppNavigator.pushSlide(
-                        context: context,
-                        page: MarkListScreen(),
-                      );
-                    },
-                  ),
-                  _QuickAccessItem(
-                    label: "Material",
-                    icon: Icons.grid_view_rounded,
-                    bubbleColor: Color(0xFFBFD2FF),
-                    iconColor: Color(0xFF1C2240),
-                    onTap: () {
-                      AppNavigator.pushSlide(
-                        context: context,
-                        page: MaterialsScreen(),
-                      );
-                    },
-                  ),
-                  _QuickAccessItem(
-                    label: "Class Diary",
-                    icon: Icons.menu_book_rounded,
-                    bubbleColor: Color(0xFFBFA6FF),
-                    iconColor: Color(0xFF2A1E45),
-                    onTap: () {
-                      AppNavigator.pushSlide(
-                        context: context,
-                        page: AllClassDiaryScreen(),
-                      );
-                    },
-                  ),
-                ],
+              GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: items.length,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                ),
+                itemBuilder: (context, index) {
+                  return items[index];
+                },
               ),
               const SizedBox(height: 22),
             ],
@@ -270,24 +277,11 @@ class _StudentInfoCard extends StatelessWidget {
                     builder: (_) => const AccountSwitchBottomSheet(),
                   );
                 },
-                child: Container(
-                  height: 70,
-                  width: 70,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.white.withOpacity(0.18),
-                    border: Border.all(color: Colors.white24, width: 1),
-                  ),
-                  child: Center(
-                    child: Center(
-                      child: Icon(
-                        getGenderIcon(),
-                        color: Colors.white,
-                        size: 24,
-                      ),
-                    ),
-                    // child: Icon(Icons.person, color: Colors.white, size: 24),
-                  ),
+                child: Image.asset(
+                  getGenderImage(),
+                  fit: BoxFit.cover,
+                  width: 80,
+                  height: 80,
                 ),
               ),
               Positioned(
@@ -355,15 +349,15 @@ class _StudentInfoCard extends StatelessWidget {
     );
   }
 
-  IconData getGenderIcon() {
-    final g = (gender).toLowerCase().trim();
+  String getGenderImage() {
+    final g = gender.toLowerCase().trim();
 
     if (g == 'male') {
-      return Icons.male;
+      return "assets/icons/c0d90970-7626-47b6-a097-ca0834c7a05f_removalai_preview.png";
     } else if (g == 'female') {
-      return Icons.female_rounded;
+      return "assets/icons/1f5debb8-6e36-4d25-bde8-526f4dd89820_removalai_preview.png";
     } else {
-      return Icons.person;
+      return "assets/icons/c0d90970-7626-47b6-a097-ca0834c7a05f_removalai_preview.png"; // fallback
     }
   }
 }

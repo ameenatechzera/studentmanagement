@@ -10,7 +10,9 @@ class PaidFee extends StatefulWidget {
   @override
   State<PaidFee> createState() => _PaidFeeState();
 }
+
 int? expandedIndex; // 👈 add this in your StatefulWidget
+
 class _PaidFeeState extends State<PaidFee> {
   @override
   Widget build(BuildContext context) {
@@ -23,7 +25,6 @@ class _PaidFeeState extends State<PaidFee> {
         if (state is FeesPaidSuccess) {
           final feesList = state.feePaidResult.data; // your API list
 
-
           return ListView.builder(
             itemCount: feesList.length,
             shrinkWrap: true,
@@ -31,12 +32,10 @@ class _PaidFeeState extends State<PaidFee> {
             itemBuilder: (context, index) {
               final fee = feesList[index];
 
-                String formatedDate = fee.date!;
+              String formatedDate = fee.date!;
               try {
-               formatedDate =formatDate(fee.date!);
-              }catch(_){
-
-              }
+                formatedDate = formatDate(fee.date!);
+              } catch (_) {}
               final isExpanded = expandedIndex == index;
 
               return GestureDetector(
@@ -66,7 +65,6 @@ class _PaidFeeState extends State<PaidFee> {
                       /// 🔹 HEADER
                       Row(
                         children: [
-                          // 🔵 LEFT - Circle Avatar
                           Container(
                             height: 42,
                             width: 42,
@@ -79,49 +77,67 @@ class _PaidFeeState extends State<PaidFee> {
                               color: Colors.white,
                             ),
                           ),
+                          const SizedBox(width: 5),
 
-                          const SizedBox(width: 8),
-
-                          // 🧾 CENTER - Receipt + Tick
                           Expanded(
                             child: Row(
                               children: [
-                                const Text(
-                                  '# Receipt No : ',
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w600,
+                                Expanded(
+                                  flex: 1,
+                                  child: Row(
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Text(
+                                            'Recpt No : ',
+                                            style: const TextStyle(
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                          Text(
+                                            fee.receiptNo,
+                                            style: const TextStyle(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(width: 6),
+                                      const Icon(
+                                        Icons.check_circle,
+                                        color: Colors.green,
+                                        size: 18,
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                Text(
-                                  fee.receiptNo,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
+
+                                Expanded(
+                                  flex: 1,
+                                  child: Text(
+                                    formatedDate,
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
                                 ),
-                                const SizedBox(width: 6),
-                                const Icon(
-                                  Icons.check_circle,
-                                  color: Colors.green,
-                                  size: 18,
+
+                                /// 🔥 Arrow
+                                Icon(
+                                  isExpanded
+                                      ? Icons.keyboard_arrow_up
+                                      : Icons.keyboard_arrow_down,
                                 ),
                               ],
-                            ),
-                          ),
-
-                          // 📅 RIGHT - Date
-                          Text(
-                            formatedDate ?? "",
-                            style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ],
                       ),
 
-                      const SizedBox(height: 5),
+                      const SizedBox(height: 10),
 
                       /// PAYMENT MODE
                       Row(
@@ -140,59 +156,21 @@ class _PaidFeeState extends State<PaidFee> {
                             ],
                           ),
 
-                          // Text(
-                          //   fee.totalPaidAmount,
-                          //   style: const TextStyle(
-                          //     fontSize: 18,
-                          //     fontWeight: FontWeight.bold,
-                          //   ),
-                          // ),
-
-                        ],
-                      ),
-                      /// 🔥 Arrow
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(Icons.money),
-                              Text(
-                                fee.totalPaidAmount,
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(width: 5),
-                            ],
-                          ),
-                          Icon(
-                            isExpanded
-                                ? Icons.keyboard_arrow_up
-                                : Icons.keyboard_arrow_down,
+                          Text(
+                            fee.totalPaidAmount,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ],
                       ),
-
 
                       /// 🔥 SHOW DETAILS ONLY WHEN EXPANDED
                       if (isExpanded) ...[
-                        const SizedBox(height: 1),
+                        const SizedBox(height: 12),
                         const Divider(),
                         const SizedBox(height: 12),
-                        Padding(
-                          padding: const EdgeInsets.all(0.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text('Sl No'),
-                             Text('Month'),
-                              Text('Ledger'),
-                              Text('Paid Amt'),
-                            ],
-                          ),
-                        ),
 
                         ListView.builder(
                           itemCount: fee.details.length,
@@ -200,29 +178,25 @@ class _PaidFeeState extends State<PaidFee> {
                           physics: const NeverScrollableScrollPhysics(),
                           itemBuilder: (context, i) {
                             final dtls = fee.details[i];
-                           int srlNo = i+1;
 
                             return Container(
-                              margin: const EdgeInsets.only(bottom: 1),
-                              padding: const EdgeInsets.all(1),
+                              margin: const EdgeInsets.only(bottom: 12),
+                              padding: const EdgeInsets.all(16),
 
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   AmountColumn(
-                                    title: "",
-                                    value: srlNo.toString(),
-                                  ),
-                                  AmountColumn(
-                                    title: "",
+                                    title: "Month",
                                     value: dtls.feeMonth,
                                   ),
                                   AmountColumn(
-                                    title: "",
+                                    title: "Ledger",
                                     value: dtls.ledgerName,
                                   ),
                                   AmountColumn(
-                                    title: "",
+                                    title: "Paid Amt",
                                     value: dtls.paidAmount.toString(),
                                     valueColor: Colors.red,
                                   ),
@@ -421,6 +395,7 @@ class _PaidFeeState extends State<PaidFee> {
       },
     );
   }
+
   String formatDate(String inputDate) {
     DateTime date = DateTime.parse(inputDate);
     return DateFormat('dd-MM-yyyy').format(date);
