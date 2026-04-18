@@ -60,6 +60,7 @@ class FeesRemoteDataSourceImpl implements FeesRemoteDataSource {
     final url = ApiConstants.getFeesUnPaidServerPath(baseUrl!);
     final token = await SharedPreferenceHelper().getToken() ?? "";
     print('Register URL: $url');
+    print(' token: $token');
     print('Request Body: ${request.toJson()}');
 
     final response = await dio.post(
