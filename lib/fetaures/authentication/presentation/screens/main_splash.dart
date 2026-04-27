@@ -12,10 +12,25 @@ class MainSplashScreen extends StatefulWidget {
 }
 
 class _MainSplashScreenState extends State<MainSplashScreen> {
+  String? branchName;
+  String? logo;
   @override
   void initState() {
     super.initState();
+    _loadBranchData();
     _checkLogin();
+  }
+
+  Future<void> _loadBranchData() async {
+    final pref = SharedPreferenceHelper();
+    final branch = await pref.getBranchData();
+
+    if (branch != null) {
+      setState(() {
+        branchName = branch['branchName'];
+        logo = branch['logo']; // 👉 only one logo
+      });
+    }
   }
 
   Future<void> _checkLogin() async {
@@ -49,6 +64,24 @@ class _MainSplashScreenState extends State<MainSplashScreen> {
     }
   }
 
+  /// 🔥 COMMON LOGO (API or fallback)
+  Widget buildLogo(double height) {
+    return logo != null && logo!.isNotEmpty
+        ? Image.network(
+      logo!,
+      height: height,
+      fit: BoxFit.contain,
+      errorBuilder: (_, __, ___) => Image.asset(
+        'assets/images/cristal_horizontal.png', // fallback
+        height: height,
+      ),
+    )
+        : Image.asset(
+      'assets/images/cristal_horizontal.png', // fallback
+      height: height,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,15 +91,15 @@ class _MainSplashScreenState extends State<MainSplashScreen> {
           child: Column(
             children: [
               const Spacer(flex: 2),
+              buildLogo(250),
 
               /// TOP LOGO
-              Image.asset('assets/images/fsp_logo.png', height: 250),
-
+              //  Image.asset('assets/images/fsp_logo.png', height: 250),
               const SizedBox(height: 20),
 
               /// SCHOOL NAME
-              const Text(
-                'First Step Preschool',
+              Text(
+                branchName ?? 'School Name',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
@@ -77,11 +110,7 @@ class _MainSplashScreenState extends State<MainSplashScreen> {
               const Spacer(flex: 3),
 
               /// BOTTOM IMAGE / BRAND
-              Image.asset(
-                'assets/images/cristal_horizontal.png',
-                height: 200,
-                fit: BoxFit.contain,
-              ),
+              buildLogo(150),
 
               const SizedBox(height: 12),
             ],
