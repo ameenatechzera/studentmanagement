@@ -193,18 +193,15 @@ class AllClassDiarySkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
-      padding: const EdgeInsets.all(16),
-      itemCount: 6,
+      padding: const EdgeInsets.all(26), // same as real UI
+      itemCount: 10,
       separatorBuilder: (_, __) => const SizedBox(height: 10),
       itemBuilder: (context, index) {
-        /// ✅ Only some cards expanded (like real UI)
-        final isExpanded = index == 1 || index == 4;
-
         return Shimmer.fromColors(
           baseColor: Colors.grey.shade300,
           highlightColor: Colors.grey.shade100,
           child: Container(
-            padding: const EdgeInsets.all(14),
+            padding: const EdgeInsets.all(14), // same as UI
             decoration: BoxDecoration(
               color: const Color(0xFFF8F8F9),
               borderRadius: BorderRadius.circular(14),
@@ -216,83 +213,49 @@ class AllClassDiarySkeleton extends StatelessWidget {
                 ),
               ],
             ),
-            child: Column(
+            child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                /// 🔹 HEADER (same height as real)
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 2),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              height: 16,
-                              width: double.infinity,
-                              color: Colors.white,
-                            ),
-                            const SizedBox(height: 8),
-                            Container(
-                              height: 14,
-                              width: 120,
-                              color: Colors.white,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(width: 10),
-
-                    Column(
-                      children: [
-                        Container(height: 14, width: 60, color: Colors.white),
-                        const SizedBox(height: 10),
-                        Container(
-                          height: 18,
-                          width: 18,
-                          decoration: const BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-
-                /// 🔥 ONLY SHOW WHEN EXPANDED
-                if (isExpanded) ...[
-                  const SizedBox(height: 10),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      top: 10,
-                      left: 16,
-                      right: 16,
-                    ),
+                /// 🔹 LEFT SIDE (Title + Subtitle)
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 2),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        /// Title
                         Container(
-                          height: 14,
+                          height: 50,
                           width: double.infinity,
                           color: Colors.white,
                         ),
-                        const SizedBox(height: 6),
-                        Container(
-                          height: 14,
-                          width: double.infinity,
-                          color: Colors.white,
-                        ),
-                        const SizedBox(height: 6),
-                        Container(height: 14, width: 200, color: Colors.white),
+
+                        const SizedBox(height: 8),
+
+                        /// Subtitle (short preview)
+                        Container(height: 14, width: 120, color: Colors.white),
                       ],
                     ),
                   ),
-                ],
+                ),
+
+                const SizedBox(width: 10),
+
+                /// 🔹 RIGHT SIDE (Date + Arrow)
+                Column(
+                  children: [
+                    Container(height: 14, width: 60, color: Colors.white),
+                    const SizedBox(height: 10),
+                    Container(
+                      height: 18,
+                      width: 18,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),

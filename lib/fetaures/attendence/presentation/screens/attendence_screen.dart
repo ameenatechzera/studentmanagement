@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studentmanagement/fetaures/attendence/domain/parameters/attendence_reportbydate_parameter.dart';
 import 'package:studentmanagement/fetaures/attendence/domain/parameters/attendence_reportbymonth_parameter.dart';
 import 'package:studentmanagement/fetaures/attendence/presentation/cubit/attendence_cubit.dart';
+import 'package:studentmanagement/fetaures/classdiary/presentation/screens/alldiary_screen.dart';
 
 class AttendenceScreen extends StatefulWidget {
   const AttendenceScreen({super.key});
@@ -128,7 +129,7 @@ class _AttendenceScreenState extends State<AttendenceScreen> {
         body: BlocBuilder<AttendenceCubit, AttendenceState>(
           builder: (context, state) {
             if (state is AttendenceMonthLoading) {
-              return const Center(child: CircularProgressIndicator());
+              return AllClassDiarySkeleton();
             }
 
             if (state is AttendenceMonthError) {
