@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:studentmanagement/core/errors/error_message_model.dart';
 import 'package:studentmanagement/core/errors/exceptions.dart';
 import 'package:studentmanagement/core/network/api_endpoints.dart';
+import 'package:studentmanagement/core/network/apihelper.dart';
 import 'package:studentmanagement/fetaures/timetable/data/models/fetch_timetable_model.dart';
 import 'package:studentmanagement/fetaures/timetable/domain/parameters/fetch_timetable_parameter.dart';
 import 'package:studentmanagement/services/shared_preference_helper.dart';
@@ -33,23 +34,25 @@ class TimeTableRemoteDataSourceImpl implements TimeTableRemoteDataSource {
 
       /// 🔹 Get Headers Data
       // final dbName = await SharedPreferenceHelper().getDatabaseName();
-      final token = await SharedPreferenceHelper().getToken() ?? "";
-
+      //final token = await SharedPreferenceHelper().getToken() ?? "";
+      print(url);
       // if (token.isEmpty) {
       //   throw Exception("Token missing! Please login again.");
       // }
+      final options = await ApiHelper.getAuthOptions(withToken: true);
 
       /// 🔹 GET Request
       final response = await dio.post(
         url,
         data: params.toJson(),
-        options: Options(
-          contentType: "application/json",
-          headers: {
-            "Accept": "application/json",
-            "Authorization": "Bearer $token",
-          },
-        ),
+        options: options,
+        // options: Options(
+        //   contentType: "application/json",
+        //   headers: {
+        //     "Accept": "application/json",
+        //     "Authorization": "Bearer $token",
+        //   },
+        // ),
       );
 
       print('📘 Status Code: ${response.statusCode}');

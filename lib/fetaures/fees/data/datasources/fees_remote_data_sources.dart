@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:studentmanagement/core/errors/error_message_model.dart';
 import 'package:studentmanagement/core/errors/exceptions.dart';
 import 'package:studentmanagement/core/network/api_endpoints.dart';
+import 'package:studentmanagement/core/network/apihelper.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/paid_fee_result.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/unpaid%20fee_result.dart';
 import 'package:studentmanagement/fetaures/fees/domain/parameters/paidFees_request.dart';
@@ -23,19 +24,21 @@ class FeesRemoteDataSourceImpl implements FeesRemoteDataSource {
     if (baseUrl == null || baseUrl.isEmpty) {}
 
     final url = ApiConstants.getFeesPaidServerPath(baseUrl!);
-    final token = await SharedPreferenceHelper().getToken() ?? "";
+    //final token = await SharedPreferenceHelper().getToken() ?? "";
     print('Register URL: $url');
     print('Request Body: ${request.toJson()}');
+    final options = await ApiHelper.getAuthOptions(withToken: true);
 
     final response = await dio.post(
       ApiConstants.getFeesPaidServerPath(baseUrl),
-      options: Options(
-        contentType: "application/json",
-        headers: {
-          "Accept": "application/json",
-          "Authorization": "Bearer $token",
-        },
-      ),
+      options: options,
+      // options: Options(
+      //   contentType: "application/json",
+      //   headers: {
+      //     "Accept": "application/json",
+      //     "Authorization": "Bearer $token",
+      //   },
+      // ),
       data: request.toJson(),
     );
     print(response.data);
@@ -58,19 +61,21 @@ class FeesRemoteDataSourceImpl implements FeesRemoteDataSource {
     if (baseUrl == null || baseUrl.isEmpty) {}
 
     final url = ApiConstants.getFeesUnPaidServerPath(baseUrl!);
-    final token = await SharedPreferenceHelper().getToken() ?? "";
+    // final token = await SharedPreferenceHelper().getToken() ?? "";
     print('Register URL: $url');
     print('Request Body: ${request.toJson()}');
+    final options = await ApiHelper.getAuthOptions(withToken: true);
 
     final response = await dio.post(
       ApiConstants.getFeesUnPaidServerPath(baseUrl),
-      options: Options(
-        contentType: "application/json",
-        headers: {
-          "Accept": "application/json",
-          "Authorization": "Bearer $token",
-        },
-      ),
+      options: options,
+      // options: Options(
+      //   contentType: "application/json",
+      //   headers: {
+      //     "Accept": "application/json",
+      //     "Authorization": "Bearer $token",
+      //   },
+      // ),
       data: request.toJson(),
     );
     print(response.data);

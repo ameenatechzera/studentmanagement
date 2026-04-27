@@ -12,7 +12,36 @@ class SharedPreferenceHelper {
   static const String _tokenKey = 'auth_token';
   static const String _databaseNameKey = 'database_name';
   static const String _loginDataKey = 'login_data';
+  static const String _isSchoolRegisteredKey = 'is_school_registered';
+  static const String _branchDataKey = 'branch_data';
 
+  /// ------------------ SAVE FULL BRANCH DATA ------------------
+  Future<void> saveBranchData(Map<String, dynamic> data) async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonString = jsonEncode(data);
+    await prefs.setString(_branchDataKey, jsonString);
+  }
+
+  /// ------------------ GET FULL BRANCH DATA ------------------
+  Future<Map<String, dynamic>?> getBranchData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonString = prefs.getString(_branchDataKey);
+
+    if (jsonString == null) return null;
+
+    return jsonDecode(jsonString);
+  }
+
+  /// ------------------ SCHOOL REGISTER ------------------
+  Future<void> saveSchoolRegistered(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_isSchoolRegisteredKey, value);
+  }
+
+  Future<bool> isSchoolRegistered() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_isSchoolRegisteredKey) ?? false;
+  }
   // static const String _vatStatusKey = 'vat_status';
   // static const String _vatTypeKey = 'vat_type';
   // static const _itemTapBehaviorKey = 'itemTapBehavior';

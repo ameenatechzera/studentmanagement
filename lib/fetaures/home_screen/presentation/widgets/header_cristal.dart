@@ -18,8 +18,18 @@ class HeaderSection extends StatelessWidget {
                 ? NetworkImage(AppData.profileUrl!)
                 : null,
             child: (AppData.profileUrl == null || AppData.profileUrl!.isEmpty)
-                ? const Icon(Icons.person)
+                ? ClipOval(
+                    child: Image.asset(
+                      getGenderImage(),
+                      fit: BoxFit.cover,
+                      width: 50,
+                      height: 50,
+                    ),
+                  )
                 : null,
+            // child: (AppData.profileUrl == null || AppData.profileUrl!.isEmpty)
+            //     ? const Icon(Icons.person)
+            //     : null,
             //backgroundImage: NetworkImage(AppData.profileUrl ?? ''),
           ),
           const SizedBox(width: 12),
@@ -64,5 +74,17 @@ class HeaderSection extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String getGenderImage() {
+    final g = (AppData.gender ?? '').toLowerCase().trim();
+
+    if (g == 'male') {
+      return "assets/icons/c0d90970-7626-47b6-a097-ca0834c7a05f_removalai_preview.png";
+    } else if (g == 'female') {
+      return "assets/icons/1f5debb8-6e36-4d25-bde8-526f4dd89820_removalai_preview.png";
+    } else {
+      return "assets/icons/c0d90970-7626-47b6-a097-ca0834c7a05f_removalai_preview.png";
+    }
   }
 }

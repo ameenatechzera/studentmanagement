@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:studentmanagement/core/errors/error_message_model.dart';
 import 'package:studentmanagement/core/errors/exceptions.dart';
 import 'package:studentmanagement/core/network/api_endpoints.dart';
+import 'package:studentmanagement/core/network/apihelper.dart';
 import 'package:studentmanagement/fetaures/classdiary/data/models/fetch_diary_model.dart';
 import 'package:studentmanagement/fetaures/classdiary/domain/parameters/fetch_diary_parameter.dart';
 import 'package:studentmanagement/services/shared_preference_helper.dart';
@@ -27,21 +28,23 @@ class DiaryRemoteDataSourceImpl implements DiaryRemoteDataSource {
 
       /// 🔹 Build API URL
       final url = ApiConstants.getDiaryFetchPath(baseUrl);
-      final token = await SharedPreferenceHelper().getToken() ?? "";
-      print('token $token');
+      // final token = await SharedPreferenceHelper().getToken() ?? "";
+      //  print('token $token');
       print('url $url');
+      final options = await ApiHelper.getAuthOptions(withToken: true);
 
       /// 🔹 POST Request
       final response = await dio.post(
         url,
         data: params.toJson(),
-        options: Options(
-          contentType: "application/json",
-          headers: {
-            "Accept": "application/json",
-            "Authorization": "Bearer $token",
-          },
-        ),
+        options: options,
+        // Options(
+        //   contentType: "application/json",
+        //   headers: {
+        //     "Accept": "application/json",
+        //     "Authorization": "Bearer $token",
+        //   },
+        // ),
       );
 
       print('📘 Status Code: ${response.statusCode}');

@@ -52,8 +52,10 @@ class _HomeScreenState extends State<HomeScreen> {
         standardId: AppData.studentStdId!,
         divisionId: AppData.studentDivId!,
         fromDateTime: "",
+        admissionNo: AppData.admissionNo!,
+        branchId: 1,
         page: page,
-        perPage: 3,
+        perPage: 12,
       ),
     );
   }
@@ -100,11 +102,11 @@ class _HomeScreenState extends State<HomeScreen> {
               final newFeeds = state.response.data ?? [];
               final pagination = state.response.pagination;
 
-              print("✅ API SUCCESS → page: ${currentPageNotifier.value}");
-              print("📊 New items count: ${newFeeds.length}");
-              print(
-                "🆕 New Feed IDs: ${newFeeds.map((e) => e.feedId).toList()}",
-              );
+              // print("✅ API SUCCESS → page: ${currentPageNotifier.value}");
+              // print("📊 New items count: ${newFeeds.length}");
+              // print(
+              //   "🆕 New Feed IDs: ${newFeeds.map((e) => e.feedId).toList()}",
+              // );
 
               isFirstLoadingNotifier.value = false;
               isLoadingMoreNotifier.value = false;
@@ -115,45 +117,45 @@ class _HomeScreenState extends State<HomeScreen> {
 
               if (currentPageNotifier.value == 1) {
                 allFeedsNotifier.value = List<FeedDetails>.from(newFeeds);
-                print("🧹 RESET LIST (page 1)");
+                //print("🧹 RESET LIST (page 1)");
               } else {
                 allFeedsNotifier.value = [
                   ...allFeedsNotifier.value,
                   ...newFeeds,
                 ];
-                print("➕ APPENDED DATA");
+                // print("➕ APPENDED DATA");
               }
 
-              print(
-                "📦 ALL Feed IDs: ${allFeedsNotifier.value.map((e) => e.feedId).toList()}",
-              );
+              // print(
+              //   "📦 ALL Feed IDs: ${allFeedsNotifier.value.map((e) => e.feedId).toList()}",
+              // );
 
               final ids = allFeedsNotifier.value.map((e) => e.feedId).toList();
               final uniqueIds = ids.toSet();
 
               if (ids.length != uniqueIds.length) {
-                print("❌ DUPLICATE DETECTED!");
+                // print("❌ DUPLICATE DETECTED!");
               } else {
-                print("✅ NO DUPLICATES");
+                // print("✅ NO DUPLICATES");
               }
 
-              print(
-                "📄 PAGINATION → currentPage: ${currentPageNotifier.value} | lastPage: ${lastPageNotifier.value} | hasMoreData: ${hasMoreDataNotifier.value}",
-              );
-              print(
-                "📌 FINAL STATE → totalItems: ${allFeedsNotifier.value.length}",
-              );
+              // print(
+              //   "📄 PAGINATION → currentPage: ${currentPageNotifier.value} | lastPage: ${lastPageNotifier.value} | hasMoreData: ${hasMoreDataNotifier.value}",
+              // );
+              // print(
+              //   "📌 FINAL STATE → totalItems: ${allFeedsNotifier.value.length}",
+              // );
             }
 
             if (state is FeedError) {
-              print("❌ API ERROR: ${state.message}");
+              //print("❌ API ERROR: ${state.message}");
 
               isFirstLoadingNotifier.value = false;
               isLoadingMoreNotifier.value = false;
 
               if (currentPageNotifier.value > 1) {
                 currentPageNotifier.value = currentPageNotifier.value - 1;
-                print("↩️ PAGE ROLLBACK → ${currentPageNotifier.value}");
+                // print("↩️ PAGE ROLLBACK → ${currentPageNotifier.value}");
               }
             }
           },
@@ -165,7 +167,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   valueListenable: allFeedsNotifier,
                   builder: (context, allFeeds, __) {
                     if (isFirstLoading && state is FeedLoading) {
-                      return const Center(child: CircularProgressIndicator());
+                      return PostCardSkeleton();
                     }
 
                     if (state is FeedError && allFeeds.isEmpty) {

@@ -174,6 +174,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           .toString();
                       AppData.accYear = state.loginResponse.student!.accYear
                           .toString();
+                      AppData.gender = state.loginResponse.student!.gender
+                          .toString();
                       print(
                         'profileUrl ${state.loginResponse.student!.imageUrl.toString()}',
                       );

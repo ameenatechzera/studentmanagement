@@ -60,10 +60,7 @@ class _MainSplashScreenState extends State<MainSplashScreen> {
               const Spacer(flex: 2),
 
               /// TOP LOGO
-              Image.asset(
-                'assets/images/fsp_logo.png',
-                height: 250,
-              ),
+              Image.asset('assets/images/fsp_logo.png', height: 250),
 
               const SizedBox(height: 20),
 

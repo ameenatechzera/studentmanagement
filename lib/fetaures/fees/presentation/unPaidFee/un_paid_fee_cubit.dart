@@ -14,7 +14,7 @@ class UnPaidFeeCubit extends Cubit<UnPaidFeeState> {
        super(FeeUnpaidInitial());
 
   Future<void> fetchUnPaidFeesDetails(PaidFeesRequest request) async {
-    emit(FeeUnpaidInitial());
+    emit(FeeUnpaidLoading());
     try {
       final result = await _fetchUnPaidFeesDetailsUseCase(request);
 

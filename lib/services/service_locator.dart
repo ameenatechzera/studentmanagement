@@ -9,6 +9,8 @@ import 'package:studentmanagement/fetaures/authentication/data/datasources/auth_
 import 'package:studentmanagement/fetaures/authentication/data/repositories/auth_repository_impl.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/repositories/auth_repository.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/usecases/device_register_usecase.dart';
+import 'package:studentmanagement/fetaures/authentication/domain/usecases/getbranch_usecase.dart';
+import 'package:studentmanagement/fetaures/authentication/domain/usecases/getschool_usecase.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/usecases/login_usecase.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/bloc/logincubit/login_cubit.dart';
 import 'package:studentmanagement/fetaures/classdiary/data/datasources/diary_remote_data_source.dart';
@@ -26,6 +28,7 @@ import 'package:studentmanagement/fetaures/fees/presentation/unPaidFee/un_paid_f
 import 'package:studentmanagement/fetaures/home_screen/data/datasources/feed_remote_data_source.dart';
 import 'package:studentmanagement/fetaures/home_screen/data/repositories/feed_repository_impl.dart';
 import 'package:studentmanagement/fetaures/home_screen/domain/repositories/feed_repository.dart';
+import 'package:studentmanagement/fetaures/home_screen/domain/usecases/feedaction_usecase.dart';
 import 'package:studentmanagement/fetaures/home_screen/domain/usecases/fetch_feed_usecase.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/cubit/feed_cubit.dart';
 import 'package:studentmanagement/fetaures/marklist/data/datasources/marklist_remote_data_source.dart';
@@ -55,12 +58,16 @@ class ServiceLocator {
       () => LoginCubit(
         loginServerUseCase: sl(),
         checkDeviceRegisterStatusUseCase: sl(),
+        fetchSchoolUseCase: sl(),
+        getBranchUseCase: sl(),
       ),
     );
     // usecase
 
     sl.registerLazySingleton(() => LoginServerUseCase(sl()));
     sl.registerLazySingleton(() => CheckDeviceRegisterStatusUseCase(sl()));
+    sl.registerLazySingleton(() => FetchSchoolUseCase(sl()));
+    sl.registerLazySingleton(() => GetBranchUseCase(sl()));
 
     // Data Source
     sl.registerLazySingleton<AuthRemoteDataSource>(
@@ -126,9 +133,12 @@ class ServiceLocator {
     );
     // ------------------- FEED -------------------
 
-    sl.registerFactory(() => FeedCubit(fetchFeedUseCase: sl()));
+    sl.registerFactory(
+      () => FeedCubit(fetchFeedUseCase: sl(), feedActionUseCase: sl()),
+    );
 
     sl.registerLazySingleton(() => FetchFeedUseCase(sl()));
+    sl.registerLazySingleton(() => FeedActionUseCase(sl()));
 
     sl.registerLazySingleton<FeedRemoteDataSource>(
       () => FeedRemoteDataSourceImpl(),

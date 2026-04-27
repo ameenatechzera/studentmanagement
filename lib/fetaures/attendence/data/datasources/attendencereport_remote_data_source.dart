@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:studentmanagement/core/errors/error_message_model.dart';
 import 'package:studentmanagement/core/errors/exceptions.dart';
 import 'package:studentmanagement/core/network/api_endpoints.dart';
+import 'package:studentmanagement/core/network/apihelper.dart';
 import 'package:studentmanagement/fetaures/attendence/data/models/attendence_reportbydate_model.dart';
 import 'package:studentmanagement/fetaures/attendence/data/models/attendence_reportbymonth_model.dart';
 import 'package:studentmanagement/fetaures/attendence/domain/entities/attendence_reportbydate_entity.dart';
@@ -33,24 +34,26 @@ class AttendanceRemoteDataSourceImpl implements AttendanceRemoteDataSource {
         throw Exception("Base URL not set");
       }
 
-      final dbName = await SharedPreferenceHelper().getDatabaseName();
-      final token = await SharedPreferenceHelper().getToken() ?? "";
+      // final dbName = await SharedPreferenceHelper().getDatabaseName();
+      // final token = await SharedPreferenceHelper().getToken() ?? "";
       final url = ApiConstants.getAttendanceReportByDatePath(baseUrl);
+      final options = await ApiHelper.getAuthOptions(withToken: true);
 
       print('🔹 Attendance URL: $url');
       print('🔹 Request Body: ${params.toJson()}');
-      print('🔹 dbName: $dbName');
+      // print('🔹 dbName: $dbName');
 
       final response = await dio.post(
         url,
         data: params.toJson(),
-        options: Options(
-          contentType: "application/json",
-          headers: {
-            "Accept": "application/json",
-            "Authorization": "Bearer $token",
-          },
-        ),
+        options: options,
+        // Options(
+        //   contentType: "application/json",
+        //   headers: {
+        //     "Accept": "application/json",
+        //     "Authorization": "Bearer $token",
+        //   },
+        // ),
       );
 
       print('🔹 Status Code: ${response.statusCode}');
@@ -81,24 +84,25 @@ class AttendanceRemoteDataSourceImpl implements AttendanceRemoteDataSource {
         throw Exception("Base URL not set");
       }
 
-      final token = await SharedPreferenceHelper().getToken() ?? "";
+      // final token = await SharedPreferenceHelper().getToken() ?? "";
       final url = ApiConstants.getAttendanceReportByMonthPath(
         baseUrl,
       ); // ✅ new endpoint
 
       print('🔹 Month Attendance URL: $url');
       print('🔹 Request Body: ${params.toJson()}');
-
+      final options = await ApiHelper.getAuthOptions(withToken: true);
       final response = await dio.post(
         url,
         data: params.toJson(),
-        options: Options(
-          contentType: "application/json",
-          headers: {
-            "Accept": "application/json",
-            "Authorization": "Bearer $token",
-          },
-        ),
+        options: options,
+        // options: Options(
+        //   contentType: "application/json",
+        //   headers: {
+        //     "Accept": "application/json",
+        //     "Authorization": "Bearer $token",
+        //   },
+        // ),
       );
 
       print('🔹 Status Code: ${response.statusCode}');

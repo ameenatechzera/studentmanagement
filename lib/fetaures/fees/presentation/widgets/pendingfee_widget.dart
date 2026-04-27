@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studentmanagement/fetaures/fees/presentation/unPaidFee/un_paid_fee_cubit.dart';
+import 'package:studentmanagement/fetaures/fees/presentation/widgets/pendingfee_skeleton.dart';
 
 class PendingFee extends StatelessWidget {
   const PendingFee({super.key});
@@ -9,8 +10,9 @@ class PendingFee extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<UnPaidFeeCubit, UnPaidFeeState>(
       builder: (context, state) {
-        if (state is FeeUnpaidInitial) {
-          return const Center(child: CircularProgressIndicator());
+        if (state is FeeUnpaidInitial || state is FeeUnpaidLoading) {
+          return const PendingFeeShimmer();
+          // return const Center(child: CircularProgressIndicator());
         }
 
         if (state is FeesUnPaidSuccess) {
@@ -72,7 +74,10 @@ class PendingFee extends StatelessWidget {
                                 ),
                                 Text(
                                   fee.amount,
-                                  style: TextStyle(fontSize: 15, color: Colors.red),
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.red,
+                                  ),
                                 ),
                               ],
                             ),
@@ -84,8 +89,6 @@ class PendingFee extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(height: 6),
-
-
                           ],
                         ),
                       ),

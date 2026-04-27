@@ -28,3 +28,28 @@ class FeedError extends FeedState {
   @override
   List<Object?> get props => [message];
 }
+
+class FeedActionLoading extends FeedState {
+  const FeedActionLoading();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class FeedActionSuccess extends FeedState {
+  final FeedActionResponseModel response;
+
+  const FeedActionSuccess({required this.response});
+
+  @override
+  List<Object?> get props => [response];
+}
+
+class FeedActionError extends FeedState {
+  final String message;
+
+  const FeedActionError({required this.message});
+
+  @override
+  List<Object?> get props => [message];
+}

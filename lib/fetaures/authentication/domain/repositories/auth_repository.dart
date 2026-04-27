@@ -1,8 +1,11 @@
 import 'package:studentmanagement/core/utils/typedef.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/entities/device_register_result.dart';
+import 'package:studentmanagement/fetaures/authentication/domain/entities/getbranch_entitiy.dart';
+import 'package:studentmanagement/fetaures/authentication/domain/entities/getschool_entity.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/entities/login_entity.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/entities/register_server_response_entity.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/parameters/device_register_request.dart';
+import 'package:studentmanagement/fetaures/authentication/domain/parameters/fetchschool_parameter.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/parameters/login_params.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/parameters/register_server_params.dart';
 
@@ -15,4 +18,6 @@ abstract class AuthRepository {
   ResultFuture<DeviceRegisterResult> deviceRegister(
     DeviceRegisterRequest request,
   );
+  ResultFuture<FetchSchoolEntity> fetchSchools(FetchSchoolRequest request);
+  ResultFuture<GetBranchEntity> getBranchDetails();
 }

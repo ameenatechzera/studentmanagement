@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studentmanagement/fetaures/attendence/presentation/cubit/attendence_cubit.dart';
-import 'package:studentmanagement/fetaures/authentication/presentation/screens/main_splash.dart';
+import 'package:studentmanagement/fetaures/authentication/presentation/screens/appstart_screen.dart';
 import 'package:studentmanagement/fetaures/classdiary/presentation/cubit/diary_cubit.dart';
 import 'package:studentmanagement/fetaures/fees/presentation/bloc/fees_cubit.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/cubit/feed_cubit.dart';
@@ -9,7 +9,6 @@ import 'package:studentmanagement/fetaures/marklist/presentation/cubit/marklist_
 import 'package:studentmanagement/fetaures/materials/presentation/cubit/material_cubit.dart';
 import 'package:studentmanagement/fetaures/timetable/presentation/cubit/timetable_cubit.dart';
 import 'package:studentmanagement/services/service_locator.dart';
-import 'package:studentmanagement/services/shared_preference_helper.dart';
 import 'fetaures/authentication/presentation/bloc/logincubit/login_cubit.dart';
 import 'fetaures/fees/presentation/unPaidFee/un_paid_fee_cubit.dart';
 
@@ -25,19 +24,21 @@ void main() async {
   // );
   // appDb = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
   await ServiceLocator.init();
-  final sharedPrefHelper = SharedPreferenceHelper();
+  //final sharedPrefHelper = SharedPreferenceHelper();
 
   // set the default URL if not already set
-  final currentBaseUrl = await sharedPrefHelper.getBaseUrl();
-  if (currentBaseUrl == null) {
-    await sharedPrefHelper.setBaseUrl(
-      // 'https://cristalofflineweb.techzera.in/Api/public/api',
-      //'https://test.cristaledu.com/Api/public/api',
-      //'https://cristalwebonline.techzera.in/Api/public/api',
-      'https://online.cristaledu.com/Api/public/api',
-      //'https://fsp.cristaledu.com/Api/public/api',
-    );
-  }
+  // final currentBaseUrl = await sharedPrefHelper.getBaseUrl();
+  // if (currentBaseUrl == null) {
+  //   // await sharedPrefHelper.setBaseUrl(
+  //   //   // 'https://cristalofflineweb.techzera.in/Api/public/api',
+  //   //   //'https://test.cristaledu.com/Api/public/api',
+  //   //   //'https://cristalwebonline.techzera.in/Api/public/api',
+  //   //   // 'https://online.cristaledu.com/Api/public/api/app',
+
+  //   //   //'https://fsp.cristaledu.com/Api/public/api',
+  //   //   'https://online.cristaledu.com/Api/public/api',
+  //   // );
+  // }
   runApp(MyApp());
 }
 
@@ -75,7 +76,7 @@ class MyApp extends StatelessWidget {
             // ),
           ),
         ),
-        home: const MainSplashScreen(),
+        home: const AppStartScreen(),
       ),
     );
   }

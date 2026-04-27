@@ -5,6 +5,8 @@ sealed class UnPaidFeeState {}
 
 final class FeeUnpaidInitial extends UnPaidFeeState {}
 
+final class FeeUnpaidLoading extends UnPaidFeeState {}
+
 final class FeeUnPaidFailure extends UnPaidFeeState {
   final String error;
 

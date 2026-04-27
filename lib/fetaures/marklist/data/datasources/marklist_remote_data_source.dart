@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:studentmanagement/core/errors/error_message_model.dart';
 import 'package:studentmanagement/core/errors/exceptions.dart';
 import 'package:studentmanagement/core/network/api_endpoints.dart';
+import 'package:studentmanagement/core/network/apihelper.dart';
 import 'package:studentmanagement/fetaures/marklist/data/models/fetch_examterm_model.dart';
 import 'package:studentmanagement/fetaures/marklist/data/models/fetch_marklist_model.dart';
 import 'package:studentmanagement/fetaures/marklist/domain/parameter/fetch_marklist_parameter.dart';
@@ -32,18 +33,20 @@ class MarkListRemoteDataSourceImpl implements MarkListRemoteDataSource {
       final url = ApiConstants.getExamTermPath(baseUrl);
 
       /// 🔹 Get Token
-      final token = await SharedPreferenceHelper().getToken() ?? "";
+      //final token = await SharedPreferenceHelper().getToken() ?? "";
+      final options = await ApiHelper.getAuthOptions(withToken: true);
 
       /// 🔹 API Call
       final response = await dio.get(
         url,
-        options: Options(
-          contentType: "application/json",
-          headers: {
-            "Accept": "application/json",
-            "Authorization": "Bearer $token",
-          },
-        ),
+        options: options,
+        // options: Options(
+        //   contentType: "application/json",
+        //   headers: {
+        //     "Accept": "application/json",
+        //     "Authorization": "Bearer $token",
+        //   },
+        // ),
       );
 
       print('📘 Status Code: ${response.statusCode}');
@@ -83,9 +86,10 @@ class MarkListRemoteDataSourceImpl implements MarkListRemoteDataSource {
       final url = ApiConstants.getMarkListPath(baseUrl);
       print('url $url');
       print('params ${params.toJson()}');
+      final options = await ApiHelper.getAuthOptions();
 
       /// 🔹 Get Token
-      final token = await SharedPreferenceHelper().getToken() ?? "";
+      //final token = await SharedPreferenceHelper().getToken() ?? "";
 
       /// 🔹 Request Body (important 🔥)
 
@@ -93,13 +97,14 @@ class MarkListRemoteDataSourceImpl implements MarkListRemoteDataSource {
       final response = await dio.post(
         url,
         data: params.toJson(),
-        options: Options(
-          contentType: "application/json",
-          headers: {
-            "Accept": "application/json",
-            "Authorization": "Bearer $token",
-          },
-        ),
+        options: options,
+        // options: Options(
+        //   contentType: "application/json",
+        //   headers: {
+        //     "Accept": "application/json",
+        //     "Authorization": "Bearer $token",
+        //   },
+        // ),
       );
 
       /// 🔹 Parse Response

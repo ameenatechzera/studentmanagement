@@ -54,6 +54,8 @@ class CustomBottomBar extends StatelessWidget {
                       standardId: AppData.studentStdId!,
                       divisionId: AppData.studentDivId!,
                       fromDateTime: "",
+                      admissionNo: AppData.admissionNo!,
+                      branchId: 1,
                       page: 1,
                       perPage: 10,
                     ),

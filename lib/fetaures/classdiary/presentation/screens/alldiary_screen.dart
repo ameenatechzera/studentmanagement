@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:studentmanagement/core/appdata/appdata.dart';
 import 'package:studentmanagement/fetaures/classdiary/domain/parameters/fetch_diary_parameter.dart';
 import 'package:studentmanagement/fetaures/classdiary/presentation/cubit/diary_cubit.dart';
@@ -18,7 +19,10 @@ class AllClassDiaryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<DiaryCubit>().fetchDiary(
-        FetchDiaryParameter(admNo: AppData.admissionNo!, accYear: AppData.accYear!),
+        FetchDiaryParameter(
+          admNo: AppData.admissionNo!,
+          accYear: AppData.accYear!,
+        ),
       );
     });
     return Scaffold(
@@ -70,7 +74,7 @@ class AllClassDiaryScreen extends StatelessWidget {
       body: BlocBuilder<DiaryCubit, DiaryState>(
         builder: (context, state) {
           if (state is DiaryLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return AllClassDiarySkeleton();
           }
 
           if (state is DiaryError) {
@@ -91,8 +95,10 @@ class AllClassDiaryScreen extends StatelessWidget {
               itemBuilder: (context, index) {
                 final diary = diaryList[index];
                 String desc = diary.description ?? '';
-                String st_diaryHead = desc.length > 8 ? desc.substring(0, 8) : desc;
-                st_diaryHead = st_diaryHead+'...';
+                String st_diaryHead = desc.length > 8
+                    ? desc.substring(0, 8)
+                    : desc;
+                st_diaryHead = st_diaryHead + '...';
                 return ValueListenableBuilder<int?>(
                   valueListenable: expandedIndexNotifier,
                   builder: (_, expandedIndex, __) {
@@ -134,7 +140,7 @@ class AllClassDiaryScreen extends StatelessWidget {
                               padding: const EdgeInsets.only(top: 8.0),
                               child: Column(
                                 children: [
-                             Text(diary.diaryDate!),
+                                  Text(diary.diaryDate!),
                                   const SizedBox(height: 10),
                                   InkWell(
                                     onTap: () {
@@ -177,6 +183,121 @@ class AllClassDiaryScreen extends StatelessWidget {
           return const SizedBox();
         },
       ),
+    );
+  }
+}
+
+class AllClassDiarySkeleton extends StatelessWidget {
+  const AllClassDiarySkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.separated(
+      padding: const EdgeInsets.all(16),
+      itemCount: 6,
+      separatorBuilder: (_, __) => const SizedBox(height: 10),
+      itemBuilder: (context, index) {
+        /// ✅ Only some cards expanded (like real UI)
+        final isExpanded = index == 1 || index == 4;
+
+        return Shimmer.fromColors(
+          baseColor: Colors.grey.shade300,
+          highlightColor: Colors.grey.shade100,
+          child: Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF8F8F9),
+              borderRadius: BorderRadius.circular(14),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.08),
+                  blurRadius: 16,
+                  offset: const Offset(0, 10),
+                ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                /// 🔹 HEADER (same height as real)
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 2),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              height: 16,
+                              width: double.infinity,
+                              color: Colors.white,
+                            ),
+                            const SizedBox(height: 8),
+                            Container(
+                              height: 14,
+                              width: 120,
+                              color: Colors.white,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(width: 10),
+
+                    Column(
+                      children: [
+                        Container(height: 14, width: 60, color: Colors.white),
+                        const SizedBox(height: 10),
+                        Container(
+                          height: 18,
+                          width: 18,
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+
+                /// 🔥 ONLY SHOW WHEN EXPANDED
+                if (isExpanded) ...[
+                  const SizedBox(height: 10),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      top: 10,
+                      left: 16,
+                      right: 16,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          height: 14,
+                          width: double.infinity,
+                          color: Colors.white,
+                        ),
+                        const SizedBox(height: 6),
+                        Container(
+                          height: 14,
+                          width: double.infinity,
+                          color: Colors.white,
+                        ),
+                        const SizedBox(height: 6),
+                        Container(height: 14, width: 200, color: Colors.white),
+                      ],
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

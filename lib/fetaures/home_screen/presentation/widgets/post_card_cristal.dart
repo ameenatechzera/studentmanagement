@@ -1,164 +1,361 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:studentmanagement/fetaures/home_screen/domain/entities/fetchfeed_entity.dart';
+import 'package:studentmanagement/fetaures/home_screen/domain/parameters/feedaction_parameter.dart';
+import 'package:studentmanagement/fetaures/home_screen/presentation/cubit/feed_cubit.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/helper/homescreen_helper.dart';
 
-class PostCard extends StatelessWidget {
+class PostCard extends StatefulWidget {
   final FeedDetails feed;
 
   const PostCard({super.key, required this.feed});
 
   @override
+  State<PostCard> createState() => _PostCardState();
+}
+
+class _PostCardState extends State<PostCard> {
+  late bool isLiked;
+  late int likeCount;
+  int currentPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+
+    isLiked = widget.feed.isLiked ?? false;
+    likeCount = widget.feed.likeCount ?? 0;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final imageUrl = feed.files != null && feed.files!.isNotEmpty
-        ? feed.files!.first.image
-        : null;
+    final feed = widget.feed;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // 🔹 Top Row
-        Container(
-          color: Colors.transparent,
-          child: Padding(
-            padding: const EdgeInsets.only(left: 10, right: 10),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const CircleAvatar(
-                  radius: 16,
-                  backgroundImage: AssetImage('assets/images/fsp_logo.png'),
-                ),
-
-                const SizedBox(width: 10),
-
-                /// TEXT SECTION
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        "FSP",
-                        style: TextStyle(
-                          // color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        TimeAgoHelper.getFeedTime(
-                          createdDate: feed.createdDate,
-                          modifiedDate: feed.modifiedDate,
-                        ),
-                        style: const TextStyle(
-                          fontSize: 12,
-                          // color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                /// RIGHT SIDE TIME (optional)
-                Text(
-                  feed.createdTime ?? "",
-                  style: TextStyle(
-                    fontSize: 12,
-                    // color: Colors.white,
-                  ), // Colors.grey.shade600),
-                ),
-              ],
-            ),
-          ),
-        ),
-        SizedBox(height: 10),
-
-        /// 🔹 Image (only if exists)
-        if (imageUrl != null)
-          Image.network(
-            imageUrl,
-            height: 200,
-            width: double.infinity,
-            fit: BoxFit.cover,
-          ),
-
-        /// 🔹 Text
+        /// 🔹 TOP ROW
         Padding(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.symmetric(horizontal: 10),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const CircleAvatar(
+                radius: 16,
+                backgroundImage: AssetImage('assets/images/fsp_logo.png'),
+              ),
+              const SizedBox(width: 10),
+
               Expanded(
-                child: Text(
-                  feed.feedText ?? "",
-                  style: const TextStyle(
-                    //color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      feed.postedBy ?? 'NoName',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      TimeAgoHelper.getFeedTime(
+                        createdDate: feed.createdDate,
+                        modifiedDate: feed.modifiedDate,
+                      ),
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                  ],
                 ),
               ),
-              // const Icon(Icons.favorite_border),
+
+              Text(
+                feed.createdTime ?? "",
+                style: const TextStyle(fontSize: 12),
+              ),
             ],
           ),
         ),
+
+        const SizedBox(height: 10),
+
+        /// 🔹 IMAGE SECTION
+        if (feed.files != null && feed.files!.isNotEmpty)
+          Column(
+            children: [
+              FutureBuilder<Size>(
+                future: _getImageSize(feed.files!.first.image ?? ""),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return const SizedBox(
+                      height: 200,
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                  }
+
+                  final size = snapshot.data!;
+                  final aspectRatio = size.width / size.height;
+
+                  return AspectRatio(
+                    aspectRatio: aspectRatio,
+                    child: PageView.builder(
+                      itemCount: feed.files!.length,
+                      onPageChanged: (index) {
+                        setState(() {
+                          currentPage = index;
+                        });
+                      },
+                      itemBuilder: (context, index) {
+                        final imageUrl = feed.files![index].image;
+
+                        return Image.network(
+                          imageUrl ?? "",
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                        );
+                      },
+                    ),
+                  );
+                },
+              ),
+
+              /// 🔹 DOT INDICATOR
+              if (feed.files!.length > 1)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(
+                    feed.files!.length,
+                    (index) => Container(
+                      margin: const EdgeInsets.all(3),
+                      width: currentPage == index ? 8 : 6,
+                      height: currentPage == index ? 8 : 6,
+                      decoration: BoxDecoration(
+                        color: currentPage == index ? Colors.blue : Colors.grey,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+
+        /// 🔹 FEED TEXT
+        Padding(
+          padding: const EdgeInsets.all(12),
+          child: Text(
+            feed.feedText ?? "",
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          ),
+        ),
+
+        /// 🔹 ACTION ROW
         Row(
           children: [
             IconButton(
-              icon: Icon(Icons.favorite_border),
-              onPressed: () {},
-              // color: Colors.white,
-            ),
-            Text('30k'), // style: TextStyle(color: Colors.white)),
-            IconButton(
-              icon: Icon(Icons.send),
+              icon: Icon(
+                isLiked ? Icons.favorite : Icons.favorite_border,
+                color: isLiked ? Colors.red : Colors.grey,
+              ),
               onPressed: () {
-                sharePost();
+                final newValue = !isLiked;
+
+                context.read<FeedCubit>().feedAction(
+                  FeedActionParameter(
+                    admissionId: 1,
+                    feedId: feed.feedId!,
+                    branchId: feed.branchId!,
+                    type: "like",
+                    value: newValue,
+                  ),
+                );
+
+                setState(() {
+                  isLiked = newValue;
+                  likeCount = newValue
+                      ? likeCount + 1
+                      : (likeCount > 0 ? likeCount - 1 : 0);
+                });
               },
             ),
-            Text('20'), //style: TextStyle(color: Colors.white)),
+
+            Text(likeCount.toString()),
+
+            IconButton(icon: const Icon(Icons.send), onPressed: sharePost),
+
+            Text(feed.shareCount.toString()),
           ],
         ),
       ],
     );
   }
 
+  Future<Size> _getImageSize(String url) async {
+    final completer = Completer<Size>();
+
+    final image = Image.network(url);
+
+    image.image
+        .resolve(const ImageConfiguration())
+        .addListener(
+          ImageStreamListener((ImageInfo info, bool _) {
+            final myImage = info.image;
+
+            completer.complete(
+              Size(myImage.width.toDouble(), myImage.height.toDouble()),
+            );
+          }),
+        );
+
+    return completer.future;
+  }
+
   Future<void> sharePost() async {
     try {
-      String text = feed.feedText ?? "";
+      String text = widget.feed.feedText ?? "";
 
       String finalText =
           """
 $text
 
-*Shared From Cristal App* 
+*Shared From Cristal App*
 FSP School, Saudi Arabia
 """;
 
-      if (feed.files != null && feed.files!.isNotEmpty) {
-        final imageUrl = feed.files!.first.image;
+      if (widget.feed.files != null && widget.feed.files!.isNotEmpty) {
+        final imageUrl = widget.feed.files!.first.image;
 
-        // Download image
         final response = await http.get(Uri.parse(imageUrl!));
+
         final bytes = response.bodyBytes;
 
-        // Save to temp file
         final dir = await getTemporaryDirectory();
+
         final file = File('${dir.path}/shared_image.jpg');
+
         await file.writeAsBytes(bytes);
 
-        // Share image + text
         await Share.shareXFiles([XFile(file.path)], text: finalText);
       } else {
-        // Share only text
         await Share.share(finalText);
       }
     } catch (e) {
-      print("Share error: $e");
+      debugPrint("Share error: $e");
     }
+  }
+}
+
+class PostCardSkeleton extends StatelessWidget {
+  const PostCardSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: 10, // 👈 number of shimmer cards
+      padding: const EdgeInsets.only(top: 10),
+      itemBuilder: (context, index) {
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: Shimmer.fromColors(
+            baseColor: Colors.grey.shade300,
+            highlightColor: Colors.grey.shade100,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                /// 🔹 TOP ROW
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Row(
+                    children: [
+                      const CircleAvatar(
+                        radius: 16,
+                        backgroundColor: Colors.white,
+                      ),
+                      const SizedBox(width: 10),
+
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _box(width: 120, height: 12),
+                            const SizedBox(height: 6),
+                            _box(width: 80, height: 10),
+                          ],
+                        ),
+                      ),
+
+                      _box(width: 40, height: 10),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 10),
+
+                /// 🔹 IMAGE
+                Container(
+                  height: 220,
+                  width: double.infinity,
+                  color: Colors.white,
+                ),
+
+                const SizedBox(height: 10),
+
+                /// 🔹 TEXT
+                Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _box(width: double.infinity, height: 14),
+                      const SizedBox(height: 8),
+                      _box(width: double.infinity, height: 14),
+                      const SizedBox(height: 8),
+                      _box(width: 200, height: 14),
+                    ],
+                  ),
+                ),
+
+                /// 🔹 ACTION ROW
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Row(
+                    children: [
+                      _circle(),
+                      const SizedBox(width: 8),
+                      _box(width: 20, height: 12),
+                      const SizedBox(width: 20),
+                      _circle(),
+                      const SizedBox(width: 8),
+                      _box(width: 20, height: 12),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _box({required double width, required double height}) {
+    return Container(width: width, height: height, color: Colors.white);
+  }
+
+  Widget _circle() {
+    return Container(
+      width: 24,
+      height: 24,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        shape: BoxShape.circle,
+      ),
+    );
   }
 }

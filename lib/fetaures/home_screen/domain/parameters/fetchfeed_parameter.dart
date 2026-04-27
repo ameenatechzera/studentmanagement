@@ -3,6 +3,8 @@ class FetchFeedParameter {
   final String standardId;
   final String divisionId;
   final String fromDateTime;
+  final String admissionNo;
+  final int branchId;
   final int page;
   final int perPage;
 
@@ -11,6 +13,8 @@ class FetchFeedParameter {
     required this.standardId,
     required this.divisionId,
     required this.fromDateTime,
+    required this.admissionNo,
+    required this.branchId,
     required this.page,
     required this.perPage,
   });
@@ -21,6 +25,8 @@ class FetchFeedParameter {
       "StandardId": standardId,
       "DivisionId": divisionId,
       "FromDateTime": fromDateTime,
+      "admissionNo": admissionNo,
+      "branchId": branchId,
       "page": page,
       "per_page": perPage,
     };

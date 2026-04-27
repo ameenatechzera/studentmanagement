@@ -48,3 +48,31 @@ final class DeviceRegisterStatusSuccess extends LoginState {
   @override
   List<Object> get props => [registerResponse];
 }
+
+class FetchSchoolLoading extends LoginState {}
+
+class FetchSchoolSuccess extends LoginState {
+  final FetchSchoolEntity response;
+
+  const FetchSchoolSuccess(this.response);
+}
+
+class FetchSchoolFailure extends LoginState {
+  final String message;
+
+  const FetchSchoolFailure(this.message);
+}
+
+class GetBranchLoading extends LoginState {}
+
+class GetBranchSuccess extends LoginState {
+  final GetBranchEntity response;
+
+  const GetBranchSuccess(this.response);
+}
+
+class GetBranchFailure extends LoginState {
+  final String message;
+
+  const GetBranchFailure(this.message);
+}
