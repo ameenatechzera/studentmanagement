@@ -27,8 +27,7 @@ class ThirdSplashScreen extends StatelessWidget {
 
                 Center(
                   child: Text(
-                    'Track records, schedules, and daily activities '
-                    'with an easy-to-use interface.',
+                  'Attendance, diary, fees & more at your fingertips',
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       fontSize: 18,

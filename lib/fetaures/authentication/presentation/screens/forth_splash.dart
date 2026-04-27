@@ -27,8 +27,7 @@ class ForthSplashScreen extends StatelessWidget {
 
                 Center(
                   child: Text(
-                    'Let’s get started and make your work faster '
-                    'and smarter.',
+                    'Stay connected with your child’s school anytime',
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       fontSize: 18,

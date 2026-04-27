@@ -120,6 +120,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 /// EMAIL / USERNAME
                 TextFormField(
                   controller: admNoCtrl,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9]')),
+                    // UpperCaseTextFormatter(),
+                  ],
+                  textCapitalization: TextCapitalization.characters,
                   decoration: InputDecoration(
                     labelText: 'Admission No',
                     border: OutlineInputBorder(

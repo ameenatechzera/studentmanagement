@@ -686,7 +686,7 @@ class _PeriodRow extends StatelessWidget {
               Text(
                 item.no,
                 style: const TextStyle(
-                  fontSize: 12,
+                  fontSize: 20,
                   fontWeight: FontWeight.w800,
                 ),
               ),
