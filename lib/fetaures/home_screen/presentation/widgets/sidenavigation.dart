@@ -9,6 +9,7 @@ import 'package:studentmanagement/fetaures/authentication/presentation/bloc/logi
 import 'package:studentmanagement/fetaures/authentication/presentation/screens/login_screen.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/widget/switch_account.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/screens/main_screen.dart';
+import 'package:studentmanagement/services/shared_preference_helper.dart';
 
 class SideNavigationBar extends StatefulWidget {
   SideNavigationBar({super.key});
@@ -32,37 +33,60 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
     return Drawer(
       width: MediaQuery.of(context).size.width * 0.80,
       child: SafeArea(
-        child: SingleChildScrollView(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              minHeight: MediaQuery.of(context).size.height,
-            ),
-            child: IntrinsicHeight(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _headerSection(),
-                  const SizedBox(height: 10),
-                  _accountSwitchSectionO(context),
-                  const Divider(height: 30),
-                  _menuItem(Icons.home_rounded, "Home", () {}),
-                  _menuItem(Icons.person_outline, "Profile", () {}),
-                  _menuItem(Icons.notifications_none, "Notifications", () {}),
-                  _menuItem(Icons.settings_outlined, "Settings", () {}),
-                  const Spacer(),
-                  const Divider(),
-                  _menuItem(Icons.logout, "Logout", () {
-                    Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(
-                        builder: (context) {
-                          return LoginScreen();
-                        },
-                      ),
-                    );
-                  }),
-                  const SizedBox(height: 10),
-                ],
-              ),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            minHeight: MediaQuery.of(context).size.height,
+          ),
+          child: IntrinsicHeight(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _headerSection(),
+                const SizedBox(height: 10),
+                _accountSwitchSectionO(context),
+                const Divider(height: 30),
+                _menuItem(Icons.home_rounded, "Home", () {}),
+                _menuItem(Icons.person_outline, "Profile", () {}),
+                _menuItem(Icons.notifications_none, "Notifications", () {}),
+                _menuItem(Icons.settings_outlined, "Settings", () {}),
+                const Spacer(),
+                const Divider(),
+                _menuItem(Icons.logout, "Logout", () async {
+                  final helper = SharedPreferenceHelper();
+
+                  /// 🔥 CLEAR SESSION
+                  await helper.clearLoginData();
+
+                  /// ❗ DO NOT clear accounts (for switch account feature)
+                  /// await SharedPreferenceHelper.clearAccounts(); ❌ optional
+
+                  /// 🔥 Clear AppData (VERY IMPORTANT)
+                  AppData.admissionNo = null;
+                  AppData.studentName = null;
+                  AppData.studentStdId = null;
+                  AppData.studentDivId = null;
+                  AppData.accYear = null;
+                  AppData.dob = null;
+                  AppData.profileUrl = null;
+                  // AppData.gender = null;
+
+                  /// 🔥 Navigate and remove all routes
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (_) => const LoginScreen()),
+                    (route) => false,
+                  );
+                }),
+                // _menuItem(Icons.logout, "Logout", () {
+                //   Navigator.of(context).pushReplacement(
+                //     MaterialPageRoute(
+                //       builder: (context) {
+                //         return LoginScreen();
+                //       },
+                //     ),
+                //   );
+                // }),
+                const SizedBox(height: 10),
+              ],
             ),
           ),
         ),

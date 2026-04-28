@@ -132,10 +132,12 @@ class AllClassDiaryScreen extends StatelessWidget {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            subtitle: Padding(
-                              padding: const EdgeInsets.only(top: 8.0),
-                              child: Text(st_diaryHead),
-                            ),
+                            subtitle: isExpanded
+                                ? null
+                                : Padding(
+                                    padding: const EdgeInsets.only(top: 8.0),
+                                    child: Text(st_diaryHead),
+                                  ),
                             trailing: Padding(
                               padding: const EdgeInsets.only(top: 8.0),
                               child: Column(

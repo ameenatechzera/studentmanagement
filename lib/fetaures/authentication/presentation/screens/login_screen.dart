@@ -255,8 +255,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     }
                   },
                   builder: (context, state) {
-                    final isLoading =
-                        state is LoginLoading || state is LoginSuccess;
+                    final isLoading = state is LoginLoading;
                     return SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(

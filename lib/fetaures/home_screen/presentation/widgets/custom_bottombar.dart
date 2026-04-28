@@ -26,78 +26,73 @@ class CustomBottomBar extends StatelessWidget {
       ),
     ];
 
-    return SafeArea(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black12,
-              blurRadius: 10,
-              offset: Offset(0, -2),
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: List.generate(items.length, (index) {
-            final isSelected = selectedIndex == index;
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 10,
+            offset: Offset(0, -2),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: List.generate(items.length, (index) {
+          final isSelected = selectedIndex == index;
 
-            return GestureDetector(
-              // onTap: () => onItemSelected(index),
-              onTap: () {
-                if (index == 0) {
-                  context.read<FeedCubit>().fetchFeeds(
-                    FetchFeedParameter(
-                      //accYear: AppData.accYear!,
-                      standardId: AppData.studentStdId!,
-                      divisionId: AppData.studentDivId!,
-                      fromDateTime: "",
-                      admissionNo: AppData.admissionNo!,
-                      branchId: 1,
-                      page: 1,
-                      perPage: 10,
-                    ),
-                  );
-                  onItemSelected(index);
-                } else {
-                  onItemSelected(index);
-                }
-              },
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 250),
-                padding: EdgeInsets.symmetric(
-                  horizontal: isSelected ? 16 : 12,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: isSelected ? Colors.pink.shade600 : Colors.transparent,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      items[index].icon,
-                      color: isSelected ? Colors.white : Colors.grey,
-                      size: 23,
-                    ),
-                    if (isSelected) ...[
-                      const SizedBox(width: 6),
-                      Text(
-                        items[index].label,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
+          return GestureDetector(
+            // onTap: () => onItemSelected(index),
+            onTap: () {
+              if (index == 0) {
+                context.read<FeedCubit>().fetchFeeds(
+                  FetchFeedParameter(
+                    //accYear: AppData.accYear!,
+                    standardId: AppData.studentStdId!,
+                    divisionId: AppData.studentDivId!,
+                    fromDateTime: "",
+                    admissionNo: AppData.admissionNo!,
+                    branchId: 1,
+                    page: 1,
+                    perPage: 10,
+                  ),
+                );
+                onItemSelected(index);
+              } else {
+                onItemSelected(index);
+              }
+            },
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 250),
+              padding: EdgeInsets.symmetric(
+                horizontal: isSelected ? 16 : 12,
+                vertical: 8,
               ),
-            );
-          }),
-        ),
+              decoration: BoxDecoration(
+                color: isSelected ? Colors.pink.shade600 : Colors.transparent,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    items[index].icon,
+                    color: isSelected ? Colors.white : Colors.grey,
+                    size: 23,
+                  ),
+                  if (isSelected) ...[
+                    const SizedBox(width: 6),
+                    Text(
+                      items[index].label,
+                      style: const TextStyle(color: Colors.white, fontSize: 14),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          );
+        }),
       ),
     );
   }
