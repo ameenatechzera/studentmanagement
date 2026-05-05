@@ -10,6 +10,7 @@ class TimetableCubit extends Cubit<TimetableState> {
   final FetchTimeTableUseCase fetchTimeTableUseCase;
   TimetableCubit({required this.fetchTimeTableUseCase})
     : super(TimetableInitial());
+
   Future<void> fetchTimeTable(FetchTimeTableParameter params) async {
     emit(TimetableLoading());
 
@@ -23,5 +24,11 @@ class TimetableCubit extends Cubit<TimetableState> {
         emit(TimetableLoaded(response: response));
       },
     );
+  }
+
+  Future<void> daySelectionChanged() async {
+    print('reached');
+    emit(DaySelectionChanged());
+
   }
 }

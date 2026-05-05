@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:studentmanagement/core/appdata/appdata.dart';
+import 'package:studentmanagement/fetaures/materials/domain/parameters/fetch_material_parameter.dart';
+import 'package:studentmanagement/fetaures/materials/presentation/cubit/material_cubit.dart';
 import 'package:studentmanagement/fetaures/materials/presentation/widgets/materials_widget.dart';
 
 final ValueNotifier<String> selectedSubject = ValueNotifier<String>(
@@ -10,16 +14,16 @@ class MaterialsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Future.microtask(() {
-    //   context.read<MaterialCubit>().fetchMaterials(
-    //     FetchMaterialParameter(
-    //       branchId: 1,
-    //       accYear:AppData.accYear!.toString(),
-    //       standardId: AppData.studentStdId!.toString(),
-    //       divisionId: AppData.studentDivId!.toString(),
-    //     ),
-    //   );
-    // });
+    Future.microtask(() {
+      context.read<MaterialCubit>().fetchMaterials(
+        FetchMaterialParameter(
+          branchId: 1,
+          accYear:AppData.accYear!.toString(),
+          standardId: AppData.studentStdId!.toString(),
+          divisionId: AppData.studentDivId!.toString(),
+        ),
+      );
+    });
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(

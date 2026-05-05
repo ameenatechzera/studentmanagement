@@ -4,7 +4,8 @@ publish_to: 'none'
 
 #version: 1.0.0+1
 #version: 1.0.1+2 #second update
-version: 1.0.2+3
+#version: 1.0.2+3
+version: 1.0.3+4
 environment:
   sdk: ^3.10.4
 
@@ -67,3 +68,4 @@ flutter:
     - assets/images/cristal_horizontal.png
     - assets/icons/c0d90970-7626-47b6-a097-ca0834c7a05f_removalai_preview.png
     - assets/icons/1f5debb8-6e36-4d25-bde8-526f4dd89820_removalai_preview.png
+    - assets/images/mask_bg.png

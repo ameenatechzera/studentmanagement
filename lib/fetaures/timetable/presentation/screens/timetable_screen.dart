@@ -770,6 +770,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:studentmanagement/core/appdata/appdata.dart';
+import 'package:studentmanagement/fetaures/timetable/domain/entities/fetch_timetable_entity.dart';
 import 'package:studentmanagement/fetaures/timetable/domain/parameters/fetch_timetable_parameter.dart';
 import 'package:studentmanagement/fetaures/timetable/presentation/cubit/timetable_cubit.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -785,13 +786,14 @@ class _TimeTableScreenState extends State<TimeTableScreen> {
   final DateTime _today = DateTime.now();
   final ValueNotifier<DateTime> _focusedDay = ValueNotifier(DateTime.now());
   final ValueNotifier<DateTime?> _selectedDay = ValueNotifier(DateTime.now());
-
+  List<FetchTimeTableDetails>? loadedList;
   @override
   void initState() {
     super.initState();
     Future.microtask(() {
       context.read<TimetableCubit>().fetchTimeTable(
         FetchTimeTableParameter(
+
           accYear: AppData.accYear!,
           standardId: AppData.studentStdId!,
           divisionId: AppData.studentDivId!,
@@ -922,14 +924,17 @@ class _TimeTableScreenState extends State<TimeTableScreen> {
                               onDaySelected: (day, focused) {
                                 _selectedDay.value = day;
                                 _focusedDay.value = focused;
+                                print('changed');
 
-                                context.read<TimetableCubit>().fetchTimeTable(
-                                  FetchTimeTableParameter(
-                                    accYear: AppData.accYear!,
-                                    standardId: AppData.studentStdId!,
-                                    divisionId: AppData.studentDivId!,
-                                    branchId: 1,
-                                  ),
+                                // context.read<TimetableCubit>().fetchTimeTable(
+                                //   FetchTimeTableParameter(
+                                //     accYear: AppData.accYear!,
+                                //     standardId: AppData.studentStdId!,
+                                //     divisionId: AppData.studentDivId!,
+                                //     branchId: 1,
+                                //   ),
+                                // );
+                                context.read<TimetableCubit>().daySelectionChanged(
                                 );
                               },
                               onPageChanged: (focusedDay) {
@@ -969,6 +974,7 @@ class _TimeTableScreenState extends State<TimeTableScreen> {
 
                 /// ✅ DATA
                 if (state is TimetableLoaded) _buildTimetableList(state),
+                if(state is DaySelectionChanged) _buildTimetableDaySelectedList(state),
               ],
             );
           },
@@ -982,6 +988,46 @@ class _TimeTableScreenState extends State<TimeTableScreen> {
     final selectedDayName = _getWeekDayName(dayForFilter);
 
     final filteredList = state.response.data!
+        .where((item) => item.dayName == selectedDayName)
+        .toList();
+    loadedList?.clear();
+    loadedList = state.response.data!;
+
+    if (filteredList.isEmpty) {
+      return const SliverToBoxAdapter(
+        child: Padding(
+          padding: EdgeInsets.all(20),
+          child: Center(child: Text("No Timetable Available")),
+        ),
+      );
+    }
+
+    return SliverPadding(
+      padding: const EdgeInsets.fromLTRB(12, 0, 12, 20),
+      sliver: SliverList(
+        delegate: SliverChildBuilderDelegate((context, index) {
+          final item = filteredList[index];
+
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: _PeriodRow(
+              item: _PeriodItem(
+                item.periodNo ?? '',
+                item.subjectName ?? "No Subject",
+                _getLineColor(index),
+              ),
+            ),
+          );
+        }, childCount: filteredList.length),
+      ),
+    );
+  }
+  Widget _buildTimetableDaySelectedList(DaySelectionChanged state) {
+    final dayForFilter = _selectedDay.value ?? _focusedDay.value;
+    final selectedDayName = _getWeekDayName(dayForFilter);
+    print('loadedList ${loadedList}');
+
+    final filteredList = loadedList!
         .where((item) => item.dayName == selectedDayName)
         .toList();
 
