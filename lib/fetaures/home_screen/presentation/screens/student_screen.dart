@@ -13,6 +13,7 @@ import 'package:studentmanagement/fetaures/classdiary/presentation/screens/alldi
 import 'package:studentmanagement/fetaures/fees/presentation/screens/fees_screen.dart';
 import 'package:studentmanagement/fetaures/marklist/presentation/screens/marklist_screen.dart';
 import 'package:studentmanagement/fetaures/marklist/presentation/screens/marklistscreenN.dart';
+import 'package:studentmanagement/fetaures/materials/presentation/screens/subjectlist_screen.dart';
 import 'package:studentmanagement/fetaures/timetable/presentation/screens/timetable_screen.dart';
 import 'package:studentmanagement/fetaures/materials/presentation/screens/materials_screen.dart';
 import 'package:studentmanagement/fetaures/authentication/data/models/account_details_model.dart';
@@ -102,7 +103,7 @@ class _StudentScreenState extends State<StudentScreen> {
         bubbleColor: Color(0xFFBFD2FF),
         iconColor: Color(0xFF1C2240),
         onTap: () {
-          AppNavigator.pushSlide(context: context, page: MaterialsScreen());
+          AppNavigator.pushSlide(context: context, page: SubjectPage());
         },
       ),
       _QuickAccessItem(

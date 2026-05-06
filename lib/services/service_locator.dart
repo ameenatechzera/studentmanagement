@@ -40,7 +40,10 @@ import 'package:studentmanagement/fetaures/marklist/presentation/cubit/marklist_
 import 'package:studentmanagement/fetaures/materials/data/datasources/materials_remote_data_source.dart';
 import 'package:studentmanagement/fetaures/materials/data/repositories/material_repository_impl.dart';
 import 'package:studentmanagement/fetaures/materials/domain/repositories/material_repository.dart';
+
+
 import 'package:studentmanagement/fetaures/materials/domain/usecases/fetch_materials_usecase.dart';
+import 'package:studentmanagement/fetaures/materials/domain/usecases/fetch_subjects_usecase.dart';
 import 'package:studentmanagement/fetaures/materials/presentation/cubit/material_cubit.dart';
 import 'package:studentmanagement/fetaures/timetable/data/datasources/timetable_remote_data_source.dart';
 import 'package:studentmanagement/fetaures/timetable/data/repositories/timetable_repository_impl.dart';
@@ -168,7 +171,7 @@ class ServiceLocator {
 
     /// ------------------- MATERIALS -------------------
 
-    sl.registerFactory(() => MaterialCubit(fetchMaterialUseCase: sl()));
+    sl.registerFactory(() => MaterialCubit(fetchMaterialUseCase: sl(), fetchSubjectsUseCase: sl()));
 
     sl.registerLazySingleton(() => FetchMaterialUseCase(sl()));
 
@@ -192,6 +195,7 @@ class ServiceLocator {
 
     sl.registerLazySingleton(() => AttendanceReportByDateUseCase(sl()));
     sl.registerLazySingleton(() => AttendanceReportByMonthUseCase(sl()));
+    sl.registerLazySingleton(() => FetchSubjectsUseCase(sl()));
 
     sl.registerLazySingleton<AttendanceRemoteDataSource>(
       () => AttendanceRemoteDataSourceImpl(),

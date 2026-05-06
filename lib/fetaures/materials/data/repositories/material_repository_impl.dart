@@ -4,6 +4,7 @@ import 'package:studentmanagement/core/errors/failure.dart';
 import 'package:studentmanagement/core/utils/typedef.dart';
 import 'package:studentmanagement/fetaures/materials/data/datasources/materials_remote_data_source.dart';
 import 'package:studentmanagement/fetaures/materials/data/models/fetch_materials_model.dart';
+import 'package:studentmanagement/fetaures/materials/data/models/subjects_model.dart';
 import 'package:studentmanagement/fetaures/materials/domain/parameters/fetch_material_parameter.dart';
 import 'package:studentmanagement/fetaures/materials/domain/repositories/material_repository.dart';
 
@@ -24,5 +25,18 @@ class MaterialRepositoryImpl implements MaterialRepository {
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }
+  }
+
+  @override
+  ResultFuture<SubjectsModel> fetchSubjects()
+    async {
+      try {
+        final result = await _remoteDataSource.fetchSubjects();
+        return Right(result);
+      } on ServerException catch (e) {
+        return Left(ServerFailure(e.errorMessageModel.statusMessage));
+      } catch (e) {
+        return Left(ServerFailure(e.toString()));
+      }
   }
 }

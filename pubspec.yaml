@@ -31,6 +31,7 @@ dependencies:
   share_plus: ^7.2.1
   http: ^1.2.0
   shimmer: ^3.0.0
+  url_launcher: ^6.3.2
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -69,3 +70,7 @@ flutter:
     - assets/icons/c0d90970-7626-47b6-a097-ca0834c7a05f_removalai_preview.png
     - assets/icons/1f5debb8-6e36-4d25-bde8-526f4dd89820_removalai_preview.png
     - assets/images/mask_bg.png
+    - assets/icons/mathsicon.png
+    - assets/icons/chemistry_icon.png
+    - assets/icons/physics_icon.png
+    - assets/icons/english_icon.png
