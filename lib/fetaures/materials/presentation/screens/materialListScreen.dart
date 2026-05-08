@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:studentmanagement/fetaures/materials/presentation/widgets/pdfViewer_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:studentmanagement/core/appdata/appdata.dart';
 import 'package:studentmanagement/fetaures/materials/domain/entities/fetch_material_entity.dart';
@@ -265,7 +266,12 @@ class _MaterialListPageState extends State<MaterialListPage>
           // ✅ Opens in browser based on tab type
           onTap: () {
             if (tab == "PDF") {
-              _openUrl(item.material);
+              // _openUrl(item.material);
+              Navigator.push(context, MaterialPageRoute(
+                builder: (_) => PdfViewerScreen(
+                  pdfUrl: item.material!,
+                ),
+              ));
             } else if (tab == "Links") {
               _openUrl(item.link);
             } else if (tab == "Notes") {

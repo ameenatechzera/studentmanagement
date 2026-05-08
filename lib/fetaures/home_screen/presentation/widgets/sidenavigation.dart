@@ -9,6 +9,8 @@ import 'package:studentmanagement/fetaures/authentication/presentation/bloc/logi
 import 'package:studentmanagement/fetaures/authentication/presentation/screens/login_screen.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/widget/switch_account.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/screens/main_screen.dart';
+import 'package:studentmanagement/fetaures/home_screen/presentation/screens/noti.dart';
+import 'package:studentmanagement/fetaures/notification/presentation/notification_screen.dart';
 import 'package:studentmanagement/services/shared_preference_helper.dart';
 
 class SideNavigationBar extends StatefulWidget {
@@ -47,7 +49,12 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                 const Divider(height: 30),
                 _menuItem(Icons.home_rounded, "Home", () {}),
                 _menuItem(Icons.person_outline, "Profile", () {}),
-                _menuItem(Icons.notifications_none, "Notifications", () {}),
+                _menuItem(Icons.notifications_none, "Notifications", () {
+                  Navigator.push(context, MaterialPageRoute(
+                    builder: (_) => NotificationsScreen(
+                    ),
+                  ));
+                }),
                 _menuItem(Icons.settings_outlined, "Settings", () {}),
                 const Spacer(),
                 const Divider(),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/entities/login_entity.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/screens/home_screen.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/screens/noti.dart';
-import 'package:studentmanagement/fetaures/home_screen/presentation/screens/student_screen.dart';
+import 'package:studentmanagement/fetaures/home_screen/presentation/screens/student_screenN.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/widgets/custom_bottombar.dart';
 
 class MainScreen extends StatefulWidget {
@@ -20,19 +20,21 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     final List<Widget> screens = [
       const HomeScreen(),
-      StudentScreen(loginResponse: widget.loginResponse),
+      StudentScreenN(loginResponse: widget.loginResponse),
       const NotificationScreen(),
     ];
 
     return Scaffold(
       body: IndexedStack(index: _currentIndex, children: screens),
-      bottomNavigationBar: CustomBottomBar(
-        selectedIndex: _currentIndex,
-        onItemSelected: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
+      bottomNavigationBar: SafeArea(
+        child: CustomBottomBar(
+          selectedIndex: _currentIndex,
+          onItemSelected: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+          },
+        ),
       ),
     );
   }
