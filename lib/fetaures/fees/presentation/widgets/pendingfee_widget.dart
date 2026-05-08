@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:studentmanagement/fetaures/fees/presentation/unPaidFee/un_paid_fee_cubit.dart';
 import 'package:studentmanagement/fetaures/fees/presentation/widgets/pendingfee_skeleton.dart';
 
@@ -12,11 +13,10 @@ class PendingFee extends StatelessWidget {
       builder: (context, state) {
         if (state is FeeUnpaidInitial || state is FeeUnpaidLoading) {
           return const PendingFeeShimmer();
-          // return const Center(child: CircularProgressIndicator());
         }
 
         if (state is FeesUnPaidSuccess) {
-          final feesUnpaidList = state.feeUnPaidResult.data; // your API list
+          final feesUnpaidList = state.feeUnPaidResult.data;
 
           return ListView.builder(
             itemCount: feesUnpaidList.length,
@@ -26,9 +26,8 @@ class PendingFee extends StatelessWidget {
               final fee = feesUnpaidList[index];
 
               return Padding(
-                padding: const EdgeInsets.only(top: 8.0),
+                padding: const EdgeInsets.only(top: 8),
                 child: Container(
-                  padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(12),
@@ -40,71 +39,97 @@ class PendingFee extends StatelessWidget {
                       ),
                     ],
                   ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+
+                  child: Stack(
                     children: [
-                      Container(
-                        height: 44,
-                        width: 44,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFD81B60),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.schedule,
-                          color: Colors.white,
-                          size: 22,
+                      Positioned(
+                        left: 0,
+                        top: 15,
+                        bottom: 15,
+                        child: Container(
+                          width: 4,
+                          // height: 50,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF807FD8),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
                         ),
                       ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+
+                      /// 🔹 MAIN CONTENT
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+                        child: Row(
                           children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  fee.feeMonth,
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
-                                  ),
+                            /// ICON
+                            Container(
+                              height: 44,
+                              width: 44,
+                              decoration: const BoxDecoration(
+                                color: Color(0xFF807FD8),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: SvgPicture.asset(
+                                  'assets/icons/Group (1).svg',
                                 ),
-                                Text(
-                                  "",
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.red,
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  fee.ledgerName,
-                                  style: const TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w600,
+
+                            const SizedBox(width: 16),
+
+                            /// TEXT SECTION
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  /// MONTH
+                                  Text(
+                                    fee.feeMonth,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
-                                ),
-                                Text(
-                                  fee.amount,
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.black,
+
+                                  const SizedBox(height: 4),
+
+                                  /// LEDGER NAME
+                                  Text(
+                                    fee.ledgerName,
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
-                                ),
-                              ],
+
+                                  const SizedBox(height: 6),
+
+                                  /// RED TEXT (like design)
+                                  Text(
+                                    fee.ledgerName,
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                            const SizedBox(height: 6),
+
+                            /// AMOUNT
+                            Text(
+                              fee.amount,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                           ],
                         ),
                       ),
-                      // const Text("12-11-2025", style: TextStyle(fontSize: 12)),
                     ],
                   ),
                 ),

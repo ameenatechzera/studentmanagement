@@ -181,6 +181,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           .toString();
                       AppData.gender = state.loginResponse.student!.gender
                           .toString();
+                      AppData.studentClass =
+                          '${state.loginResponse.student!.studentStandard} - ${state.loginResponse.student!.studentDivision}'
+                              .toString();
                       print(
                         'profileUrl ${state.loginResponse.student!.imageUrl.toString()}',
                       );

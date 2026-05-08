@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:studentmanagement/core/appdata/appdata.dart';
 import 'package:studentmanagement/fetaures/home_screen/domain/entities/fetchfeed_entity.dart';
 import 'package:studentmanagement/fetaures/home_screen/domain/parameters/feedaction_parameter.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/cubit/feed_cubit.dart';
@@ -221,11 +222,13 @@ class _PostCardState extends State<PostCard> {
       String text = widget.feed.feedText ?? "";
 
       String finalText =
-          """
+          """     
 $text
 
 *Shared From Cristal App*
-FSP School, Saudi Arabia
+${AppData.branchName ?? 'School Name'}
+${AppData.place ?? 'School Name'}
+
 """;
 
       if (widget.feed.files != null && widget.feed.files!.isNotEmpty) {

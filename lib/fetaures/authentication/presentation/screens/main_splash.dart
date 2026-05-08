@@ -119,9 +119,12 @@ class _MainSplashScreenState extends State<MainSplashScreen> {
     final branch = await pref.getBranchData();
 
     if (branch != null) {
+      AppData.branchName = branch['branchName'];
+      AppData.logo = branch['logo'];
+      AppData.place = branch['place'];
       setState(() {
         branchName = branch['branchName'];
-        logo = branch['logo']; // 👉 only one logo
+        logo = branch['logo'];
       });
     }
   }

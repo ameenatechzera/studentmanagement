@@ -43,7 +43,7 @@ class FeesRemoteDataSourceImpl implements FeesRemoteDataSource {
     );
     print(response.data);
     print('Status Code: ${response.statusCode}');
-    print('Response Data: ${response.data}');
+    print('Response Data : ${response.data}');
     if (response.statusCode == 200) {
       return PaidFeeResult.fromJson(response.data);
     } else {
@@ -81,7 +81,7 @@ class FeesRemoteDataSourceImpl implements FeesRemoteDataSource {
     );
     print(response.data);
     print('Status Code: ${response.statusCode}');
-    print('Response Data: ${response.data}');
+    print('Response Data fetched pending: ${response.data}');
     if (response.statusCode == 200) {
       return UnpaidFeeResult.fromJson(response.data);
     } else {

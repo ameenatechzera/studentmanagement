@@ -14,4 +14,8 @@ class AppData {
   // Simple global state manager
   static ValueNotifier<bool> showDeleteButtonNotifier = ValueNotifier(false);
   //final deleteButtonNotifier = ValueNotifier<bool>(false);
+  static String? branchName;
+  static String? logo;
+  static String? place;
+  static String? studentClass;
 }

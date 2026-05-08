@@ -32,8 +32,12 @@ class FeesScreen extends StatelessWidget {
               children: [
                 // ================= PENDING =================
                 const Text(
-                  'Fee Pending List',
-                  style: TextStyle(fontWeight: FontWeight.bold,color: Colors.red,fontSize: 15),
+                  'Pending',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red,
+                    fontSize: 15,
+                  ),
                 ),
                 const SizedBox(height: 8),
 
@@ -43,8 +47,12 @@ class FeesScreen extends StatelessWidget {
 
                 // ================= PAID =================
                 const Text(
-                  'Fee Paid List',
-                  style: TextStyle(fontWeight: FontWeight.bold,color: Colors.green,fontSize:15),
+                  'Paid',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green,
+                    fontSize: 15,
+                  ),
                 ),
                 const SizedBox(height: 8),
 

@@ -155,7 +155,7 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
         //   },
         // ),
       );
-
+      print('📤 REQUEST BODY: ${params.toJson()}');
       print('\n🔥 RAW RESPONSE TYPE: ${response.data.runtimeType}');
       print('🔥 RAW RESPONSE FULL: ${response.data}');
 
