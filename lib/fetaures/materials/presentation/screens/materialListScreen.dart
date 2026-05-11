@@ -10,7 +10,7 @@ import 'package:studentmanagement/fetaures/materials/presentation/cubit/material
 // ---------- Main Page ----------
 class MaterialListPage extends StatefulWidget {
   final String subjectName;
-  final int subjectId;
+  final String subjectId;
 
   const MaterialListPage({
     super.key,

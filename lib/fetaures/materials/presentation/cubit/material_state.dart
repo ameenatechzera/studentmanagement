@@ -20,6 +20,15 @@ class MaterialLoaded extends MaterialsState {
   List<Object?> get props => [response];
 }
 
+class MaterialBySubjectLoaded extends MaterialsState {
+  final List<MaterialList> response;
+
+  MaterialBySubjectLoaded({required this.response});
+
+  @override
+  List<Object?> get props => [response];
+}
+
 class SubjectsLoaded extends MaterialsState {
   final SubjectsModel response;
 

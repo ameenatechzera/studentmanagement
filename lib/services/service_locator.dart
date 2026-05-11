@@ -40,6 +40,7 @@ import 'package:studentmanagement/fetaures/marklist/presentation/cubit/marklist_
 import 'package:studentmanagement/fetaures/materials/data/datasources/materials_remote_data_source.dart';
 import 'package:studentmanagement/fetaures/materials/data/repositories/material_repository_impl.dart';
 import 'package:studentmanagement/fetaures/materials/domain/repositories/material_repository.dart';
+import 'package:studentmanagement/fetaures/materials/domain/usecases/fetchMaterialsby_subject_usecase.dart';
 
 
 import 'package:studentmanagement/fetaures/materials/domain/usecases/fetch_materials_usecase.dart';
@@ -171,9 +172,10 @@ class ServiceLocator {
 
     /// ------------------- MATERIALS -------------------
 
-    sl.registerFactory(() => MaterialCubit(fetchMaterialUseCase: sl(), fetchSubjectsUseCase: sl()));
+    sl.registerFactory(() => MaterialCubit(fetchMaterialUseCase: sl(), fetchSubjectsUseCase: sl(), fetchMaterialBySubjectUseCase: sl()));
 
     sl.registerLazySingleton(() => FetchMaterialUseCase(sl()));
+    sl.registerLazySingleton(() => FetchMaterialBySubjectUseCase(sl()));
 
     sl.registerLazySingleton<MaterialRemoteDataSource>(
       () => MaterialRemoteDataSourceImpl(),
