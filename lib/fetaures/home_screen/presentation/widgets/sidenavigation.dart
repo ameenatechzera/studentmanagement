@@ -63,7 +63,9 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
 
                   /// 🔥 CLEAR SESSION
                   await helper.clearLoginData();
+                  final prefs = await SharedPreferences.getInstance();
 
+                  await SharedPreferenceHelper.clearAccounts();
                   /// ❗ DO NOT clear accounts (for switch account feature)
                   /// await SharedPreferenceHelper.clearAccounts(); ❌ optional
 

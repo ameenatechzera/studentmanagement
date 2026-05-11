@@ -132,7 +132,7 @@ class _HomeScreenState extends State<StudentScreenN> {
                           widget.loginResponse!.student!.name,
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 18,
+                          fontSize: 13,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -140,8 +140,8 @@ class _HomeScreenState extends State<StudentScreenN> {
                       Text(
                         widget.loginResponse!.student!.admno,
                         style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 13,
+                          color: Colors.white,
+                          fontSize: 11,
                         ),
                       ),
                     ],
@@ -150,16 +150,19 @@ class _HomeScreenState extends State<StudentScreenN> {
               ),
               const SizedBox(height: 20),
               // Class / Std / Roll No
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _buildStatItem('Class', widget.loginResponse!.student!.currentStudentStandardId
-                      .toString()),
-                  _buildStatItem('Div', widget.loginResponse!.student!.currentStudentDivisionId
-                      .toString()),
-                  _buildStatItem('Admission No', widget.loginResponse!.student!.admno
-                      .toString()),
-                ],
+              Padding(
+                padding: const EdgeInsets.only(left: 20.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    _buildStatItem('Class', widget.loginResponse!.student!.currentStudentStandardId
+                        .toString()),
+                    _buildStatItem('Div', widget.loginResponse!.student!.currentStudentDivisionId
+                        .toString()),
+                    _buildStatItem('Admission No', widget.loginResponse!.student!.admno
+                        .toString()),
+                  ],
+                ),
               ),
             ],
           ),
@@ -174,8 +177,8 @@ class _HomeScreenState extends State<StudentScreenN> {
         Text(
           label,
           style: const TextStyle(
-            color: Colors.white70,
-            fontSize: 13,
+            color: Colors.white,
+            fontSize: 11,
           ),
         ),
         const SizedBox(height: 4),
@@ -183,7 +186,7 @@ class _HomeScreenState extends State<StudentScreenN> {
           value,
           style: const TextStyle(
             color: Colors.white,
-            fontSize: 22,
+            fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -248,27 +251,99 @@ class _HomeScreenState extends State<StudentScreenN> {
     );
   }
 
-  // --- Quick Access Grid ---
+// --- Quick Access Grid ---
   Widget _buildQuickAccessGrid() {
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: _quickAccessItems.length,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        mainAxisSpacing: 12,
-        crossAxisSpacing: 12,
-        childAspectRatio: 2.2,
-      ),
-      itemBuilder: (context, index) {
-        final item = _quickAccessItems[index];
-        return _buildQuickAccessTile(
-          icon: item['icon'] as IconData,
-          label: item['label'] as String,
-          color: item['color'] as Color,
+    return Column(
+      children: [
+        /// First Row
+        Row(
+          children: [
+            // Small Card
+            Expanded(
+              flex: 2,
+              child: _buildQuickAccessTile(
+                icon: _quickAccessItems[0]['icon'] as IconData,
+                label: _quickAccessItems[0]['label'] as String,
+                color: _quickAccessItems[0]['color'] as Color,
+                height: 90,
+              ),
+            ),
 
-        );
-      },
+            const SizedBox(width: 12),
+
+            // Large Card
+            Expanded(
+              flex: 3,
+              child: _buildQuickAccessTile(
+                icon: _quickAccessItems[1]['icon'] as IconData,
+                label: _quickAccessItems[1]['label'] as String,
+                color: _quickAccessItems[1]['color'] as Color,
+                height: 90,
+              ),
+            ),
+          ],
+        ),
+
+        const SizedBox(height: 12),
+
+        /// Second Row
+        Row(
+          children: [
+            // Large Card
+            Expanded(
+              flex: 3,
+              child: _buildQuickAccessTile(
+                icon: _quickAccessItems[2]['icon'] as IconData,
+                label: _quickAccessItems[2]['label'] as String,
+                color: _quickAccessItems[2]['color'] as Color,
+                height: 90,
+              ),
+            ),
+
+            const SizedBox(width: 12),
+
+            // Small Card
+            Expanded(
+              flex: 2,
+              child: _buildQuickAccessTile(
+                icon: _quickAccessItems[3]['icon'] as IconData,
+                label: _quickAccessItems[3]['label'] as String,
+                color: _quickAccessItems[3]['color'] as Color,
+                height: 90,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        /// Third Row
+        Row(
+          children: [
+            // Large Card
+            Expanded(
+              flex: 2,
+              child: _buildQuickAccessTile(
+                icon: _quickAccessItems[4]['icon'] as IconData,
+                label: _quickAccessItems[4]['label'] as String,
+                color: _quickAccessItems[4]['color'] as Color,
+                height: 90,
+              ),
+            ),
+
+            const SizedBox(width: 12),
+
+            // Small Card
+            Expanded(
+              flex: 3,
+              child: _buildQuickAccessTile(
+                icon: _quickAccessItems[5]['icon'] as IconData,
+                label: _quickAccessItems[5]['label'] as String,
+                color: _quickAccessItems[5]['color'] as Color,
+                height: 90,
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 
@@ -276,6 +351,7 @@ class _HomeScreenState extends State<StudentScreenN> {
     required IconData icon,
     required String label,
     required Color color,
+    double height = 80,
   }) {
     return GestureDetector(
       onTap: () {
@@ -321,7 +397,7 @@ class _HomeScreenState extends State<StudentScreenN> {
               child: Text(
                 label,
                 style: const TextStyle(
-                  fontSize: 14,
+                  fontSize: 11,
                   fontWeight: FontWeight.w600,
                   color: Colors.black87,
                 ),
