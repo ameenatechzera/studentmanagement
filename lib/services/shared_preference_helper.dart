@@ -132,7 +132,12 @@ class SharedPreferenceHelper {
       await prefs.setStringList('accounts', data);
     }
   }
+  // Clear on logout
+  static Future<void> clearSavedAccount() async {
+    final prefs = await SharedPreferences.getInstance();
 
+    await prefs.remove('accounts');
+  }
   //fetch List
 
   Future<List<AccountDetails>> getAccounts() async {
