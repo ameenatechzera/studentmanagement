@@ -202,12 +202,16 @@
 //     );
 //   }
 // }
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:studentmanagement/core/appdata/appdata.dart';
+import 'package:studentmanagement/fetaures/classdiary/domain/entities/fetch_diary_entity.dart';
 import 'package:studentmanagement/fetaures/classdiary/domain/parameters/fetch_diary_parameter.dart';
 import 'package:studentmanagement/fetaures/classdiary/presentation/cubit/diary_cubit.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 final ValueNotifier<String> selectedSubject = ValueNotifier<String>(
   'Mathematics',
@@ -249,54 +253,58 @@ class AllClassDiaryScreen extends StatelessWidget {
           ),
         ),
       ),
-      body: BlocBuilder<DiaryCubit, DiaryState>(
-        builder: (context, state) {
-          if (state is DiaryLoading) {
-            return AllClassDiarySkeleton();
-          }
+      body: SafeArea(
+        child: BlocBuilder<DiaryCubit, DiaryState>(
+          builder: (context, state) {
+            if (state is DiaryLoading) {
+              return AllClassDiarySkeleton();
+            }
 
-          if (state is DiaryError) {
-            return Center(
-              child: Text(
-                state.message,
-                style: const TextStyle(color: Colors.red),
-              ),
-            );
-          }
-
-          if (state is DiaryLoaded) {
-            final diaryList = state.response.data ?? [];
-
-            if (diaryList.isEmpty) {
-              return const Center(
+            if (state is DiaryError) {
+              return Center(
                 child: Text(
-                  'No Diary',
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                  state.message,
+                  style: const TextStyle(color: Colors.red),
                 ),
               );
             }
 
-            return ListView.separated(
-              padding: const EdgeInsets.fromLTRB(24, 22, 24, 24),
-              itemCount: diaryList.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 22),
-              itemBuilder: (context, index) {
-                final diary = diaryList[index];
+            if (state is DiaryLoaded) {
+              final diaryList = state.response.data ?? [];
 
-                return _DiaryCard(
-                  index: index,
-                  teacherName: 'Sandra P 🔥',
-                  teacherRole: 'Chemistry Teacher',
-                  title: diary.diaryTitle ?? 'Announcement',
-                  description: diary.description ?? '',
-                  date: diary.diaryDate ?? 'Today',
+              if (diaryList.isEmpty) {
+                return const Center(
+                  child: Text(
+                    'No Diary',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                  ),
                 );
-              },
-            );
-          }
+              }
 
-          return const Center(child: Text('No Diary'));
-        },
+              return ListView.separated(
+                padding: const EdgeInsets.fromLTRB(24, 22, 24, 24),
+                itemCount: diaryList.length,
+                separatorBuilder: (context, index) =>
+                    const SizedBox(height: 22),
+                itemBuilder: (context, index) {
+                  final diary = diaryList[index];
+
+                  return _DiaryCard(
+                    index: index,
+                    teacherName: '${diary.name}',
+                    teacherRole: 'Chemistry Teacher',
+                    title: diary.diaryTitle ?? 'Announcement',
+                    description: diary.description ?? '',
+                    date: diary.diaryDate ?? 'Today',
+                    files: diary.files ?? [],
+                  );
+                },
+              );
+            }
+
+            return const Center(child: Text('No Diary'));
+          },
+        ),
       ),
     );
   }
@@ -309,6 +317,7 @@ class _DiaryCard extends StatelessWidget {
   final String title;
   final String description;
   final String date;
+  final List<DiaryFile> files;
 
   const _DiaryCard({
     required this.index,
@@ -317,6 +326,7 @@ class _DiaryCard extends StatelessWidget {
     required this.title,
     required this.description,
     required this.date,
+    required this.files,
   });
 
   Color get mainColor {
@@ -373,13 +383,15 @@ class _DiaryCard extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      teacherName,
-                      style: const TextStyle(
-                        color: Color(0xFF202020),
-                        fontSize: 15,
-                        fontWeight: FontWeight.w900,
-                      ),
+                    Row(
+                      children: [
+                        Text(
+                          teacherName,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(width: 6),
+                        const Icon(Icons.push_pin, size: 18, color: Colors.red),
+                      ],
                     ),
                     const SizedBox(height: 2),
                     Text(
@@ -415,7 +427,7 @@ class _DiaryCard extends StatelessWidget {
                         children: [
                           Expanded(
                             child: Text(
-                              'Announcement',
+                              title,
                               style: const TextStyle(
                                 color: Color(0xFF171717),
                                 fontSize: 15,
@@ -483,18 +495,320 @@ class _DiaryCard extends StatelessWidget {
                           bottomRight: Radius.circular(18),
                         ),
                       ),
-                      child: Text(
-                        description.isEmpty ? 'No Description' : description,
-                        maxLines: isExpanded ? null : 2, // 👈 KEY CHANGE
-                        overflow: isExpanded
-                            ? TextOverflow.visible
-                            : TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: Color(0xFF222222),
-                          fontSize: 12,
-                          height: 1.7,
-                          fontWeight: FontWeight.w500,
-                        ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            description.isEmpty
+                                ? 'No Description'
+                                : description,
+                            maxLines: isExpanded ? null : 2, // 👈 KEY CHANGE
+                            overflow: isExpanded
+                                ? TextOverflow.visible
+                                : TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              color: Color(0xFF222222),
+                              fontSize: 12,
+                              height: 1.7,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+
+                          //       /// SHOW FILES ONLY WHEN EXPANDED
+                          //       if (isExpanded && files.isNotEmpty) ...[
+                          //         const SizedBox(height: 14),
+
+                          //         Wrap(
+                          //           spacing: 10,
+                          //           runSpacing: 10,
+                          //           children: files.map((file) {
+                          //             final url = file.url ?? '';
+                          //             final type = (file.type ?? '').toLowerCase();
+
+                          //             final isImage =
+                          //                 type.contains('image') ||
+                          //                 url.endsWith('.png') ||
+                          //                 url.endsWith('.jpg') ||
+                          //                 url.endsWith('.jpeg');
+
+                          //             final isPdf = url.toLowerCase().endsWith(
+                          //               '.pdf',
+                          //             );
+
+                          //             final isDoc =
+                          //                 url.toLowerCase().endsWith('.doc') ||
+                          //                 url.toLowerCase().endsWith('.docx');
+
+                          //             return GestureDetector(
+                          //               onTap: () async {
+                          //                 final uri = Uri.parse(url);
+
+                          //                 if (await canLaunchUrl(uri)) {
+                          //                   await launchUrl(
+                          //                     uri,
+                          //                     mode: LaunchMode.externalApplication,
+                          //                   );
+                          //                 }
+                          //               },
+                          //               child: isImage
+                          //                   ? ClipRRect(
+                          //                       borderRadius: BorderRadius.circular(
+                          //                         12,
+                          //                       ),
+                          //                       child: Image.network(
+                          //                         url,
+                          //                         // width: 100,
+                          //                         // height: 100,
+                          //                         fit: BoxFit.cover,
+                          //                       ),
+                          //                     )
+                          //                   : Container(
+                          //                       width: 100,
+                          //                       padding: const EdgeInsets.symmetric(
+                          //                         vertical: 16,
+                          //                       ),
+                          //                       decoration: BoxDecoration(
+                          //                         color: Colors.white,
+                          //                         borderRadius: BorderRadius.circular(
+                          //                           14,
+                          //                         ),
+                          //                       ),
+                          //                       child: Column(
+                          //                         children: [
+                          //                           Icon(
+                          //                             isPdf
+                          //                                 ? Icons.picture_as_pdf
+                          //                                 : isDoc
+                          //                                 ? Icons.description
+                          //                                 : Icons.insert_drive_file,
+                          //                             size: 42,
+                          //                             color: isPdf
+                          //                                 ? Colors.red
+                          //                                 : Colors.blue,
+                          //                           ),
+                          //                           const SizedBox(height: 8),
+                          //                           Text(
+                          //                             isPdf
+                          //                                 ? 'PDF File'
+                          //                                 : isDoc
+                          //                                 ? 'Document'
+                          //                                 : 'File',
+                          //                             style: const TextStyle(
+                          //                               fontSize: 11,
+                          //                               fontWeight: FontWeight.w600,
+                          //                             ),
+                          //                           ),
+                          //                         ],
+                          //                       ),
+                          //                     ),
+                          //             );
+                          //           }).toList(),
+                          //         ),
+                          //       ],
+                          //     ],
+                          //   ),
+                          // ),
+                          /// SHOW FILES ONLY WHEN EXPANDED
+                          if (isExpanded && files.isNotEmpty) ...[
+                            const SizedBox(height: 14),
+
+                            Builder(
+                              builder: (context) {
+                                final imageFiles = files.where((file) {
+                                  final url = (file.url ?? '').toLowerCase();
+                                  final type = (file.type ?? '').toLowerCase();
+
+                                  return type.contains('image') ||
+                                      url.endsWith('.png') ||
+                                      url.endsWith('.jpg') ||
+                                      url.endsWith('.jpeg');
+                                }).toList();
+
+                                final otherFiles = files.where((file) {
+                                  final url = (file.url ?? '').toLowerCase();
+
+                                  return !(url.endsWith('.png') ||
+                                      url.endsWith('.jpg') ||
+                                      url.endsWith('.jpeg'));
+                                }).toList();
+
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    /// IMAGE CAROUSEL
+                                    if (imageFiles.isNotEmpty)
+                                      SizedBox(
+                                        height: 220,
+                                        child: PageView.builder(
+                                          itemCount: imageFiles.length,
+                                          controller: PageController(
+                                            viewportFraction: 0.92,
+                                          ),
+                                          itemBuilder: (context, imageIndex) {
+                                            final image =
+                                                imageFiles[imageIndex];
+
+                                            return Padding(
+                                              padding: const EdgeInsets.only(
+                                                right: 10,
+                                              ),
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(18),
+                                                child: GestureDetector(
+                                                  onTap: () async {
+                                                    final uri = Uri.parse(
+                                                      image.url ?? '',
+                                                    );
+
+                                                    if (await canLaunchUrl(
+                                                      uri,
+                                                    )) {
+                                                      await launchUrl(
+                                                        uri,
+                                                        mode: LaunchMode
+                                                            .externalApplication,
+                                                      );
+                                                    }
+                                                  },
+                                                  child: Image.network(
+                                                    image.url ?? '',
+                                                    fit: BoxFit.cover,
+                                                    width: double.infinity,
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ),
+
+                                    /// FILES
+                                    if (otherFiles.isNotEmpty) ...[
+                                      const SizedBox(height: 14),
+
+                                      Wrap(
+                                        spacing: 10,
+                                        runSpacing: 10,
+                                        children: otherFiles.map((file) {
+                                          final url = file.url ?? '';
+
+                                          final isPdf = url
+                                              .toLowerCase()
+                                              .endsWith('.pdf');
+
+                                          final isDoc =
+                                              url.toLowerCase().endsWith(
+                                                '.doc',
+                                              ) ||
+                                              url.toLowerCase().endsWith(
+                                                '.docx',
+                                              );
+
+                                          return GestureDetector(
+                                            // onTap: () async {
+                                            //   try {
+                                            //     debugPrint("FILE CLICKED");
+
+                                            //     final dir =
+                                            //         await getTemporaryDirectory();
+
+                                            //     final extension = url
+                                            //         .split('.')
+                                            //         .last;
+
+                                            //     final filePath =
+                                            //         '${dir.path}/${DateTime.now().millisecondsSinceEpoch}.$extension';
+
+                                            //     debugPrint(
+                                            //       "DOWNLOADING TO: $filePath",
+                                            //     );
+
+                                            //     await Dio().download(
+                                            //       url,
+                                            //       filePath,
+                                            //     );
+
+                                            //     debugPrint(
+                                            //       "DOWNLOAD COMPLETED",
+                                            //     );
+
+                                            //     final result =
+                                            //         await OpenFilex.open(
+                                            //           filePath,
+                                            //         );
+
+                                            //     debugPrint(
+                                            //       "OPEN RESULT: ${result.message}",
+                                            //     );
+                                            //   } catch (e) {
+                                            //     debugPrint("ERROR: $e");
+                                            //   }
+                                            // },
+                                            onTap: () async {
+                                              final uri = Uri.parse(url);
+
+                                              if (await canLaunchUrl(uri)) {
+                                                await launchUrl(
+                                                  uri,
+                                                  mode: LaunchMode
+                                                      .externalApplication,
+                                                );
+                                              }
+                                            },
+                                            child: Container(
+                                              //width: 100,
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    vertical: 16,
+                                                  ),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(14),
+                                              ),
+                                              child: Row(
+                                                children: [
+                                                  const SizedBox(width: 20),
+
+                                                  Icon(
+                                                    isPdf
+                                                        ? Icons.picture_as_pdf
+                                                        : isDoc
+                                                        ? Icons.description
+                                                        : Icons
+                                                              .insert_drive_file,
+                                                    size: 42,
+                                                    color: isPdf
+                                                        ? Colors.red
+                                                        : Colors.blue,
+                                                  ),
+                                                  const SizedBox(width: 20),
+                                                  Text(
+                                                    isPdf
+                                                        ? title
+                                                        : isDoc
+                                                        ? title
+                                                        : title,
+                                                    style: const TextStyle(
+                                                      fontSize: 11,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        }).toList(),
+                                      ),
+                                    ],
+                                  ],
+                                );
+                              },
+                            ),
+                          ],
+                        ],
                       ),
                     ),
                   ],

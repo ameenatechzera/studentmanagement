@@ -129,301 +129,301 @@ class _AttendenceScreenState extends State<AttendenceScreen> {
           // ],
         ),
 
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              /// ✅ ALWAYS VISIBLE CALENDAR
-              _buildCalendarSection(),
+        body: Column(
+          children: [
+            /// ✅ ALWAYS VISIBLE CALENDAR
+            // _buildCalendarSection(),
 
-              // /// ✅ ONLY LIST CHANGES
-              // BlocBuilder<AttendenceCubit, AttendenceState>(
-              //   builder: (context, state) {
-              //     if (state is AttendenceMonthLoading) {
-              //       return AllClassDiarySkeleton();
-              //     }
+            /// ✅ ONLY LIST CHANGES
+            BlocBuilder<AttendenceCubit, AttendenceState>(
+              builder: (context, state) {
+                if (state is AttendenceMonthLoading) {
+                  return AllClassDiarySkeleton();
+                }
 
-              //     if (state is AttendenceMonthError) {
-              //       return Center(child: Text(state.message));
-              //     }
+                if (state is AttendenceMonthError) {
+                  return Center(child: Text(state.message));
+                }
 
-              //     if (state is AttendenceMonthLoaded) {
-              //       final student = state.data.data?.isNotEmpty == true
-              //           ? state.data.data!.first
-              //           : null;
+                if (state is AttendenceMonthLoaded) {
+                  final student = state.data.data?.isNotEmpty == true
+                      ? state.data.data!.first
+                      : null;
 
-              //       final daysMap = student?.days ?? {};
+                  final daysMap = student?.days ?? {};
 
-              //       final focusedDay = _focusedDay.value;
+                  final focusedDay = _focusedDay.value;
 
-              //       final daysInMonth = DateTime(
-              //         focusedDay.year,
-              //         focusedDay.month + 1,
-              //         0,
-              //       ).day;
+                  final daysInMonth = DateTime(
+                    focusedDay.year,
+                    focusedDay.month + 1,
+                    0,
+                  ).day;
 
-              //       // return ListView.builder(
-              //       //   padding: const EdgeInsets.all(16),
-              //       //   itemCount: daysInMonth,
-              //       //   itemBuilder: (context, index) {
-              //       //     final date = DateTime(
-              //       //       focusedDay.year,
-              //       //       focusedDay.month,
-              //       //       index + 1,
-              //       //     );
+                  return Expanded(
+                    child: ListView.builder(
+                      padding: const EdgeInsets.all(16),
+                      itemCount: daysInMonth,
+                      itemBuilder: (context, index) {
+                        final date = DateTime(
+                          focusedDay.year,
+                          focusedDay.month,
+                          index + 1,
+                        );
 
-              //       //     final dayKey = "Day${index + 1}";
-              //       //     final statusValue = daysMap[dayKey];
+                        final dayKey = "Day${index + 1}";
+                        final statusValue = daysMap[dayKey];
 
-              //       //     final now = DateTime.now();
-              //       //     final today = DateTime(now.year, now.month, now.day);
+                        final now = DateTime.now();
+                        final today = DateTime(now.year, now.month, now.day);
 
-              //       //     String status;
-              //       //     Color color;
-              //       //     double progress;
-              //       //     String time;
+                        String status;
+                        Color color;
+                        double progress;
+                        String time;
 
-              //       //     /// ✅ FUTURE DATE
-              //       //     if (date.isAfter(today)) {
-              //       //       status = "Upcoming";
-              //       //       color = Colors.blueGrey;
-              //       //       progress = 0.0;
-              //       //       time = "Not Yet";
-              //       //     }
-              //       //     /// ✅ PRESENT
-              //       //     else if (statusValue == "Present") {
-              //       //       status = "Present";
-              //       //       color = const Color(0xff22c55e);
-              //       //       progress = 1.0;
-              //       //       time = "09:00 AM - 06:00 PM";
-              //       //     }
-              //       //     /// ✅ ABSENT
-              //       //     else if (statusValue == "Absent") {
-              //       //       status = "Absent";
-              //       //       color = const Color(0xffef4444);
-              //       //       progress = 0.0;
-              //       //       time = "No Login";
-              //       //     }
-              //       //     /// ✅ NO DATA
-              //       //     else {
-              //       //       status = "No Data";
-              //       //       color = Colors.blueGrey;
-              //       //       progress = 0.0;
-              //       //       time = "Missing Data";
-              //       //     }
+                        /// ✅ FUTURE DATE
+                        if (date.isAfter(today)) {
+                          status = "Upcoming";
+                          color = Colors.blueGrey;
+                          progress = 0.0;
+                          time = "Not Yet";
+                        }
+                        /// ✅ PRESENT
+                        else if (statusValue == "Present") {
+                          status = "Present";
+                          color = const Color(0xff22c55e);
+                          progress = 1.0;
+                          time = "09:00 AM - 06:00 PM";
+                        }
+                        /// ✅ ABSENT
+                        else if (statusValue == "Absent") {
+                          status = "Absent";
+                          color = const Color(0xffef4444);
+                          progress = 0.0;
+                          time = "No Login";
+                        }
+                        /// ✅ NO DATA
+                        else {
+                          status = "No Data";
+                          color = Colors.blueGrey;
+                          progress = 0.0;
+                          time = "Missing Data";
+                        }
 
-              //       //     // return Padding(
-              //       //     //   padding: const EdgeInsets.only(bottom: 16),
-              //       //     //   child: AttendanceCard(
-              //       //     //     date: date,
-              //       //     //     status: status,
-              //       //     //     time: time,
-              //       //     //     progress: progress,
-              //       //     //     color: color,
-              //       //     //   ),
-              //       //     // );
-              //       //   },
-              //       // );
-              //     }
-
-              //     return const SizedBox();
-              //   },
-              // ),
-              Stack(
-                children: [
-                  Container(
-                    margin: const EdgeInsets.all(16),
-                    padding: const EdgeInsets.all(18),
-                    decoration: BoxDecoration(
-                      color: const Color(0xffc5c4ff),
-                      borderRadius: BorderRadius.circular(28),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: const [
-                                  Text(
-                                    "Total working days",
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w800,
-                                      color: Color(0xff111827),
-                                    ),
-                                  ),
-
-                                  SizedBox(height: 35),
-
-                                  Text(
-                                    "22",
-                                    style: TextStyle(
-                                      fontSize: 34,
-                                      fontWeight: FontWeight.w900,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-
-                            Expanded(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    "Total Attendance",
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w800,
-                                      color: Color(0xff111827),
-                                    ),
-                                  ),
-
-                                  const SizedBox(height: 16),
-
-                                  SizedBox(
-                                    width: 100,
-                                    height: 100,
-                                    child: Stack(
-                                      alignment: Alignment.center,
-                                      children: [
-                                        Transform.scale(
-                                          scale: 1.8,
-                                          child: CircularProgressIndicator(
-                                            value: 0.89,
-                                            strokeWidth: 8,
-                                            backgroundColor: Colors.white,
-                                            valueColor:
-                                                const AlwaysStoppedAnimation(
-                                                  Color(0xff807fd8),
-                                                ),
-                                          ),
-                                        ),
-
-                                        const Text(
-                                          "89%",
-                                          style: TextStyle(
-                                            fontSize: 17,
-                                            fontWeight: FontWeight.w900,
-                                            color: Color(0xff111827),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        // const SizedBox(height: 20),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 22,
-                            vertical: 5,
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          child: AttendanceCard(
+                            date: date,
+                            status: status,
+                            time: time,
+                            progress: progress,
+                            color: color,
                           ),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(18),
-                          ),
-                          child: Column(
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  _attendanceLegendDot(
-                                    title: "Present",
-                                    color: const Color(0xff22c55e),
-                                  ),
-                                  _attendanceLegendDot(
-                                    title: "Absent",
-                                    color: const Color(0xffff4b4b),
-                                  ),
-                                  Row(
-                                    children: [
-                                      Container(
-                                        width: 11,
-                                        height: 11,
-                                        decoration: const BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          gradient: LinearGradient(
-                                            colors: [
-                                              Color(0xff22c55e),
-                                              Color(0xffff4b4b),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 6),
-                                      const Text(
-                                        "Half day",
-                                        style: TextStyle(
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-
-                              const SizedBox(height: 12),
-
-                              const Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    "19",
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w900,
-                                    ),
-                                  ),
-                                  Text(
-                                    "2",
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w900,
-                                    ),
-                                  ),
-                                  Text(
-                                    "1",
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w900,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                        );
+                      },
                     ),
-                  ),
+                  );
+                }
 
-                  Positioned(
-                    right: 100,
-                    top: 40,
-                    child: Image.asset(
-                      "assets/images/mask_bg.png",
-                      width: 250,
-                      height: 200,
-                      fit: BoxFit.contain,
-                      color: Colors.black,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
+                return const SizedBox();
+              },
+            ),
+            // Stack(
+            //   children: [
+            //     Container(
+            //       margin: const EdgeInsets.all(16),
+            //       padding: const EdgeInsets.all(18),
+            //       decoration: BoxDecoration(
+            //         color: const Color(0xffc5c4ff),
+            //         borderRadius: BorderRadius.circular(28),
+            //       ),
+            //       child: Column(
+            //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //         children: [
+            //           Row(
+            //             crossAxisAlignment: CrossAxisAlignment.start,
+            //             children: [
+            //               Expanded(
+            //                 child: Column(
+            //                   mainAxisAlignment: MainAxisAlignment.start,
+            //                   children: const [
+            //                     Text(
+            //                       "Total working days",
+            //                       style: TextStyle(
+            //                         fontSize: 15,
+            //                         fontWeight: FontWeight.w800,
+            //                         color: Color(0xff111827),
+            //                       ),
+            //                     ),
+
+            //                     SizedBox(height: 35),
+
+            //                     Text(
+            //                       "22",
+            //                       style: TextStyle(
+            //                         fontSize: 34,
+            //                         fontWeight: FontWeight.w900,
+            //                         color: Colors.black,
+            //                       ),
+            //                     ),
+            //                   ],
+            //                 ),
+            //               ),
+
+            //               Expanded(
+            //                 child: Column(
+            //                   mainAxisAlignment: MainAxisAlignment.start,
+            //                   children: [
+            //                     const Text(
+            //                       "Total Attendance",
+            //                       style: TextStyle(
+            //                         fontSize: 15,
+            //                         fontWeight: FontWeight.w800,
+            //                         color: Color(0xff111827),
+            //                       ),
+            //                     ),
+
+            //                     const SizedBox(height: 16),
+
+            //                     SizedBox(
+            //                       width: 100,
+            //                       height: 100,
+            //                       child: Stack(
+            //                         alignment: Alignment.center,
+            //                         children: [
+            //                           Transform.scale(
+            //                             scale: 1.8,
+            //                             child: CircularProgressIndicator(
+            //                               value: 0.89,
+            //                               strokeWidth: 8,
+            //                               backgroundColor: Colors.white,
+            //                               valueColor:
+            //                                   const AlwaysStoppedAnimation(
+            //                                     Color(0xff807fd8),
+            //                                   ),
+            //                             ),
+            //                           ),
+
+            //                           const Text(
+            //                             "89%",
+            //                             style: TextStyle(
+            //                               fontSize: 17,
+            //                               fontWeight: FontWeight.w900,
+            //                               color: Color(0xff111827),
+            //                             ),
+            //                           ),
+            //                         ],
+            //                       ),
+            //                     ),
+            //                   ],
+            //                 ),
+            //               ),
+            //             ],
+            //           ),
+
+            //           // const SizedBox(height: 20),
+            //           Container(
+            //             padding: const EdgeInsets.symmetric(
+            //               horizontal: 22,
+            //               vertical: 5,
+            //             ),
+            //             decoration: BoxDecoration(
+            //               color: Colors.white,
+            //               borderRadius: BorderRadius.circular(18),
+            //             ),
+            //             child: Column(
+            //               children: [
+            //                 Row(
+            //                   mainAxisAlignment:
+            //                       MainAxisAlignment.spaceBetween,
+            //                   children: [
+            //                     _attendanceLegendDot(
+            //                       title: "Present",
+            //                       color: const Color(0xff22c55e),
+            //                     ),
+            //                     _attendanceLegendDot(
+            //                       title: "Absent",
+            //                       color: const Color(0xffff4b4b),
+            //                     ),
+            //                     Row(
+            //                       children: [
+            //                         Container(
+            //                           width: 11,
+            //                           height: 11,
+            //                           decoration: const BoxDecoration(
+            //                             shape: BoxShape.circle,
+            //                             gradient: LinearGradient(
+            //                               colors: [
+            //                                 Color(0xff22c55e),
+            //                                 Color(0xffff4b4b),
+            //                               ],
+            //                             ),
+            //                           ),
+            //                         ),
+            //                         const SizedBox(width: 6),
+            //                         const Text(
+            //                           "Half day",
+            //                           style: TextStyle(
+            //                             fontSize: 13,
+            //                             fontWeight: FontWeight.w700,
+            //                           ),
+            //                         ),
+            //                       ],
+            //                     ),
+            //                   ],
+            //                 ),
+
+            //                 const SizedBox(height: 12),
+
+            //                 const Row(
+            //                   mainAxisAlignment:
+            //                       MainAxisAlignment.spaceBetween,
+            //                   children: [
+            //                     Text(
+            //                       "19",
+            //                       style: TextStyle(
+            //                         fontSize: 20,
+            //                         fontWeight: FontWeight.w900,
+            //                       ),
+            //                     ),
+            //                     Text(
+            //                       "2",
+            //                       style: TextStyle(
+            //                         fontSize: 20,
+            //                         fontWeight: FontWeight.w900,
+            //                       ),
+            //                     ),
+            //                     Text(
+            //                       "1",
+            //                       style: TextStyle(
+            //                         fontSize: 20,
+            //                         fontWeight: FontWeight.w900,
+            //                       ),
+            //                     ),
+            //                   ],
+            //                 ),
+            //               ],
+            //             ),
+            //           ),
+            //         ],
+            //       ),
+            //     ),
+
+            //     Positioned(
+            //       right: 100,
+            //       top: 40,
+            //       child: Image.asset(
+            //         "assets/images/mask_bg.png",
+            //         width: 250,
+            //         height: 200,
+            //         fit: BoxFit.contain,
+            //         color: Colors.black,
+            //       ),
+            //     ),
+            //   ],
+            // ),
+          ],
         ),
       ),
     );

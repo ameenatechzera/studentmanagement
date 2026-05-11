@@ -42,11 +42,8 @@ class _MarkListPageState extends State<MarkListPage> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: const Icon(Icons.arrow_back, color: Colors.black),
-        title: const Text(
-          "Mark List",
-          style: TextStyle(color: Colors.black),
-        ),
+        // leading: const Icon(Icons.arrow_back, color: Colors.black),
+        title: const Text("Mark List", style: TextStyle(color: Colors.black)),
       ),
       body: BlocBuilder<MarklistCubit, MarklistState>(
         builder: (context, state) {
@@ -101,14 +98,13 @@ class _MarkListPageState extends State<MarkListPage> {
                       child: Center(child: Text("No results found")),
                     )
                   else
-
-                  /// 📋 List
+                    /// 📋 List
                     Expanded(
                       child: ListView.separated(
                         padding: EdgeInsets.zero,
                         itemCount: filteredExamTerms.length,
                         separatorBuilder: (context, index) =>
-                        const SizedBox(height: 12),
+                            const SizedBox(height: 12),
                         itemBuilder: (context, index) {
                           final item = filteredExamTerms[index];
 
@@ -119,7 +115,8 @@ class _MarkListPageState extends State<MarkListPage> {
                                 ? Colors.blue
                                 : index % 3 == 1
                                 ? Colors.green
-                                : Colors.orange, termId: item.examTermId?.toString() ?? "0",
+                                : Colors.orange,
+                            termId: item.examTermId?.toString() ?? "0",
                           );
                         },
                       ),
@@ -147,20 +144,20 @@ class MarkCard extends StatelessWidget {
     super.key,
     required this.title,
     required this.date,
-    required this.color, required this.termId,
+    required this.color,
+    required this.termId,
   });
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () async {
-          await AppNavigator.pushSlide(
-            context: context,
-            page: ExamMarkDetailsPage(examTermId: termId, examTerm: title,)
-          );
-          // 🔥 Reload after coming back
-          context.read<MarklistCubit>().fetchExamTerms();
-
+        await AppNavigator.pushSlide(
+          context: context,
+          page: ExamMarkDetailsPage(examTermId: termId, examTerm: title),
+        );
+        // 🔥 Reload after coming back
+        context.read<MarklistCubit>().fetchExamTerms();
       },
       child: Container(
         decoration: BoxDecoration(
@@ -171,7 +168,7 @@ class MarkCard extends StatelessWidget {
               color: Colors.black.withOpacity(0.05),
               blurRadius: 10,
               offset: const Offset(0, 4),
-            )
+            ),
           ],
         ),
         child: Row(
@@ -213,12 +210,7 @@ class MarkCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text(
-                    date,
-                    style: TextStyle(
-                      color: Colors.grey.shade600,
-                    ),
-                  ),
+                  Text(date, style: TextStyle(color: Colors.grey.shade600)),
                 ],
               ),
             ),

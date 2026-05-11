@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:studentmanagement/core/errors/error_message_model.dart';
 import 'package:studentmanagement/core/errors/exceptions.dart';
@@ -48,9 +50,24 @@ class DiaryRemoteDataSourceImpl implements DiaryRemoteDataSource {
       );
 
       print('📘 Status Code: ${response.statusCode}');
-      print('📘 Response Data: ${response.data}');
-      print("REQUEST BODY: ${params.toJson()}");
-      print("FULL URL: $url");
+      final responseString = jsonEncode(response.data);
+
+      const chunkSize = 800;
+
+      for (int i = 0; i < responseString.length; i += chunkSize) {
+        print(
+          responseString.substring(
+            i,
+            i + chunkSize > responseString.length
+                ? responseString.length
+                : i + chunkSize,
+          ),
+        );
+      }
+      // print(jsonEncode(response.data));
+      // print('📘 Response Data: ${response.data}');
+      // print("REQUEST BODY: ${params.toJson()}");
+      // print("FULL URL: $url");
 
       /// 🔹 Parse Response
       if (response.statusCode == 200 || response.statusCode == 201) {
