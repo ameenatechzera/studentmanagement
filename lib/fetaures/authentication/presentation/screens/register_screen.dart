@@ -140,7 +140,7 @@ class RegisterScreen extends StatelessWidget {
                   height: 48,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFC4005F),
+                      backgroundColor: const Color(0xFF807FD8),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(4),
                       ),

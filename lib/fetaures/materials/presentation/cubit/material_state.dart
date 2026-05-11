@@ -9,10 +9,21 @@ class MaterialInitial extends MaterialsState {}
 
 class MaterialLoading extends MaterialsState {}
 
+class SubjectsLoading extends MaterialsState {}
+
 class MaterialLoaded extends MaterialsState {
-  final FetchMaterialResponseModel response;
+  final List<FetchMaterialDetails> response;
 
   MaterialLoaded({required this.response});
+
+  @override
+  List<Object?> get props => [response];
+}
+
+class SubjectsLoaded extends MaterialsState {
+  final SubjectsModel response;
+
+  SubjectsLoaded({required this.response});
 
   @override
   List<Object?> get props => [response];
@@ -22,6 +33,15 @@ class MaterialError extends MaterialsState {
   final String message;
 
   MaterialError({required this.message});
+
+  @override
+  List<Object?> get props => [message];
+}
+
+class SubjectsError extends MaterialsState {
+  final String message;
+
+  SubjectsError({required this.message});
 
   @override
   List<Object?> get props => [message];

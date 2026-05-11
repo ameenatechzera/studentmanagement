@@ -22,3 +22,7 @@ class TimetableError extends TimetableState {
 
   const TimetableError({required this.message});
 }
+class DaySelectionChanged extends TimetableState {
+
+  const DaySelectionChanged();
+}

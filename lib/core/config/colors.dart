@@ -18,6 +18,9 @@ const SizedBox height10=SizedBox(height: 10,);
 const SizedBox height5=SizedBox(height: 5,);
 const Color appThemeLightOrange = Color(0xFFfeeda3);
 final Color darkGreen= Color(0xFF134E0C);
+final Color appBlueTheme= Color(0xFF807FD8);
+final Color appBlueFont= Color(0xFF4D4EFF);
+final Color cardColor= Color(0xFF313131);
 
 
 

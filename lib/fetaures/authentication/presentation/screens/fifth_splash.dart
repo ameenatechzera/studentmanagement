@@ -1,20 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:studentmanagement/core/config/colors.dart';
 import 'package:studentmanagement/core/navigation/app_navigator.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/screens/login_screen.dart';
-import 'package:studentmanagement/fetaures/authentication/presentation/screens/third_splash.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:studentmanagement/fetaures/authentication/presentation/widget/dot.dart';
 
-class SecondSplashScreen extends StatelessWidget {
-  const SecondSplashScreen({super.key});
+class FifthSplashScreen extends StatelessWidget {
+  const FifthSplashScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       body: Column(
         children: [
-          /// ✅ TOP PURPLE SECTION
           Container(
             height: 500,
             width: double.infinity,
@@ -29,23 +25,25 @@ class SecondSplashScreen extends StatelessWidget {
             //SizedBox(height: 50),
             child: Stack(
               children: [
-                /// ✅ BACKGROUND IMAGE
                 Positioned(
-                  right: -10,
-                  top: 130,
-                  bottom: 60,
-                  child: Image.asset(
-                    "assets/images/mask_bg.png",
-                    // color: Colors.white,
-                    height: 100,
-                    fit: BoxFit.contain,
+                  left: -220,
+                  top: 10,
+                  bottom: 9,
+                  child: Transform.rotate(
+                    angle: 1.2,
+                    child: Image.asset(
+                      "assets/images/mask_bg.png",
+                      // color: Colors.white,
+                      // height: 100,
+                      fit: BoxFit.contain,
+                    ),
                   ),
                 ),
                 Center(
                   child: Padding(
-                    padding: const EdgeInsets.only(top: 170),
+                    padding: const EdgeInsets.only(top: 120),
                     child: Image.asset(
-                      'assets/images/magnific__background__23364 1.png',
+                      'assets/images/ChatGPT Image May 7, 2026, 10_21_20 AM 1.png',
                     ),
                   ),
                 ),
@@ -53,9 +51,8 @@ class SecondSplashScreen extends StatelessWidget {
             ),
           ),
           SizedBox(height: 30),
-
           Text(
-            'Welcome to Cristal',
+            'Easy & Convenient',
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -67,7 +64,7 @@ class SecondSplashScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(left: 20.0, right: 20),
             child: Text(
-              'A complete school management solution to stay connected with your child’s school anytime, anywhere.',
+              'Pay fees, view reports, and access all school-related information in one place, anytime.',
               textAlign: TextAlign.center,
               style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
             ),
@@ -78,58 +75,17 @@ class SecondSplashScreen extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                _dot(isActive: true), // current splash
+                _dot(isActive: false), // current splash
                 const SizedBox(width: 6),
                 _dot(isActive: false),
                 const SizedBox(width: 6),
                 _dot(isActive: false),
                 const SizedBox(width: 6),
-                _dot(isActive: false),
+                _dot(isActive: true),
               ],
             ),
           ),
           SizedBox(height: 100),
-
-          // Row(
-          //   children: [
-          //     TextButton(
-          //       onPressed: () {},
-          //       child: Text(
-          //         'Skip',
-          //         style: TextStyle(
-          //           fontWeight: FontWeight.bold,
-          //           color: Colors.black,
-          //         ),
-          //       ),
-          //     ),
-          //     SizedBox(
-          //       height: 50,
-          //       width: 30,
-
-          //       child: ElevatedButton(
-          //         onPressed: () {
-          //           AppNavigator.pushReplacementSlide(
-          //             context: context,
-          //             page: ThirdSplashScreen(),
-          //           );
-          //         },
-
-          //         style: ElevatedButton.styleFrom(
-          //           backgroundColor: const Color(0xFF807FD8),
-          //           shape: const CircleBorder(),
-          //           padding: EdgeInsets.zero,
-          //           elevation: 4,
-          //         ),
-
-          //         child: const Icon(
-          //           Icons.arrow_forward,
-          //           color: Colors.white,
-          //           size: 26,
-          //         ),
-          //       ),
-          //     ),
-          //   ],
-          // ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 26),
             child: Row(
@@ -166,7 +122,7 @@ class SecondSplashScreen extends StatelessWidget {
                     onPressed: () {
                       AppNavigator.pushReplacementSlide(
                         context: context,
-                        page: ThirdSplashScreen(),
+                        page: LoginScreen(),
                       );
                     },
                     style: ElevatedButton.styleFrom(
@@ -204,15 +160,4 @@ class SecondSplashScreen extends StatelessWidget {
       ),
     );
   }
-
-  // Widget _dot({required bool isActive}) {
-  //   return Container(
-  //     width: isActive ? 10 : 8,
-  //     height: isActive ? 10 : 8,
-  //     decoration: BoxDecoration(
-  //       color: isActive ? const Color(0xFF807FD8) : Colors.grey.shade400,
-  //       shape: BoxShape.circle,
-  //     ),
-  //   );
-  // }
 }

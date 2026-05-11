@@ -48,38 +48,52 @@ class _PostCardState extends State<PostCard> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const CircleAvatar(
-                radius: 16,
-                backgroundImage: AssetImage('assets/images/fsp_logo.png'),
+              CircleAvatar(
+                radius: 25,
+                backgroundImage:
+                    (AppData.profileUrl != null &&
+                        AppData.profileUrl!.isNotEmpty)
+                    ? NetworkImage(AppData.profileUrl!)
+                    : null,
+                child:
+                    (AppData.profileUrl == null || AppData.profileUrl!.isEmpty)
+                    ? ClipOval(
+                        child: Image.asset(
+                          getGenderImage(),
+                          fit: BoxFit.cover,
+                          width: 50,
+                          height: 50,
+                        ),
+                      )
+                    : null,
               ),
-              const SizedBox(width: 10),
-
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      feed.postedBy ?? 'NoName',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 15.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        AppData.studentName ?? 'No Name',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          //color: Colors.white,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      TimeAgoHelper.getFeedTime(
-                        createdDate: feed.createdDate,
-                        modifiedDate: feed.modifiedDate,
-                      ),
-                      style: const TextStyle(fontSize: 12),
-                    ),
-                  ],
+                      const SizedBox(height: 2),
+                      Text('Principal', style: const TextStyle(fontSize: 12)),
+                    ],
+                  ),
                 ),
               ),
 
-              Text(
-                feed.createdTime ?? "",
-                style: const TextStyle(fontSize: 12),
+              Padding(
+                padding: const EdgeInsets.only(right: 25.0),
+                child: Text(
+                  feed.createdTime ?? "",
+                  style: const TextStyle(fontSize: 12),
+                ),
               ),
             ],
           ),
@@ -148,21 +162,28 @@ class _PostCardState extends State<PostCard> {
           ),
 
         /// 🔹 FEED TEXT
-        Padding(
-          padding: const EdgeInsets.all(12),
-          child: Text(
-            feed.feedText ?? "",
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-          ),
-        ),
+        // Padding(
+        //   padding: const EdgeInsets.all(12),
+        //   child: Text(
+        //     feed.feedText ?? "",
+        //     style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        //   ),
+        // ),
 
         /// 🔹 ACTION ROW
         Row(
           children: [
             IconButton(
-              icon: Icon(
-                isLiked ? Icons.favorite : Icons.favorite_border,
-                color: isLiked ? Colors.red : Colors.grey,
+              icon: ColorFiltered(
+                colorFilter: ColorFilter.mode(
+                  isLiked ? Colors.red : Colors.grey,
+                  BlendMode.srcIn,
+                ),
+                child: Image.asset(
+                  'assets/images/Clip path group (3).png',
+                  height: 24,
+                  width: 24,
+                ),
               ),
               onPressed: () {
                 final newValue = !isLiked;
@@ -188,13 +209,34 @@ class _PostCardState extends State<PostCard> {
 
             Text(likeCount.toString()),
 
-            IconButton(icon: const Icon(Icons.send), onPressed: sharePost),
-
+            IconButton(
+              onPressed: sharePost,
+              icon: Image.asset('assets/images/Clip path group (2).png'),
+            ),
             Text(feed.shareCount.toString()),
           ],
         ),
+        Padding(
+          padding: const EdgeInsets.all(12),
+          child: Text(
+            feed.feedText ?? "",
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          ),
+        ),
       ],
     );
+  }
+
+  String getGenderImage() {
+    final g = (AppData.gender ?? '').toLowerCase().trim();
+
+    if (g == 'male') {
+      return "assets/icons/c0d90970-7626-47b6-a097-ca0834c7a05f_removalai_preview.png";
+    } else if (g == 'female') {
+      return "assets/icons/1f5debb8-6e36-4d25-bde8-526f4dd89820_removalai_preview.png";
+    } else {
+      return "assets/icons/c0d90970-7626-47b6-a097-ca0834c7a05f_removalai_preview.png";
+    }
   }
 
   Future<Size> _getImageSize(String url) async {

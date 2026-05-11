@@ -93,8 +93,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       drawer: SideNavigationBar(),
-      appBar: AppBar(title: const Text("Home")),
+      //appBar: AppBar(backgroundColor: Colors.white, title: const Text("Home")),
       body: SafeArea(
         child: BlocConsumer<FeedCubit, FeedState>(
           listener: (context, state) {
@@ -187,9 +188,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             return CustomScrollView(
                               controller: _scrollController,
                               slivers: [
-                                const SliverToBoxAdapter(
-                                  child: HeaderSection(),
-                                ),
+                                // const SliverToBoxAdapter(
+                                //   child: HeaderSection(),
+                                // ),
                                 SliverList(
                                   delegate: SliverChildBuilderDelegate((
                                     context,
@@ -210,12 +211,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                       );
                                     }
 
-                                    return Column(
-                                      children: [
-                                        const SizedBox(height: 16),
-                                        PostCard(feed: allFeeds[index]),
-                                        const SizedBox(height: 16),
-                                      ],
+                                    return Padding(
+                                      padding: const EdgeInsets.only(top: 8.0),
+                                      child: Column(
+                                        children: [
+                                          const SizedBox(height: 16),
+                                          PostCard(feed: allFeeds[index]),
+                                          const SizedBox(height: 16),
+                                        ],
+                                      ),
                                     );
                                   }, childCount: allFeeds.length + 1),
                                 ),

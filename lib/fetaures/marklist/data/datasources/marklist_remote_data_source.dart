@@ -28,6 +28,7 @@ class MarkListRemoteDataSourceImpl implements MarkListRemoteDataSource {
       if (baseUrl == null || baseUrl.isEmpty) {
         throw Exception("Base URL not set");
       }
+      print('baseUrl $baseUrl');
 
       /// 🔹 Build API URL
       final url = ApiConstants.getExamTermPath(baseUrl);
@@ -86,11 +87,10 @@ class MarkListRemoteDataSourceImpl implements MarkListRemoteDataSource {
       final url = ApiConstants.getMarkListPath(baseUrl);
       print('url $url');
       print('params ${params.toJson()}');
-      final options = await ApiHelper.getAuthOptions();
 
       /// 🔹 Get Token
-      //final token = await SharedPreferenceHelper().getToken() ?? "";
-
+      final options = await ApiHelper.getAuthOptions(withToken: true);
+      //print('token $token');
       /// 🔹 Request Body (important 🔥)
 
       /// 🔹 API Call (usually POST for this type)
@@ -98,15 +98,9 @@ class MarkListRemoteDataSourceImpl implements MarkListRemoteDataSource {
         url,
         data: params.toJson(),
         options: options,
-        // options: Options(
-        //   contentType: "application/json",
-        //   headers: {
-        //     "Accept": "application/json",
-        //     "Authorization": "Bearer $token",
-        //   },
-        // ),
-      );
 
+      );
+      print('response $response');
       /// 🔹 Parse Response
       if (response.statusCode == 200 || response.statusCode == 201) {
         return FetchMarkListResponseModel.fromJson(response.data);

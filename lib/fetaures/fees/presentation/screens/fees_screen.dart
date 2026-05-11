@@ -22,7 +22,8 @@ class FeesScreen extends StatelessWidget {
     });
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Fees")),
+      backgroundColor: Colors.white,
+      appBar: AppBar(backgroundColor: Colors.white, title: const Text("Fees")),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
