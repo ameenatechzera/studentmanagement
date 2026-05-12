@@ -4,8 +4,10 @@ import 'package:studentmanagement/core/errors/exceptions.dart';
 import 'package:studentmanagement/core/network/api_endpoints.dart';
 import 'package:studentmanagement/core/network/apihelper.dart';
 import 'package:studentmanagement/fetaures/materials/data/models/fetch_materials_model.dart';
+import 'package:studentmanagement/fetaures/materials/data/models/fetch_materialsbysubject_model.dart';
 import 'package:studentmanagement/fetaures/materials/data/models/subjects_model.dart';
 import 'package:studentmanagement/fetaures/materials/domain/parameters/fetch_material_parameter.dart';
+import 'package:studentmanagement/fetaures/materials/domain/parameters/fetch_materialsbysubjectId.dart';
 import 'package:studentmanagement/services/shared_preference_helper.dart';
 
 abstract class MaterialRemoteDataSource {
@@ -13,7 +15,9 @@ abstract class MaterialRemoteDataSource {
     FetchMaterialParameter params,
   );
   Future<SubjectsModel> fetchSubjects();
-
+  Future<FetchMaterialsbySubjectModel> fetchMaterialsBySubject(
+      FetchMaterialBySubjectIdParameter params,
+      );
 }
 
 class MaterialRemoteDataSourceImpl implements MaterialRemoteDataSource {
@@ -100,6 +104,46 @@ class MaterialRemoteDataSourceImpl implements MaterialRemoteDataSource {
       /// 🔹 Parse Response
       if (response.statusCode == 200 || response.statusCode == 201) {
         return SubjectsModel.fromJson(response.data);
+      } else {
+        throw ServerException(
+          errorMessageModel: ErrorMessageModel.fromJson(response.data),
+        );
+      }
+    } catch (e, stacktrace) {
+      print('❌ Exception in fetchMaterials: $e');
+      print(stacktrace);
+      rethrow;
+    }
+  }
+
+  @override
+  Future<FetchMaterialsbySubjectModel> fetchMaterialsBySubject(FetchMaterialBySubjectIdParameter params) async {
+    try {
+      /// 🔹 Get Base URL
+      final baseUrl = await SharedPreferenceHelper().getBaseUrl();
+      if (baseUrl == null || baseUrl.isEmpty) {
+        throw Exception("Base URL not set");
+      }
+
+      /// 🔹 Build API URL
+      final url = ApiConstants.getMaterialsPath(baseUrl);
+      print('url $url');
+
+      final options = await ApiHelper.getAuthOptions(withToken: true);
+      /// 🔹 API Call (GET or POST based on backend)
+      final response = await dio.post(
+        url,
+        data: params.toJson(),
+        options: options,
+      );
+
+      print('📘 Status Code: ${response.statusCode}');
+      print('📘 Response Data: ${response.data}');
+      print("FULL URL: $url");
+
+      /// 🔹 Parse Response
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return FetchMaterialsbySubjectModel.fromJson(response.data);
       } else {
         throw ServerException(
           errorMessageModel: ErrorMessageModel.fromJson(response.data),

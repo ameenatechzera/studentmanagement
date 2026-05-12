@@ -18,12 +18,12 @@ import 'package:studentmanagement/fetaures/timetable/presentation/screens/timeta
 
 // --- Data ---
 const _quickAccessItems = [
-  {'icon': Icons.credit_card, 'label': 'Fees', 'color': Color(0xFFF5F0A8)},
-  {'icon': Icons.schedule, 'label': 'Time Table', 'color': Color(0xFFD4EDA4)},
-  {'icon': Icons.menu_book, 'label': 'Class Diary', 'color': Color(0xFFB8F0B8)},
-  {'icon': Icons.checklist, 'label': 'Mark List', 'color': Color(0xFFB8E8F5)},
-  {'icon': Icons.dashboard, 'label': 'Material', 'color': Color(0xFFCFBEF5)},
-  {'icon': Icons.event_available, 'label': 'Attendance', 'color': Color(0xFFD4EDA4)},
+  {'icon': Icons.credit_card, 'label': 'Fees', 'color': Color(0xFFFFF5AD)},
+  {'icon': Icons.schedule, 'label': 'Time Table', 'color': Color(0xFFE8FFAD)},
+  {'icon': Icons.menu_book, 'label': 'Class Diary', 'color': Color(0xFFC1FFAD)},
+  {'icon': Icons.checklist, 'label': 'Mark List', 'color': Color(0xFFADDFFF)},
+  {'icon': Icons.dashboard, 'label': 'Material', 'color': Color(0xFFC3ADFF)},
+  {'icon': Icons.event_available, 'label': 'Attendance', 'color': Color(0xFFFFF5AD)},
 ];
 
 final ValueNotifier<bool> showAllNotifications = ValueNotifier<bool>(false);
@@ -57,7 +57,7 @@ class _HomeScreenState extends State<StudentScreenN> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
@@ -66,9 +66,9 @@ class _HomeScreenState extends State<StudentScreenN> {
             children: [
               _buildProfileCard(),
               const SizedBox(height: 24),
-              _buildSectionTitle('Notification'),
-              const SizedBox(height: 10),
-              _buildNotificationCard(),
+              // _buildSectionTitle('Notification'),
+              // const SizedBox(height: 10),
+              // _buildNotificationCard(),
               const SizedBox(height: 24),
               _buildSectionTitle('Quick Access'),
               const SizedBox(height: 12),
@@ -94,15 +94,29 @@ class _HomeScreenState extends State<StudentScreenN> {
       child: Stack(
         children: [
           // Watermark "66" text in background
+          // Positioned(
+          //   right: -10,
+          //   top: -10,
+          //   child: Text(
+          //     '66',
+          //     style: TextStyle(
+          //       fontSize: 90,
+          //       fontWeight: FontWeight.bold,
+          //       color: Colors.white.withOpacity(0.08),
+          //     ),
+          //   ),
+          // ),
           Positioned(
             right: -10,
-            top: -10,
-            child: Text(
-              '66',
-              style: TextStyle(
-                fontSize: 90,
-                fontWeight: FontWeight.bold,
-                color: Colors.white.withOpacity(0.08),
+            top: 10,
+            bottom: 10,
+            child: Opacity(
+              opacity: 0.99, // 👈 adjust visibility
+              child: Image.asset(
+                "assets/images/mask_bg.png",
+                color: Colors.white,
+                height: 100,
+                fit: BoxFit.contain,
               ),
             ),
           ),
@@ -138,7 +152,7 @@ class _HomeScreenState extends State<StudentScreenN> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        widget.loginResponse!.student!.admno,
+                        widget.loginResponse!.student!.mobile,
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 11,
@@ -155,9 +169,9 @@ class _HomeScreenState extends State<StudentScreenN> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    _buildStatItem('Class', widget.loginResponse!.student!.currentStudentStandardId
+                    _buildStatItem('Class', widget.loginResponse!.student!.studentStandard
                         .toString()),
-                    _buildStatItem('Div', widget.loginResponse!.student!.currentStudentDivisionId
+                    _buildStatItem('Div', widget.loginResponse!.student!.studentDivision
                         .toString()),
                     _buildStatItem('Admission No', widget.loginResponse!.student!.admno
                         .toString()),
@@ -265,9 +279,10 @@ class _HomeScreenState extends State<StudentScreenN> {
                 icon: _quickAccessItems[0]['icon'] as IconData,
                 label: _quickAccessItems[0]['label'] as String,
                 color: _quickAccessItems[0]['color'] as Color,
-                height: 90,
+               // height: 120,
               ),
             ),
+
 
             const SizedBox(width: 12),
 
@@ -278,7 +293,7 @@ class _HomeScreenState extends State<StudentScreenN> {
                 icon: _quickAccessItems[1]['icon'] as IconData,
                 label: _quickAccessItems[1]['label'] as String,
                 color: _quickAccessItems[1]['color'] as Color,
-                height: 90,
+                //height: 120,
               ),
             ),
           ],
@@ -296,7 +311,7 @@ class _HomeScreenState extends State<StudentScreenN> {
                 icon: _quickAccessItems[2]['icon'] as IconData,
                 label: _quickAccessItems[2]['label'] as String,
                 color: _quickAccessItems[2]['color'] as Color,
-                height: 90,
+              //  height: 90,
               ),
             ),
 
@@ -309,7 +324,7 @@ class _HomeScreenState extends State<StudentScreenN> {
                 icon: _quickAccessItems[3]['icon'] as IconData,
                 label: _quickAccessItems[3]['label'] as String,
                 color: _quickAccessItems[3]['color'] as Color,
-                height: 90,
+                //height: 90,
               ),
             ),
           ],
@@ -325,7 +340,7 @@ class _HomeScreenState extends State<StudentScreenN> {
                 icon: _quickAccessItems[4]['icon'] as IconData,
                 label: _quickAccessItems[4]['label'] as String,
                 color: _quickAccessItems[4]['color'] as Color,
-                height: 90,
+               // height: 90,
               ),
             ),
 
@@ -338,7 +353,7 @@ class _HomeScreenState extends State<StudentScreenN> {
                 icon: _quickAccessItems[5]['icon'] as IconData,
                 label: _quickAccessItems[5]['label'] as String,
                 color: _quickAccessItems[5]['color'] as Color,
-                height: 90,
+               // height: 90,
               ),
             ),
           ],
@@ -351,7 +366,6 @@ class _HomeScreenState extends State<StudentScreenN> {
     required IconData icon,
     required String label,
     required Color color,
-    double height = 80,
   }) {
     return GestureDetector(
       onTap: () {
@@ -377,6 +391,7 @@ class _HomeScreenState extends State<StudentScreenN> {
 
       },
       child: Container(
+        height: 90,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
           color: color,

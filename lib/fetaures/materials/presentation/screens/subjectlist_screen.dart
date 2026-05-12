@@ -99,7 +99,7 @@ class _SubjectPageState extends State<SubjectPage> {
 
               return InkWell(
                 onTap: (){
-                  AppNavigator.pushSlide(context: context, page: MaterialListPage(subjectName: 'Physics', subjectId: 1,));
+                  AppNavigator.pushSlide(context: context, page: MaterialListPage(subjectName: item.subjectName, subjectId: item.subjectId,));
                 },
                 child: Container(
                   margin: const EdgeInsets.only(bottom: 16),
