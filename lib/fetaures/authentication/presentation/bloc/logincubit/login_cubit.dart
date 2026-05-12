@@ -11,6 +11,7 @@ import 'package:studentmanagement/fetaures/authentication/domain/usecases/device
 import 'package:studentmanagement/fetaures/authentication/domain/usecases/getbranch_usecase.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/usecases/getschool_usecase.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/usecases/login_usecase.dart';
+import 'package:studentmanagement/services/shared_preference_helper.dart';
 
 part 'login_state.dart';
 
@@ -87,7 +88,11 @@ class LoginCubit extends Cubit<LoginState> {
           print('❌ FetchSchool failure: ${failure.message}');
           emit(FetchSchoolFailure(failure.message));
         },
-        (response) {
+        (response) async {
+          print("schoolResponse $response");
+          final pref = SharedPreferenceHelper();
+          await pref.setAppStoreVersion(response.schoolDetails!.first.appStoreVersion!);
+          await pref.setPlayStoreVersion(response.schoolDetails!.first.playStoreVersion!);
           emit(FetchSchoolSuccess(response));
         },
       );

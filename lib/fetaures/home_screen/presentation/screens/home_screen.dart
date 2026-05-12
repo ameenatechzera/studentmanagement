@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:studentmanagement/core/appdata/appdata.dart';
+import 'package:studentmanagement/fetaures/authentication/domain/parameters/fetchschool_parameter.dart';
+import 'package:studentmanagement/fetaures/authentication/presentation/bloc/logincubit/login_cubit.dart';
 import 'package:studentmanagement/fetaures/home_screen/domain/entities/fetchfeed_entity.dart';
 import 'package:studentmanagement/fetaures/home_screen/domain/parameters/fetchfeed_parameter.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/cubit/feed_cubit.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/widgets/header_cristal.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/widgets/post_card_cristal.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/widgets/sidenavigation.dart';
+import 'package:studentmanagement/services/shared_preference_helper.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -31,6 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
 
     print("🚀 INIT → Fetch page 1");
+    getVersion();
     _fetchFeeds(page: 1);
 
     _scrollController.addListener(() {
@@ -44,6 +50,90 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+
+
+  Future<void> checkForUpdate(
+      BuildContext context,
+      String appStoreVersion,
+      String playStoreVersion,
+      String appVersion,
+      ) async {
+    final playStoreVersion = await SharedPreferenceHelper().getPlayStoreVersion();
+    final appStoreVersion = await SharedPreferenceHelper().getAppStoreVersion();
+    print('playStoreVersion $playStoreVersion');
+    print('appVersion $appVersion');
+    if (appStoreVersion!.isNotEmpty &&
+        playStoreVersion!.isNotEmpty &&
+        playStoreVersion != appVersion) {
+
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text("Update Available"),
+            content: const Text(
+              "You have an update. Please update the app.",
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context); // dismiss dialog
+                  _fetchFeeds(page: 1);
+                },
+                child: const Text("Cancel"),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  Navigator.pop(context); // dismiss dialog
+                  _fetchFeeds(page: 1);
+                  const url =
+                      'https://play.google.com/store/apps/details?id=com.techzera.studentmanagement';
+
+                  final Uri uri = Uri.parse(url);
+
+                  if (await canLaunchUrl(uri)) {
+                    await launchUrl(
+                      uri,
+                      mode: LaunchMode.externalApplication,
+                    );
+                  }
+                },
+                child: const Text("OK"),
+              ),
+            ],
+          );
+        },
+      );
+    }
+    else{
+      _fetchFeeds(page: 1);
+    }
+
+  }
+  Future<void> getVersion() async {
+    final packageInfo = await PackageInfo.fromPlatform();
+    print(packageInfo.appName);
+    print(packageInfo.packageName);
+    print(packageInfo.version);
+    print(packageInfo.buildNumber);
+    String st_appVersion = packageInfo.version+"+"+packageInfo.buildNumber;
+    print('st_appVersion $st_appVersion');
+   // final schoolCode = await SharedPreferenceHelper().getSchoolCode();
+    // await context.read<LoginCubit>().fetchSchools(
+    //   FetchSchoolRequest(slno: schoolCode),
+    // );
+
+    final playStoreVersion = await SharedPreferenceHelper().getPlayStoreVersion();
+    final appStoreVersion = await SharedPreferenceHelper().getAppStoreVersion();
+    print('playStoreVersionPref $playStoreVersion');
+    checkForUpdate(
+      context,
+      playStoreVersion!,
+      appStoreVersion!,
+        st_appVersion
+    );
+  }
   void _fetchFeeds({required int page}) {
     print("🌐 API CALL → page: $page");
 
@@ -92,13 +182,37 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    getVersion();
     return Scaffold(
       backgroundColor: Colors.white,
       drawer: SideNavigationBar(),
       //appBar: AppBar(backgroundColor: Colors.white, title: const Text("Home")),
       body: SafeArea(
         child: BlocConsumer<FeedCubit, FeedState>(
-          listener: (context, state) {
+          listener: (context, state) async {
+            if(state is VersionFetchSuccess){
+              final packageInfo = await PackageInfo.fromPlatform();
+              print(packageInfo.appName);
+              print(packageInfo.packageName);
+              print(packageInfo.version);
+              print(packageInfo.buildNumber);
+              String st_appVersion = packageInfo.version+"+"+packageInfo.buildNumber;
+              print('st_appVersion $st_appVersion');
+              final schoolCode = await SharedPreferenceHelper().getSchoolCode();
+              await context.read<LoginCubit>().fetchSchools(
+                FetchSchoolRequest(slno: schoolCode),
+              );
+
+              final playStoreVersion = await SharedPreferenceHelper().getPlayStoreVersion();
+              final appStoreVersion = await SharedPreferenceHelper().getAppStoreVersion();
+              print('playStoreVersionPref $playStoreVersion');
+              await checkForUpdate(
+                  context,
+                  playStoreVersion!,
+                  appStoreVersion!,
+                  st_appVersion
+              );
+            }
             if (state is FeedLoaded) {
               final newFeeds = state.response.data ?? [];
               final pagination = state.response.pagination;
@@ -146,6 +260,8 @@ class _HomeScreenState extends State<HomeScreen> {
               // print(
               //   "📌 FINAL STATE → totalItems: ${allFeedsNotifier.value.length}",
               // );
+              //getVersion();
+
             }
 
             if (state is FeedError) {
