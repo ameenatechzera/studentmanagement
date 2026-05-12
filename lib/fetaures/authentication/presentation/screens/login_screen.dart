@@ -93,225 +93,235 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              children: [
-                SizedBox(height: 50),
-                SizedBox(
-                  height: 150,
-                  child: Image.asset('assets/images/Group 46.png'),
-                ),
-                SizedBox(height: 20),
-
-                Text(
-                  'Login',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: const SystemUiOverlayStyle(
+        statusBarColor: Colors.white,
+        statusBarIconBrightness: Brightness.dark,
+      ),
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                children: [
+                  SizedBox(height: 50),
+                  SizedBox(
+                    height: 150,
+                    child: Image.asset('assets/images/Group 46.png'),
                   ),
-                ),
-                SizedBox(height: 20),
+                  SizedBox(height: 20),
 
-                /// EMAIL / USERNAME
-                TextFormField(
-                  controller: admNoCtrl,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9]')),
-                    // UpperCaseTextFormatter(),
-                  ],
-                  textCapitalization: TextCapitalization.characters,
-                  decoration: InputDecoration(
-                    labelText: 'Admission No',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                  Text(
+                    'Login',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
                   ),
-                ),
+                  SizedBox(height: 20),
 
-                const SizedBox(height: 16),
-
-                /// PASSWORD
-                TextFormField(
-                  controller: dobCtrl,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [DateInputFormatter()],
-                  decoration: InputDecoration(
-                    labelText: 'DOB (DD-MM-YYYY)',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                  /// EMAIL / USERNAME
+                  TextFormField(
+                    controller: admNoCtrl,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9]')),
+                      // UpperCaseTextFormatter(),
+                    ],
+                    textCapitalization: TextCapitalization.characters,
+                    decoration: InputDecoration(
+                      labelText: 'Admission No',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                   ),
-                ),
 
-                /// pushes content up
-                // const Expanded(child: SizedBox()),
-                //  Spacer(),
-                SizedBox(height: 20),
-                BlocConsumer<LoginCubit, LoginState>(
-                  listener: (context, state) async {
-                    if (state is LoginSuccess) {
-                      final sharedPrefHelper = SharedPreferenceHelper();
+                  const SizedBox(height: 16),
 
-                      await sharedPrefHelper.setToken(
-                        state.loginResponse.token,
-                      );
-                      await sharedPrefHelper.saveLoginResponse(
-                        state.loginResponse,
-                      );
-                      AppData.admissionNo = state.loginResponse.student!.admno
-                          .toString();
-                      AppData.studentName = state.loginResponse.student!.name
-                          .toString();
-                      AppData.studentStdId = state
-                          .loginResponse
-                          .student!
-                          .currentStudentStandardId
-                          .toString();
-                      AppData.studentDivId = state
-                          .loginResponse
-                          .student!
-                          .currentStudentDivisionId
-                          .toString();
-                      AppData.accYear = state.loginResponse.student!.accYear
-                          .toString();
-                      AppData.gender = state.loginResponse.student!.gender
-                          .toString();
-                      AppData.studentClass =
-                          '${state.loginResponse.student!.studentStandard} - ${state.loginResponse.student!.studentDivision}'
-                              .toString();
-                      print(
-                        'profileUrl ${state.loginResponse.student!.imageUrl.toString()}',
-                      );
-                      AppData.profileUrl = state.loginResponse.student!.imageUrl
-                          .toString();
-                      await SharedPreferenceHelper.saveNewAccount(
-                        AccountDetails(
-                          admissionNo: state.loginResponse.student!.admno
-                              .toString(),
-                          dob: state.loginResponse.student!.dob.toString(),
-                          stdId: state
-                              .loginResponse
-                              .student!
-                              .currentStudentStandardId
-                              .toString(),
-                          divId: state
-                              .loginResponse
-                              .student!
-                              .currentStudentDivisionId,
-                          accYear: state.loginResponse.student!.accYear
-                              .toString(),
-                          name: state.loginResponse.student!.name,
-                        ),
-                      );
-                      AppNavigator.pushAndRemoveUntilSlide(
-                        context: context,
-                        page: MainScreen(loginResponse: state.loginResponse),
-                        predicate: (route) => false,
-                      );
-                      // Navigator.of(context).pushReplacement(
-                      //   MaterialPageRoute(
-                      //     builder: (context) {
-                      //       return MainScreen(
-                      //         loginResponse: state.loginResponse,
-                      //       );
-                      //     },
-                      //   ),
-                      // );
-                    }
-                    if (state is DeviceRegisterStatusSuccess) {
-                      if (state.registerResponse.data?.result == true) {
-                        final apiDob = convertDobToApiFormat(
-                          dobCtrl.text.trim(),
+                  /// PASSWORD
+                  TextFormField(
+                    controller: dobCtrl,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [DateInputFormatter()],
+                    decoration: InputDecoration(
+                      labelText: 'DOB (DD-MM-YYYY)',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+
+                  /// pushes content up
+                  // const Expanded(child: SizedBox()),
+                  //  Spacer(),
+                  SizedBox(height: 20),
+                  BlocConsumer<LoginCubit, LoginState>(
+                    listener: (context, state) async {
+                      if (state is LoginSuccess) {
+                        final sharedPrefHelper = SharedPreferenceHelper();
+
+                        await sharedPrefHelper.setToken(
+                          state.loginResponse.token,
                         );
-
-                        if (apiDob.isEmpty) {
-                          showAppSnackBar(context, 'Invalid DOB format');
-                          return;
-                        }
-
-                        context.read<LoginCubit>().loginUser(
-                          LoginRequest(
-                            admno: admNoCtrl.text.trim(),
-                            dob: apiDob,
+                        await sharedPrefHelper.saveLoginResponse(
+                          state.loginResponse,
+                        );
+                        AppData.admissionNo = state.loginResponse.student!.admno
+                            .toString();
+                        AppData.studentName = state.loginResponse.student!.name
+                            .toString();
+                        AppData.studentStdId = state
+                            .loginResponse
+                            .student!
+                            .currentStudentStandardId
+                            .toString();
+                        AppData.studentDivId = state
+                            .loginResponse
+                            .student!
+                            .currentStudentDivisionId
+                            .toString();
+                        AppData.accYear = state.loginResponse.student!.accYear
+                            .toString();
+                        AppData.gender = state.loginResponse.student!.gender
+                            .toString();
+                        AppData.studentClass =
+                            '${state.loginResponse.student!.studentStandard} - ${state.loginResponse.student!.studentDivision}'
+                                .toString();
+                        print(
+                          'profileUrl ${state.loginResponse.student!.imageUrl.toString()}',
+                        );
+                        AppData.profileUrl = state
+                            .loginResponse
+                            .student!
+                            .imageUrl
+                            .toString();
+                        await SharedPreferenceHelper.saveNewAccount(
+                          AccountDetails(
+                            admissionNo: state.loginResponse.student!.admno
+                                .toString(),
+                            dob: state.loginResponse.student!.dob.toString(),
+                            stdId: state
+                                .loginResponse
+                                .student!
+                                .currentStudentStandardId
+                                .toString(),
+                            divId: state
+                                .loginResponse
+                                .student!
+                                .currentStudentDivisionId,
+                            accYear: state.loginResponse.student!.accYear
+                                .toString(),
+                            name: state.loginResponse.student!.name,
                           ),
                         );
-                        // context.read<LoginCubit>().loginUser(
-                        //   LoginRequest(
-                        //     admno: admNoCtrl.text,
-                        //     dob: dobCtrl.text,
+                        AppNavigator.pushAndRemoveUntilSlide(
+                          context: context,
+                          page: MainScreen(loginResponse: state.loginResponse),
+                          predicate: (route) => false,
+                        );
+                        // Navigator.of(context).pushReplacement(
+                        //   MaterialPageRoute(
+                        //     builder: (context) {
+                        //       return MainScreen(
+                        //         loginResponse: state.loginResponse,
+                        //       );
+                        //     },
                         //   ),
                         // );
-                      } else {
-                        showAppSnackBar(context, 'Device Not Registered..!');
                       }
-                    }
-                    if (state is DeviceRegisterStatusFailure) {
-                      showAppSnackBar(context, state.error);
-                    }
-                    if (state is LoginFailure) {
-                      showAppSnackBar(context, 'Invalid Credentials');
-                    }
-                  },
-                  builder: (context, state) {
-                    final isLoading = state is LoginLoading;
-                    return SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: isLoading
-                            ? null
-                            : () {
-                                // context.read<LoginCubit>().checkDeviceRegisterStatus(
-                                //   DeviceRegisterRequest(
-                                //     deviceId: _deviceIdController.text.toString(),
-                                //   ),
-                                // );
-                                final apiDob = convertDobToApiFormat(
-                                  dobCtrl.text.trim(),
-                                );
+                      if (state is DeviceRegisterStatusSuccess) {
+                        if (state.registerResponse.data?.result == true) {
+                          final apiDob = convertDobToApiFormat(
+                            dobCtrl.text.trim(),
+                          );
 
-                                if (apiDob.isEmpty) {
-                                  showAppSnackBar(
-                                    context,
-                                    'Invalid DOB format',
+                          if (apiDob.isEmpty) {
+                            showAppSnackBar(context, 'Invalid DOB format');
+                            return;
+                          }
+
+                          context.read<LoginCubit>().loginUser(
+                            LoginRequest(
+                              admno: admNoCtrl.text.trim(),
+                              dob: apiDob,
+                            ),
+                          );
+                          // context.read<LoginCubit>().loginUser(
+                          //   LoginRequest(
+                          //     admno: admNoCtrl.text,
+                          //     dob: dobCtrl.text,
+                          //   ),
+                          // );
+                        } else {
+                          showAppSnackBar(context, 'Device Not Registered..!');
+                        }
+                      }
+                      if (state is DeviceRegisterStatusFailure) {
+                        showAppSnackBar(context, state.error);
+                      }
+                      if (state is LoginFailure) {
+                        showAppSnackBar(context, 'Invalid Credentials');
+                      }
+                    },
+                    builder: (context, state) {
+                      final isLoading = state is LoginLoading;
+                      return SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: isLoading
+                              ? null
+                              : () {
+                                  // context.read<LoginCubit>().checkDeviceRegisterStatus(
+                                  //   DeviceRegisterRequest(
+                                  //     deviceId: _deviceIdController.text.toString(),
+                                  //   ),
+                                  // );
+                                  final apiDob = convertDobToApiFormat(
+                                    dobCtrl.text.trim(),
                                   );
-                                  return;
-                                }
-                                context.read<LoginCubit>().loginUser(
-                                  LoginRequest(
-                                    admno: admNoCtrl.text.trim(),
-                                    dob: apiDob,
-                                  ),
-                                );
-                              },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: appThemeColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(4),
+
+                                  if (apiDob.isEmpty) {
+                                    showAppSnackBar(
+                                      context,
+                                      'Invalid DOB format',
+                                    );
+                                    return;
+                                  }
+                                  context.read<LoginCubit>().loginUser(
+                                    LoginRequest(
+                                      admno: admNoCtrl.text.trim(),
+                                      dob: apiDob,
+                                    ),
+                                  );
+                                },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: appThemeColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(4),
+                            ),
                           ),
-                        ),
-                        child: isLoading
-                            ? const SizedBox(
-                                height: 22,
-                                width: 22,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.white,
+                          child: isLoading
+                              ? const SizedBox(
+                                  height: 22,
+                                  width: 22,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : Text(
+                                  'Login',
+                                  style: TextStyle(color: Colors.white),
                                 ),
-                              )
-                            : Text(
-                                'Login',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                      ),
-                    );
-                  },
-                ),
-              ],
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
         ),

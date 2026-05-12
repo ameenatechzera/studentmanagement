@@ -219,20 +219,36 @@ final ValueNotifier<String> selectedSubject = ValueNotifier<String>(
 
 final ValueNotifier<int?> expandedIndexNotifier = ValueNotifier<int?>(null);
 
-class AllClassDiaryScreen extends StatelessWidget {
+class AllClassDiaryScreen extends StatefulWidget {
   const AllClassDiaryScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<DiaryCubit>().fetchDiary(
-        FetchDiaryParameter(
-          admNo: AppData.admissionNo!,
-          accYear: AppData.accYear!,
-        ),
-      );
-    });
+  State<AllClassDiaryScreen> createState() => _AllClassDiaryScreenState();
+}
 
+class _AllClassDiaryScreenState extends State<AllClassDiaryScreen> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<DiaryCubit>().fetchDiary(
+      FetchDiaryParameter(
+        admNo: AppData.admissionNo!,
+        accYear: AppData.accYear!,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   context.read<DiaryCubit>().fetchDiary(
+    //     FetchDiaryParameter(
+    //       admNo: AppData.admissionNo!,
+    //       accYear: AppData.accYear!,
+    //     ),
+    //   );
+    // });
+    // debugPrint("API CALLED");
     return Scaffold(
       backgroundColor: const Color(0xFFFAF8FF),
       appBar: AppBar(
@@ -292,11 +308,14 @@ class AllClassDiaryScreen extends StatelessWidget {
                   return _DiaryCard(
                     index: index,
                     teacherName: '${diary.name}',
-                    teacherRole: 'Chemistry Teacher',
+                    teacherRole: diary.employeeName != null
+                        ? '${diary.employeeName}'
+                        : '',
                     title: diary.diaryTitle ?? 'Announcement',
                     description: diary.description ?? '',
                     date: diary.diaryDate ?? 'Today',
                     files: diary.files ?? [],
+                    employeePhoto: diary.employeePhoto,
                   );
                 },
               );
@@ -317,7 +336,8 @@ class _DiaryCard extends StatelessWidget {
   final String title;
   final String description;
   final String date;
-  final List<DiaryFile> files;
+  final List<DiaryFileEntity> files;
+  final String? employeePhoto;
 
   const _DiaryCard({
     required this.index,
@@ -327,6 +347,7 @@ class _DiaryCard extends StatelessWidget {
     required this.description,
     required this.date,
     required this.files,
+    required this.employeePhoto,
   });
 
   Color get mainColor {
@@ -353,15 +374,15 @@ class _DiaryCard extends StatelessWidget {
     return colors[index % colors.length];
   }
 
-  String get avatarImage {
-    final images = [
-      'https://i.pravatar.cc/100?img=12',
-      'https://i.pravatar.cc/100?img=47',
-      'https://i.pravatar.cc/100?img=12',
-      'https://i.pravatar.cc/100?img=47',
-    ];
-    return images[index % images.length];
-  }
+  // String get avatarImage {
+  //   final images = [
+  //     'https://i.pravatar.cc/100?img=12',
+  //     'https://i.pravatar.cc/100?img=47',
+  //     'https://i.pravatar.cc/100?img=12',
+  //     'https://i.pravatar.cc/100?img=47',
+  //   ];
+  //   return images[index % images.length];
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -377,8 +398,18 @@ class _DiaryCard extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 22,
-                  backgroundImage: NetworkImage(avatarImage),
+                  backgroundImage:
+                      employeePhoto != null && employeePhoto!.isNotEmpty
+                      ? NetworkImage(employeePhoto!)
+                      : null,
+                  child: employeePhoto == null || employeePhoto!.isEmpty
+                      ? const Icon(Icons.person)
+                      : null,
                 ),
+                // CircleAvatar(
+                //   radius: 22,
+                //   backgroundImage: NetworkImage(avatarImage),
+                // ),
                 const SizedBox(width: 12),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -671,11 +702,118 @@ class _DiaryCard extends StatelessWidget {
                                                       );
                                                     }
                                                   },
-                                                  child: Image.network(
-                                                    image.url ?? '',
-                                                    fit: BoxFit.cover,
-                                                    width: double.infinity,
+                                                  child: Stack(
+                                                    children: [
+                                                      /// SHIMMER LOADER
+                                                      Shimmer.fromColors(
+                                                        baseColor: Colors
+                                                            .grey
+                                                            .shade300,
+                                                        highlightColor: Colors
+                                                            .grey
+                                                            .shade100,
+                                                        child: Container(
+                                                          width:
+                                                              double.infinity,
+                                                          height: 220,
+                                                          decoration: BoxDecoration(
+                                                            color: Colors.white,
+                                                            borderRadius:
+                                                                BorderRadius.circular(
+                                                                  18,
+                                                                ),
+                                                          ),
+                                                        ),
+                                                      ),
+
+                                                      /// IMAGE
+                                                      Image.network(
+                                                        image.url ?? '',
+                                                        fit: BoxFit.cover,
+                                                        width: double.infinity,
+
+                                                        loadingBuilder:
+                                                            (
+                                                              context,
+                                                              child,
+                                                              loadingProgress,
+                                                            ) {
+                                                              if (loadingProgress ==
+                                                                  null) {
+                                                                return child;
+                                                              }
+
+                                                              return const SizedBox();
+                                                            },
+
+                                                        errorBuilder:
+                                                            (
+                                                              context,
+                                                              error,
+                                                              stackTrace,
+                                                            ) {
+                                                              return const Center(
+                                                                child: Icon(
+                                                                  Icons
+                                                                      .broken_image,
+                                                                  size: 40,
+                                                                ),
+                                                              );
+                                                            },
+                                                      ),
+                                                    ],
                                                   ),
+                                                  // child: Stack(
+                                                  //   alignment: Alignment.center,
+                                                  //   children: [
+                                                  //     /// LOADER SHOWS IMMEDIATELY
+                                                  //     const Center(
+                                                  //       child:
+                                                  //           CircularProgressIndicator(),
+                                                  //     ),
+
+                                                  //     /// IMAGE
+                                                  //     Image.network(
+                                                  //       image.url ?? '',
+                                                  //       fit: BoxFit.cover,
+                                                  //       width: double.infinity,
+
+                                                  //       loadingBuilder:
+                                                  //           (
+                                                  //             context,
+                                                  //             child,
+                                                  //             loadingProgress,
+                                                  //           ) {
+                                                  //             if (loadingProgress ==
+                                                  //                 null) {
+                                                  //               return child;
+                                                  //             }
+
+                                                  //             return child;
+                                                  //           },
+
+                                                  //       errorBuilder:
+                                                  //           (
+                                                  //             context,
+                                                  //             error,
+                                                  //             stackTrace,
+                                                  //           ) {
+                                                  //             return const Center(
+                                                  //               child: Icon(
+                                                  //                 Icons
+                                                  //                     .broken_image,
+                                                  //                 size: 40,
+                                                  //               ),
+                                                  //             );
+                                                  //           },
+                                                  //     ),
+                                                  //   ],
+                                                  // ),
+                                                  // child: Image.network(
+                                                  //   image.url ?? '',
+                                                  //   fit: BoxFit.cover,
+                                                  //   width: double.infinity,
+                                                  // ),
                                                 ),
                                               ),
                                             );
