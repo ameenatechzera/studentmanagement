@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:studentmanagement/core/appdata/appdata.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/parameters/fetchschool_parameter.dart';
@@ -52,19 +55,101 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
 
+  // Future<void> checkForUpdate(
+  //     BuildContext context,
+  //     String appStoreVersion,
+  //     String playStoreVersion,
+  //     String appVersion,
+  //     ) async {
+  //   final playStoreVersion = await SharedPreferenceHelper().getPlayStoreVersion();
+  //   final appStoreVersion = await SharedPreferenceHelper().getAppStoreVersion();
+  //   print('playStoreVersion $playStoreVersion');
+  //   print('appVersion $appVersion');
+  //   if (appStoreVersion!.isNotEmpty &&
+  //       playStoreVersion!.isNotEmpty &&
+  //       playStoreVersion != appVersion) {
+  //
+  //     showDialog(
+  //       context: context,
+  //       barrierDismissible: false,
+  //       builder: (context) {
+  //         return AlertDialog(
+  //           title: const Text("Update Available"),
+  //           content: const Text(
+  //             "You have an update. Please update the app.",
+  //           ),
+  //           actions: [
+  //             TextButton(
+  //               onPressed: () {
+  //                 Navigator.pop(context); // dismiss dialog
+  //                 _fetchFeeds(page: 1);
+  //               },
+  //               child: const Text("Cancel"),
+  //             ),
+  //             ElevatedButton(
+  //               onPressed: () async {
+  //                 Navigator.pop(context); // dismiss dialog
+  //                 _fetchFeeds(page: 1);
+  //                 const url =
+  //                     'https://play.google.com/store/apps/details?id=com.techzera.studentmanagement';
+  //
+  //                 final Uri uri = Uri.parse(url);
+  //
+  //                 if (await canLaunchUrl(uri)) {
+  //                   await launchUrl(
+  //                     uri,
+  //                     mode: LaunchMode.externalApplication,
+  //                   );
+  //                 }
+  //               },
+  //               child: const Text("OK"),
+  //             ),
+  //           ],
+  //         );
+  //       },
+  //     );
+  //   }
+  //   else{
+  //     _fetchFeeds(page: 1);
+  //   }
+  //
+  // }
+
   Future<void> checkForUpdate(
       BuildContext context,
-      String appStoreVersion,
-      String playStoreVersion,
       String appVersion,
       ) async {
-    final playStoreVersion = await SharedPreferenceHelper().getPlayStoreVersion();
-    final appStoreVersion = await SharedPreferenceHelper().getAppStoreVersion();
-    print('playStoreVersion $playStoreVersion');
-    print('appVersion $appVersion');
-    if (appStoreVersion!.isNotEmpty &&
-        playStoreVersion!.isNotEmpty &&
-        playStoreVersion != appVersion) {
+    final playStoreVersion =
+    await SharedPreferenceHelper().getPlayStoreVersion();
+
+    final appStoreVersion =
+    await SharedPreferenceHelper().getAppStoreVersion();
+
+    print('playStoreVersion: $playStoreVersion');
+    print('appStoreVersion: $appStoreVersion');
+    print('appVersion: $appVersion');
+
+    String storeVersion = '';
+
+    if (Platform.isAndroid) {
+      print('Running on Android');
+      storeVersion = playStoreVersion ?? '';
+    } else if (Platform.isIOS) {
+      print('Running on iOS');
+      storeVersion = appStoreVersion ?? '';
+    }
+
+    Fluttertoast.showToast(
+      msg: "Store Version: $storeVersion",
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      backgroundColor: Colors.black87,
+      textColor: Colors.white,
+      fontSize: 16.0,
+    );
+
+    if (storeVersion.isNotEmpty &&
+        storeVersion.trim() != appVersion.trim()) {
 
       showDialog(
         context: context,
@@ -78,17 +163,20 @@ class _HomeScreenState extends State<HomeScreen> {
             actions: [
               TextButton(
                 onPressed: () {
-                  Navigator.pop(context); // dismiss dialog
+                  Navigator.pop(context);
                   _fetchFeeds(page: 1);
                 },
                 child: const Text("Cancel"),
               ),
+
               ElevatedButton(
                 onPressed: () async {
-                  Navigator.pop(context); // dismiss dialog
+                  Navigator.pop(context);
                   _fetchFeeds(page: 1);
-                  const url =
-                      'https://play.google.com/store/apps/details?id=com.techzera.studentmanagement';
+
+                  final url = Platform.isAndroid
+                      ? 'https://play.google.com/store/apps/details?id=com.techzera.studentmanagement'
+                      : 'https://apps.apple.com/app/idYOUR_APP_ID';
 
                   final Uri uri = Uri.parse(url);
 
@@ -99,17 +187,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
                   }
                 },
-                child: const Text("OK"),
+                child: const Text("Update"),
               ),
             ],
           );
         },
       );
-    }
-    else{
+    } else {
       _fetchFeeds(page: 1);
     }
-
   }
   Future<void> getVersion() async {
     final packageInfo = await PackageInfo.fromPlatform();
@@ -124,14 +210,12 @@ class _HomeScreenState extends State<HomeScreen> {
     //   FetchSchoolRequest(slno: schoolCode),
     // );
 
-    final playStoreVersion = await SharedPreferenceHelper().getPlayStoreVersion();
-    final appStoreVersion = await SharedPreferenceHelper().getAppStoreVersion();
-    print('playStoreVersionPref $playStoreVersion');
+   // final playStoreVersion = await SharedPreferenceHelper().getPlayStoreVersion();
+   // final appStoreVersion = await SharedPreferenceHelper().getAppStoreVersion();
+   // print('playStoreVersionPref $playStoreVersion');
     checkForUpdate(
       context,
-      playStoreVersion!,
-      appStoreVersion!,
-        st_appVersion
+      st_appVersion!,
     );
   }
   void _fetchFeeds({required int page}) {
@@ -203,13 +287,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 FetchSchoolRequest(slno: schoolCode),
               );
 
-              final playStoreVersion = await SharedPreferenceHelper().getPlayStoreVersion();
-              final appStoreVersion = await SharedPreferenceHelper().getAppStoreVersion();
-              print('playStoreVersionPref $playStoreVersion');
+             // final playStoreVersion = await SharedPreferenceHelper().getPlayStoreVersion();
+             // final appStoreVersion = await SharedPreferenceHelper().getAppStoreVersion();
+             // print('playStoreVersionPref $playStoreVersion');
               await checkForUpdate(
                   context,
-                  playStoreVersion!,
-                  appStoreVersion!,
                   st_appVersion
               );
             }

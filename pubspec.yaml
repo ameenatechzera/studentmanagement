@@ -6,7 +6,7 @@ publish_to: 'none'
 #version: 1.0.1+2 #second update
 #version: 1.0.2+3
 #version: 1.0.3+4 #third update playstore
-version: 1.0.4+5 #third update playstore
+version: 1.0.4+5 #third update playstore 12-05-2026
 environment:
   sdk: ^3.10.4
 
@@ -93,3 +93,5 @@ flutter:
     - assets/images/ChatGPT Image May 7, 2026, 10_21_20 AM 1.png
     - assets/images/Clip path group (2).png
     - assets/images/Clip path group (3).png
+    - assets/images/cristal_white.png
+    - assets/images/dummy_image.png

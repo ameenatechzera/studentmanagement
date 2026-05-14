@@ -4,6 +4,8 @@ import 'package:studentmanagement/core/navigation/app_navigator.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/screens/login_screen.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/widget/dot.dart';
 
+import 'loginScreen.dart';
+
 class FifthSplashScreen extends StatelessWidget {
   const FifthSplashScreen({super.key});
 
@@ -116,7 +118,7 @@ class FifthSplashScreen extends StatelessWidget {
                       onPressed: () {
                         AppNavigator.pushReplacementSlide(
                           context: context,
-                          page: LoginScreen(),
+                          page: Login_Screen(),
                         );
                       },
                       child: const Text(
@@ -137,7 +139,7 @@ class FifthSplashScreen extends StatelessWidget {
                         onPressed: () {
                           AppNavigator.pushReplacementSlide(
                             context: context,
-                            page: LoginScreen(),
+                            page: Login_Screen(),
                           );
                         },
                         style: ElevatedButton.styleFrom(

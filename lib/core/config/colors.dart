@@ -21,6 +21,7 @@ final Color darkGreen= Color(0xFF134E0C);
 final Color appBlueTheme= Color(0xFF807FD8);
 final Color appBlueFont= Color(0xFF4D4EFF);
 final Color cardColor= Color(0xFF313131);
+final Color cardBlueColor= Color(0xFF807FD8);
 
 
 
