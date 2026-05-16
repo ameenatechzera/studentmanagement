@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:studentmanagement/core/appdata/appdata.dart';
 import 'package:studentmanagement/core/navigation/app_navigator.dart';
 import 'package:studentmanagement/fetaures/attendence/domain/parameters/attendence_reportbydate_parameter.dart';
 import 'package:studentmanagement/fetaures/attendence/presentation/cubit/attendence_cubit.dart';
@@ -129,17 +130,25 @@ class _HomeScreenState extends State<StudentScreenN> {
               // Avatar + Name + Phone
               Row(
                 children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 2.5),
-                    ),
-                    child: const CircleAvatar(
-                      radius: 30,
-                      backgroundImage: NetworkImage(
-                        'https://randomuser.me/api/portraits/women/44.jpg',
-                      ),
-                    ),
+                  CircleAvatar(
+                    radius: 25,
+                    backgroundImage:
+                        (AppData.profileUrl != null &&
+                            AppData.profileUrl!.isNotEmpty)
+                        ? NetworkImage(AppData.profileUrl!)
+                        : null,
+                    child:
+                        (AppData.profileUrl == null ||
+                            AppData.profileUrl!.isEmpty)
+                        ? ClipOval(
+                            child: Image.asset(
+                              getGenderImage(),
+                              fit: BoxFit.cover,
+                              width: 50,
+                              height: 50,
+                            ),
+                          )
+                        : null,
                   ),
                   const SizedBox(width: 14),
                   Column(
@@ -192,6 +201,18 @@ class _HomeScreenState extends State<StudentScreenN> {
         ],
       ),
     );
+  }
+
+  String getGenderImage() {
+    final g = (AppData.gender ?? '').toLowerCase().trim();
+
+    if (g == 'male') {
+      return "assets/icons/c0d90970-7626-47b6-a097-ca0834c7a05f_removalai_preview.png";
+    } else if (g == 'female') {
+      return "assets/icons/1f5debb8-6e36-4d25-bde8-526f4dd89820_removalai_preview.png";
+    } else {
+      return "assets/icons/c0d90970-7626-47b6-a097-ca0834c7a05f_removalai_preview.png";
+    }
   }
 
   Widget _buildStatItem(String label, String value) {

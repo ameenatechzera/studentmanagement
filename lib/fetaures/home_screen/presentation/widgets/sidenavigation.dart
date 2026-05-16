@@ -60,7 +60,7 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                 _menuItem(Icons.settings_outlined, "Settings", () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => SchoolProfileScreen()),
+                    MaterialPageRoute(builder: (_) => SettingsScreen()),
                   );
                 }),
                 const Spacer(),

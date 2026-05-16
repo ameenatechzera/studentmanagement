@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:studentmanagement/core/appdata/appdata.dart';
+import 'package:studentmanagement/fetaures/authentication/presentation/screens/loginScreen.dart';
 import 'package:studentmanagement/services/shared_preference_helper.dart';
 
-class SchoolProfileScreen extends StatefulWidget {
-  const SchoolProfileScreen({super.key});
+class SettingsScreen extends StatefulWidget {
+  const SettingsScreen({super.key});
 
   @override
-  State<SchoolProfileScreen> createState() => _SchoolProfileScreenState();
+  State<SettingsScreen> createState() => _SettingsScreenState();
 
   static BoxDecoration boxDecoration() {
     return BoxDecoration(
@@ -23,7 +25,7 @@ class SchoolProfileScreen extends StatefulWidget {
   }
 }
 
-class _SchoolProfileScreenState extends State<SchoolProfileScreen> {
+class _SettingsScreenState extends State<SettingsScreen> {
   Map<String, dynamic>? branchData;
 
   @override
@@ -132,10 +134,13 @@ class _SchoolProfileScreenState extends State<SchoolProfileScreen> {
                   color: const Color(0xffEAF4FF),
                   borderRadius: BorderRadius.circular(18),
                 ),
-                child: const Row(
+                child: Row(
                   children: [
                     Expanded(
-                      child: InfoColumn(title: "Affiliate", value: "CBSC"),
+                      child: InfoColumn(
+                        title: "Affiliate",
+                        value: branchData?["Sector"]?.toString() ?? "--",
+                      ),
                     ),
                     SizedBox(
                       height: 55,
@@ -145,10 +150,7 @@ class _SchoolProfileScreenState extends State<SchoolProfileScreen> {
                       ),
                     ),
                     Expanded(
-                      child: InfoColumn(
-                        title: "Affiliate Number",
-                        value: "25367894",
-                      ),
+                      child: InfoColumn(title: "Affiliate Number", value: "--"),
                     ),
                   ],
                 ),
@@ -161,7 +163,7 @@ class _SchoolProfileScreenState extends State<SchoolProfileScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Container(
                 padding: const EdgeInsets.all(16),
-                decoration: SchoolProfileScreen.boxDecoration(),
+                decoration: SettingsScreen.boxDecoration(),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -247,7 +249,7 @@ class _SchoolProfileScreenState extends State<SchoolProfileScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Container(
-                decoration: SchoolProfileScreen.boxDecoration(),
+                decoration: SettingsScreen.boxDecoration(),
                 child: Column(
                   children: [
                     ContactTile(
@@ -264,13 +266,21 @@ class _SchoolProfileScreenState extends State<SchoolProfileScreen> {
                       text: branchData?["Email"]?.toString() ?? "aaaaa",
                     ),
                     Divider(height: 1, indent: 55),
-                    ContactTile(
-                      icon: Icons.language,
-                      iconColor: Color(0xffFF4DA6),
-                      bgColor: Color(0xffFFEAF4),
-                      text: branchData?["Website"]?.toString() ?? "aaaaa.com",
-                      isLink: true,
-                    ),
+                    if (branchData?["Website"] != null)
+                      ContactTile(
+                        icon: Icons.language,
+                        iconColor: Color(0xffFF4DA6),
+                        bgColor: Color(0xffFFEAF4),
+                        text: branchData?["Website"].toString() ?? "",
+                        isLink: true,
+                      ),
+                    // ContactTile(
+                    //   icon: Icons.language,
+                    //   iconColor: Color(0xffFF4DA6),
+                    //   bgColor: Color(0xffFFEAF4),
+                    //   text: branchData?["Website"]?.toString() ?? "aaaaa.com",
+                    //   isLink: true,
+                    // ),
                   ],
                 ),
               ),
@@ -386,7 +396,34 @@ class _SchoolProfileScreenState extends State<SchoolProfileScreen> {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: TextButton.icon(
-                  onPressed: () {},
+                  onPressed: () async {
+                    final helper = SharedPreferenceHelper();
+
+                    /// 🔥 CLEAR SESSION
+                    await helper.clearLoginData();
+                    final prefs = await SharedPreferences.getInstance();
+
+                    await SharedPreferenceHelper.clearAccounts();
+
+                    /// ❗ DO NOT clear accounts (for switch account feature)
+                    /// await SharedPreferenceHelper.clearAccounts(); ❌ optional
+
+                    /// 🔥 Clear AppData (VERY IMPORTANT)
+                    AppData.admissionNo = null;
+                    AppData.studentName = null;
+                    AppData.studentStdId = null;
+                    AppData.studentDivId = null;
+                    AppData.accYear = null;
+                    AppData.dob = null;
+                    AppData.profileUrl = null;
+                    // AppData.gender = null;
+
+                    /// 🔥 Navigate and remove all routes
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(builder: (_) => const Login_Screen()),
+                      (route) => false,
+                    );
+                  },
                   icon: const Icon(
                     Icons.exit_to_app,
                     color: Color(0xff7F7BFF),

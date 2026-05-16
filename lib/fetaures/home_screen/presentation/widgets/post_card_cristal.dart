@@ -50,25 +50,7 @@ class _PostCardState extends State<PostCard> {
                 radius: 20,
                 backgroundImage: NetworkImage(AppData.logo!),
               ),
-              CircleAvatar(
-                radius: 25,
-                backgroundImage:
-                    (AppData.profileUrl != null &&
-                        AppData.profileUrl!.isNotEmpty)
-                    ? NetworkImage(AppData.profileUrl!)
-                    : null,
-                child:
-                    (AppData.profileUrl == null || AppData.profileUrl!.isEmpty)
-                    ? ClipOval(
-                        child: Image.asset(
-                          getGenderImage(),
-                          fit: BoxFit.cover,
-                          width: 50,
-                          height: 50,
-                        ),
-                      )
-                    : null,
-              ),
+              //
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.only(left: 15.0),
