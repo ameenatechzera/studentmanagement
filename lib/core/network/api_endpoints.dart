@@ -63,7 +63,6 @@ class ApiConstants {
     return '${baseUrl}app/subjects/1';
   }
 
-
   /// Returns the full URL for attendecereportbydate
 
   static String getAttendanceReportByDatePath(String baseUrl) {

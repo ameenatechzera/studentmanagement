@@ -34,26 +34,16 @@ class AttendanceRemoteDataSourceImpl implements AttendanceRemoteDataSource {
         throw Exception("Base URL not set");
       }
 
-      // final dbName = await SharedPreferenceHelper().getDatabaseName();
-      // final token = await SharedPreferenceHelper().getToken() ?? "";
       final url = ApiConstants.getAttendanceReportByDatePath(baseUrl);
       final options = await ApiHelper.getAuthOptions(withToken: true);
 
       print('🔹 Attendance URL: $url');
       print('🔹 Request Body: ${params.toJson()}');
-      // print('🔹 dbName: $dbName');
 
       final response = await dio.post(
         url,
         data: params.toJson(),
         options: options,
-        // Options(
-        //   contentType: "application/json",
-        //   headers: {
-        //     "Accept": "application/json",
-        //     "Authorization": "Bearer $token",
-        //   },
-        // ),
       );
 
       print('🔹 Status Code: ${response.statusCode}');
@@ -84,11 +74,7 @@ class AttendanceRemoteDataSourceImpl implements AttendanceRemoteDataSource {
         throw Exception("Base URL not set");
       }
 
-      // final token = await SharedPreferenceHelper().getToken() ?? "";
-      final url = ApiConstants.getAttendanceReportByMonthPath(
-        baseUrl,
-      ); // ✅ new endpoint
-
+      final url = ApiConstants.getAttendanceReportByMonthPath(baseUrl);
       print('🔹 Month Attendance URL: $url');
       print('🔹 Request Body: ${params.toJson()}');
       final options = await ApiHelper.getAuthOptions(withToken: true);
@@ -96,13 +82,6 @@ class AttendanceRemoteDataSourceImpl implements AttendanceRemoteDataSource {
         url,
         data: params.toJson(),
         options: options,
-        // options: Options(
-        //   contentType: "application/json",
-        //   headers: {
-        //     "Accept": "application/json",
-        //     "Authorization": "Bearer $token",
-        //   },
-        // ),
       );
 
       print('🔹 Status Code: ${response.statusCode}');

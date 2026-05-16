@@ -8,7 +8,6 @@ abstract class AttendanceRepository {
   ResultFuture<AttendanceReportByDateEntity> getAttendanceReportByDate(
     AttendanceReportByDateParameter params,
   );
-  // ✅ NEW (Add this)
   ResultFuture<AttendanceReportByMonthEntity> getAttendanceReportByMonth(
     AttendanceReportByMonthParameter params,
   );

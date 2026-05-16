@@ -11,6 +11,7 @@ import 'package:studentmanagement/fetaures/authentication/presentation/widget/sw
 import 'package:studentmanagement/fetaures/home_screen/presentation/screens/main_screen.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/screens/noti.dart';
 import 'package:studentmanagement/fetaures/notification/presentation/notification_screen.dart';
+import 'package:studentmanagement/fetaures/settings/presentation/screens/settings_screen.dart';
 import 'package:studentmanagement/services/shared_preference_helper.dart';
 
 class SideNavigationBar extends StatefulWidget {
@@ -50,12 +51,17 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                 _menuItem(Icons.home_rounded, "Home", () {}),
                 _menuItem(Icons.person_outline, "Profile", () {}),
                 _menuItem(Icons.notifications_none, "Notifications", () {
-                  Navigator.push(context, MaterialPageRoute(
-                    builder: (_) => NotificationsScreen(
-                    ),
-                  ));
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => NotificationsScreen()),
+                  );
                 }),
-                _menuItem(Icons.settings_outlined, "Settings", () {}),
+                _menuItem(Icons.settings_outlined, "Settings", () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => SchoolProfileScreen()),
+                  );
+                }),
                 const Spacer(),
                 const Divider(),
                 _menuItem(Icons.logout, "Logout", () async {
@@ -66,6 +72,7 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                   final prefs = await SharedPreferences.getInstance();
 
                   await SharedPreferenceHelper.clearAccounts();
+
                   /// ❗ DO NOT clear accounts (for switch account feature)
                   /// await SharedPreferenceHelper.clearAccounts(); ❌ optional
 

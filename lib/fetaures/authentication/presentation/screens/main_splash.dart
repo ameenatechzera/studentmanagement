@@ -122,6 +122,8 @@ class _MainSplashScreenState extends State<MainSplashScreen> {
       AppData.branchName = branch['branchName'];
       AppData.logo = branch['logo'];
       AppData.place = branch['place'];
+      AppData.branchId = branch['branchId'];
+
       setState(() {
         branchName = branch['branchName'];
         logo = branch['logo'];

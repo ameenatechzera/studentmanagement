@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:media_store_plus/media_store_plus.dart';
 import 'package:studentmanagement/fetaures/attendence/presentation/cubit/attendence_cubit.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/screens/appstart_screen.dart';
 import 'package:studentmanagement/fetaures/classdiary/presentation/cubit/diary_cubit.dart';
@@ -15,6 +16,8 @@ import 'fetaures/fees/presentation/unPaidFee/un_paid_fee_cubit.dart';
 // late final AppDatabase appDb;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await MediaStore.ensureInitialized();
+  MediaStore.appFolder = "Cristal";
   // SystemChrome.setSystemUIOverlayStyle(
   //   const SystemUiOverlayStyle(
   //     statusBarColor: AppColors.theme,

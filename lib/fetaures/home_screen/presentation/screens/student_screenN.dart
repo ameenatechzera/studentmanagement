@@ -15,7 +15,6 @@ import 'package:studentmanagement/fetaures/marklist/presentation/screens/marklis
 import 'package:studentmanagement/fetaures/materials/presentation/screens/subjectlist_screen.dart';
 import 'package:studentmanagement/fetaures/timetable/presentation/screens/timetable_screen.dart';
 
-
 // --- Data ---
 const _quickAccessItems = [
   {'icon': Icons.credit_card, 'label': 'Fees', 'color': Color(0xFFFFF5AD)},
@@ -23,15 +22,20 @@ const _quickAccessItems = [
   {'icon': Icons.menu_book, 'label': 'Class Diary', 'color': Color(0xFFC1FFAD)},
   {'icon': Icons.checklist, 'label': 'Mark List', 'color': Color(0xFFADDFFF)},
   {'icon': Icons.dashboard, 'label': 'Material', 'color': Color(0xFFC3ADFF)},
-  {'icon': Icons.event_available, 'label': 'Attendance', 'color': Color(0xFFFFF5AD)},
+  {
+    'icon': Icons.event_available,
+    'label': 'Attendance',
+    'color': Color(0xFFFFF5AD),
+  },
 ];
 
 final ValueNotifier<bool> showAllNotifications = ValueNotifier<bool>(false);
 List<AccountDetails> accounts = [];
+
 // --- Home Screen ---
 class StudentScreenN extends StatefulWidget {
   final LoginResponseResult? loginResponse;
-  const StudentScreenN({super.key , this.loginResponse});
+  const StudentScreenN({super.key, this.loginResponse});
 
   @override
   State<StudentScreenN> createState() => _HomeScreenState();
@@ -78,7 +82,6 @@ class _HomeScreenState extends State<StudentScreenN> {
           ),
         ),
       ),
-
     );
   }
 
@@ -143,7 +146,7 @@ class _HomeScreenState extends State<StudentScreenN> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                          widget.loginResponse!.student!.name,
+                        widget.loginResponse!.student!.name,
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 13,
@@ -169,12 +172,18 @@ class _HomeScreenState extends State<StudentScreenN> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    _buildStatItem('Class', widget.loginResponse!.student!.studentStandard
-                        .toString()),
-                    _buildStatItem('Div', widget.loginResponse!.student!.studentDivision
-                        .toString()),
-                    _buildStatItem('Admission No', widget.loginResponse!.student!.admno
-                        .toString()),
+                    _buildStatItem(
+                      'Class',
+                      widget.loginResponse!.student!.studentStandard.toString(),
+                    ),
+                    _buildStatItem(
+                      'Div',
+                      widget.loginResponse!.student!.studentDivision.toString(),
+                    ),
+                    _buildStatItem(
+                      'Admission No',
+                      widget.loginResponse!.student!.admno.toString(),
+                    ),
                   ],
                 ),
               ),
@@ -188,13 +197,7 @@ class _HomeScreenState extends State<StudentScreenN> {
   Widget _buildStatItem(String label, String value) {
     return Column(
       children: [
-        Text(
-          label,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 11,
-          ),
-        ),
+        Text(label, style: const TextStyle(color: Colors.white, fontSize: 11)),
         const SizedBox(height: 4),
         Text(
           value,
@@ -265,7 +268,7 @@ class _HomeScreenState extends State<StudentScreenN> {
     );
   }
 
-// --- Quick Access Grid ---
+  // --- Quick Access Grid ---
   Widget _buildQuickAccessGrid() {
     return Column(
       children: [
@@ -279,10 +282,9 @@ class _HomeScreenState extends State<StudentScreenN> {
                 icon: _quickAccessItems[0]['icon'] as IconData,
                 label: _quickAccessItems[0]['label'] as String,
                 color: _quickAccessItems[0]['color'] as Color,
-               // height: 120,
+                // height: 120,
               ),
             ),
-
 
             const SizedBox(width: 12),
 
@@ -311,7 +313,7 @@ class _HomeScreenState extends State<StudentScreenN> {
                 icon: _quickAccessItems[2]['icon'] as IconData,
                 label: _quickAccessItems[2]['label'] as String,
                 color: _quickAccessItems[2]['color'] as Color,
-              //  height: 90,
+                //  height: 90,
               ),
             ),
 
@@ -330,6 +332,7 @@ class _HomeScreenState extends State<StudentScreenN> {
           ],
         ),
         const SizedBox(height: 12),
+
         /// Third Row
         Row(
           children: [
@@ -340,7 +343,7 @@ class _HomeScreenState extends State<StudentScreenN> {
                 icon: _quickAccessItems[4]['icon'] as IconData,
                 label: _quickAccessItems[4]['label'] as String,
                 color: _quickAccessItems[4]['color'] as Color,
-               // height: 90,
+                // height: 90,
               ),
             ),
 
@@ -353,7 +356,7 @@ class _HomeScreenState extends State<StudentScreenN> {
                 icon: _quickAccessItems[5]['icon'] as IconData,
                 label: _quickAccessItems[5]['label'] as String,
                 color: _quickAccessItems[5]['color'] as Color,
-               // height: 90,
+                // height: 90,
               ),
             ),
           ],
@@ -370,25 +373,24 @@ class _HomeScreenState extends State<StudentScreenN> {
     return GestureDetector(
       onTap: () {
         print('label $label');
-        if(label=="Fees"){
+        if (label == "Fees") {
           AppNavigator.pushSlide(context: context, page: FeesScreen());
         }
-        if(label=="Time Table"){
+        if (label == "Time Table") {
           AppNavigator.pushSlide(context: context, page: TimeTableScreen());
         }
-        if(label=="Class Diary"){
+        if (label == "Class Diary") {
           AppNavigator.pushSlide(context: context, page: AllClassDiaryScreen());
         }
-        if(label=="Mark List"){
+        if (label == "Mark List") {
           AppNavigator.pushSlide(context: context, page: MarkListPage());
         }
-        if(label=="Material"){
+        if (label == "Material") {
           AppNavigator.pushSlide(context: context, page: SubjectPage());
         }
-        if(label=="Attendance"){
+        if (label == "Attendance") {
           AppNavigator.pushSlide(context: context, page: AttendenceScreen());
         }
-
       },
       child: Container(
         height: 90,
@@ -456,9 +458,9 @@ class _HomeScreenState extends State<StudentScreenN> {
     final active = _selectedIndex == index;
     return GestureDetector(
       onTap: () => setState(() => _selectedIndex = index),
-     //  onTap: () {
-     //    AppNavigator.pushSlide(context: context, page: FeesScreen());
-     //  },
+      //  onTap: () {
+      //    AppNavigator.pushSlide(context: context, page: FeesScreen());
+      //  },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),
         padding: label != null && active
@@ -488,6 +490,7 @@ class _HomeScreenState extends State<StudentScreenN> {
     );
   }
 }
+
 Future<void> loadAccounts() async {
   final prefs = await SharedPreferences.getInstance();
   List<String> data = prefs.getStringList('accounts') ?? [];

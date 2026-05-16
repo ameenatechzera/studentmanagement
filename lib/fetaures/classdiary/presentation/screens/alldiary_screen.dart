@@ -202,10 +202,16 @@
 //     );
 //   }
 // }
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:media_store_plus/media_store_plus.dart';
+import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:photo_view/photo_view.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:studentmanagement/core/appdata/appdata.dart';
 import 'package:studentmanagement/fetaures/classdiary/domain/entities/fetch_diary_entity.dart';
@@ -512,185 +518,884 @@ class _DiaryCard extends StatelessWidget {
                     //     ),
                     //   ),
                     // ),
-                    AnimatedContainer(
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                      width: double.infinity,
-                      padding: const EdgeInsets.fromLTRB(20, 14, 20, 16),
-                      decoration: BoxDecoration(
-                        color: bodyColor,
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(22),
-                          topRight: Radius.circular(22),
-                          bottomLeft: Radius.circular(18),
-                          bottomRight: Radius.circular(18),
-                        ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 5.0,
+                        vertical: 10,
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            description.isEmpty
-                                ? 'No Description'
-                                : description,
-                            maxLines: isExpanded ? null : 2, // 👈 KEY CHANGE
-                            overflow: isExpanded
-                                ? TextOverflow.visible
-                                : TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              color: Color(0xFF222222),
-                              fontSize: 12,
-                              height: 1.7,
-                              fontWeight: FontWeight.w500,
-                            ),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                        width: double.infinity,
+                        padding: const EdgeInsets.fromLTRB(20, 14, 20, 16),
+                        decoration: BoxDecoration(
+                          color: bodyColor,
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(15),
+                            topRight: Radius.circular(15),
+                            bottomLeft: Radius.circular(15),
+                            bottomRight: Radius.circular(15),
                           ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              description.isEmpty
+                                  ? 'No Description'
+                                  : description,
+                              maxLines: isExpanded ? null : 2, // 👈 KEY CHANGE
+                              overflow: isExpanded
+                                  ? TextOverflow.visible
+                                  : TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                color: Color(0xFF222222),
+                                fontSize: 12,
+                                height: 1.7,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
 
-                          //       /// SHOW FILES ONLY WHEN EXPANDED
-                          //       if (isExpanded && files.isNotEmpty) ...[
-                          //         const SizedBox(height: 14),
+                            //       /// SHOW FILES ONLY WHEN EXPANDED
+                            //       if (isExpanded && files.isNotEmpty) ...[
+                            //         const SizedBox(height: 14),
 
-                          //         Wrap(
-                          //           spacing: 10,
-                          //           runSpacing: 10,
-                          //           children: files.map((file) {
-                          //             final url = file.url ?? '';
-                          //             final type = (file.type ?? '').toLowerCase();
+                            //         Wrap(
+                            //           spacing: 10,
+                            //           runSpacing: 10,
+                            //           children: files.map((file) {
+                            //             final url = file.url ?? '';
+                            //             final type = (file.type ?? '').toLowerCase();
 
-                          //             final isImage =
-                          //                 type.contains('image') ||
-                          //                 url.endsWith('.png') ||
-                          //                 url.endsWith('.jpg') ||
-                          //                 url.endsWith('.jpeg');
+                            //             final isImage =
+                            //                 type.contains('image') ||
+                            //                 url.endsWith('.png') ||
+                            //                 url.endsWith('.jpg') ||
+                            //                 url.endsWith('.jpeg');
 
-                          //             final isPdf = url.toLowerCase().endsWith(
-                          //               '.pdf',
-                          //             );
+                            //             final isPdf = url.toLowerCase().endsWith(
+                            //               '.pdf',
+                            //             );
 
-                          //             final isDoc =
-                          //                 url.toLowerCase().endsWith('.doc') ||
-                          //                 url.toLowerCase().endsWith('.docx');
+                            //             final isDoc =
+                            //                 url.toLowerCase().endsWith('.doc') ||
+                            //                 url.toLowerCase().endsWith('.docx');
 
-                          //             return GestureDetector(
-                          //               onTap: () async {
-                          //                 final uri = Uri.parse(url);
+                            //             return GestureDetector(
+                            //               onTap: () async {
+                            //                 final uri = Uri.parse(url);
 
-                          //                 if (await canLaunchUrl(uri)) {
-                          //                   await launchUrl(
-                          //                     uri,
-                          //                     mode: LaunchMode.externalApplication,
-                          //                   );
-                          //                 }
-                          //               },
-                          //               child: isImage
-                          //                   ? ClipRRect(
-                          //                       borderRadius: BorderRadius.circular(
-                          //                         12,
-                          //                       ),
-                          //                       child: Image.network(
-                          //                         url,
-                          //                         // width: 100,
-                          //                         // height: 100,
-                          //                         fit: BoxFit.cover,
-                          //                       ),
-                          //                     )
-                          //                   : Container(
-                          //                       width: 100,
-                          //                       padding: const EdgeInsets.symmetric(
-                          //                         vertical: 16,
-                          //                       ),
-                          //                       decoration: BoxDecoration(
-                          //                         color: Colors.white,
-                          //                         borderRadius: BorderRadius.circular(
-                          //                           14,
-                          //                         ),
-                          //                       ),
-                          //                       child: Column(
-                          //                         children: [
-                          //                           Icon(
-                          //                             isPdf
-                          //                                 ? Icons.picture_as_pdf
-                          //                                 : isDoc
-                          //                                 ? Icons.description
-                          //                                 : Icons.insert_drive_file,
-                          //                             size: 42,
-                          //                             color: isPdf
-                          //                                 ? Colors.red
-                          //                                 : Colors.blue,
-                          //                           ),
-                          //                           const SizedBox(height: 8),
-                          //                           Text(
-                          //                             isPdf
-                          //                                 ? 'PDF File'
-                          //                                 : isDoc
-                          //                                 ? 'Document'
-                          //                                 : 'File',
-                          //                             style: const TextStyle(
-                          //                               fontSize: 11,
-                          //                               fontWeight: FontWeight.w600,
-                          //                             ),
-                          //                           ),
-                          //                         ],
-                          //                       ),
-                          //                     ),
-                          //             );
-                          //           }).toList(),
-                          //         ),
-                          //       ],
-                          //     ],
-                          //   ),
-                          // ),
-                          /// SHOW FILES ONLY WHEN EXPANDED
-                          if (isExpanded && files.isNotEmpty) ...[
-                            const SizedBox(height: 14),
+                            //                 if (await canLaunchUrl(uri)) {
+                            //                   await launchUrl(
+                            //                     uri,
+                            //                     mode: LaunchMode.externalApplication,
+                            //                   );
+                            //                 }
+                            //               },
+                            //               child: isImage
+                            //                   ? ClipRRect(
+                            //                       borderRadius: BorderRadius.circular(
+                            //                         12,
+                            //                       ),
+                            //                       child: Image.network(
+                            //                         url,
+                            //                         // width: 100,
+                            //                         // height: 100,
+                            //                         fit: BoxFit.cover,
+                            //                       ),
+                            //                     )
+                            //                   : Container(
+                            //                       width: 100,
+                            //                       padding: const EdgeInsets.symmetric(
+                            //                         vertical: 16,
+                            //                       ),
+                            //                       decoration: BoxDecoration(
+                            //                         color: Colors.white,
+                            //                         borderRadius: BorderRadius.circular(
+                            //                           14,
+                            //                         ),
+                            //                       ),
+                            //                       child: Column(
+                            //                         children: [
+                            //                           Icon(
+                            //                             isPdf
+                            //                                 ? Icons.picture_as_pdf
+                            //                                 : isDoc
+                            //                                 ? Icons.description
+                            //                                 : Icons.insert_drive_file,
+                            //                             size: 42,
+                            //                             color: isPdf
+                            //                                 ? Colors.red
+                            //                                 : Colors.blue,
+                            //                           ),
+                            //                           const SizedBox(height: 8),
+                            //                           Text(
+                            //                             isPdf
+                            //                                 ? 'PDF File'
+                            //                                 : isDoc
+                            //                                 ? 'Document'
+                            //                                 : 'File',
+                            //                             style: const TextStyle(
+                            //                               fontSize: 11,
+                            //                               fontWeight: FontWeight.w600,
+                            //                             ),
+                            //                           ),
+                            //                         ],
+                            //                       ),
+                            //                     ),
+                            //             );
+                            //           }).toList(),
+                            //         ),
+                            //       ],
+                            //     ],
+                            //   ),
+                            // ),
+                            /// SHOW FILES ONLY WHEN EXPANDED
+                            if (isExpanded && files.isNotEmpty) ...[
+                              const SizedBox(height: 14),
 
-                            Builder(
-                              builder: (context) {
-                                final imageFiles = files.where((file) {
-                                  final url = (file.url ?? '').toLowerCase();
-                                  final type = (file.type ?? '').toLowerCase();
+                              Builder(
+                                builder: (context) {
+                                  final imageFiles = files.where((file) {
+                                    final url = (file.url ?? '').toLowerCase();
+                                    final type = (file.type ?? '')
+                                        .toLowerCase();
 
-                                  return type.contains('image') ||
-                                      url.endsWith('.png') ||
-                                      url.endsWith('.jpg') ||
-                                      url.endsWith('.jpeg');
-                                }).toList();
+                                    return type.contains('image') ||
+                                        url.endsWith('.png') ||
+                                        url.endsWith('.jpg') ||
+                                        url.endsWith('.jpeg');
+                                  }).toList();
 
-                                final otherFiles = files.where((file) {
-                                  final url = (file.url ?? '').toLowerCase();
+                                  final otherFiles = files.where((file) {
+                                    final url = (file.url ?? '').toLowerCase();
 
-                                  return !(url.endsWith('.png') ||
-                                      url.endsWith('.jpg') ||
-                                      url.endsWith('.jpeg'));
-                                }).toList();
+                                    return !(url.endsWith('.png') ||
+                                        url.endsWith('.jpg') ||
+                                        url.endsWith('.jpeg'));
+                                  }).toList();
 
-                                return Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    /// IMAGE CAROUSEL
-                                    if (imageFiles.isNotEmpty)
-                                      SizedBox(
-                                        height: 220,
-                                        child: PageView.builder(
-                                          itemCount: imageFiles.length,
-                                          controller: PageController(
-                                            viewportFraction: 0.92,
+                                  return Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      /// IMAGE CAROUSEL
+                                      if (imageFiles.isNotEmpty)
+                                        //if (imageFiles.isNotEmpty)
+                                        Container(
+                                          padding: const EdgeInsets.all(14),
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xffF3F4F8),
+                                            borderRadius: BorderRadius.circular(
+                                              24,
+                                            ),
                                           ),
-                                          itemBuilder: (context, imageIndex) {
-                                            final image =
-                                                imageFiles[imageIndex];
 
-                                            return Padding(
-                                              padding: const EdgeInsets.only(
-                                                right: 10,
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              /// TITLE
+                                              Text(
+                                                title,
+                                                style: TextStyle(
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.w700,
+                                                  color: Colors.black87,
+                                                ),
                                               ),
-                                              child: ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(18),
-                                                child: GestureDetector(
-                                                  onTap: () async {
-                                                    final uri = Uri.parse(
-                                                      image.url ?? '',
+
+                                              const SizedBox(height: 16),
+
+                                              /// IMAGES
+                                              SizedBox(
+                                                height: 105,
+
+                                                child: ListView.separated(
+                                                  scrollDirection:
+                                                      Axis.horizontal,
+                                                  itemCount:
+                                                      imageFiles.length > 4
+                                                      ? 4
+                                                      : imageFiles.length,
+
+                                                  separatorBuilder: (_, __) =>
+                                                      const SizedBox(width: 12),
+
+                                                  itemBuilder: (context, imageIndex) {
+                                                    final image =
+                                                        imageFiles[imageIndex];
+
+                                                    return GestureDetector(
+                                                      onTap: () {
+                                                        Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (_) => Scaffold(
+                                                              backgroundColor:
+                                                                  Colors.black,
+
+                                                              body: Stack(
+                                                                children: [
+                                                                  /// IMAGE VIEWER
+                                                                  PhotoView(
+                                                                    imageProvider:
+                                                                        NetworkImage(
+                                                                          image.url ??
+                                                                              '',
+                                                                        ),
+
+                                                                    minScale:
+                                                                        PhotoViewComputedScale
+                                                                            .contained,
+
+                                                                    maxScale:
+                                                                        PhotoViewComputedScale
+                                                                            .covered *
+                                                                        3,
+                                                                  ),
+
+                                                                  /// CLOSE BUTTON
+                                                                  Positioned(
+                                                                    top: 50,
+                                                                    right: 20,
+
+                                                                    child: GestureDetector(
+                                                                      onTap: () {
+                                                                        Navigator.pop(
+                                                                          context,
+                                                                        );
+                                                                      },
+
+                                                                      child: Container(
+                                                                        padding:
+                                                                            const EdgeInsets.all(
+                                                                              8,
+                                                                            ),
+
+                                                                        decoration: BoxDecoration(
+                                                                          color: Colors.black.withOpacity(
+                                                                            0.5,
+                                                                          ),
+                                                                          shape:
+                                                                              BoxShape.circle,
+                                                                        ),
+
+                                                                        child: const Icon(
+                                                                          Icons
+                                                                              .close,
+                                                                          color:
+                                                                              Colors.white,
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        );
+                                                      },
+
+                                                      child: Stack(
+                                                        children: [
+                                                          /// IMAGE CARD
+                                                          Container(
+                                                            width: 95,
+                                                            decoration: BoxDecoration(
+                                                              color:
+                                                                  Colors.white,
+                                                              borderRadius:
+                                                                  BorderRadius.circular(
+                                                                    14,
+                                                                  ),
+                                                              border: Border.all(
+                                                                color: Colors
+                                                                    .grey
+                                                                    .shade300,
+                                                              ),
+                                                            ),
+
+                                                            child: ClipRRect(
+                                                              borderRadius:
+                                                                  BorderRadius.circular(
+                                                                    14,
+                                                                  ),
+
+                                                              child: Stack(
+                                                                children: [
+                                                                  /// SHIMMER
+                                                                  Shimmer.fromColors(
+                                                                    baseColor: Colors
+                                                                        .grey
+                                                                        .shade300,
+                                                                    highlightColor:
+                                                                        Colors
+                                                                            .grey
+                                                                            .shade100,
+
+                                                                    child: Container(
+                                                                      color: Colors
+                                                                          .white,
+                                                                    ),
+                                                                  ),
+
+                                                                  /// IMAGE
+                                                                  Image.network(
+                                                                    image.url ??
+                                                                        '',
+                                                                    fit: BoxFit
+                                                                        .cover,
+                                                                    width: 95,
+                                                                    height: 105,
+
+                                                                    loadingBuilder:
+                                                                        (
+                                                                          context,
+                                                                          child,
+                                                                          loadingProgress,
+                                                                        ) {
+                                                                          if (loadingProgress ==
+                                                                              null) {
+                                                                            return child;
+                                                                          }
+
+                                                                          return const SizedBox();
+                                                                        },
+
+                                                                    errorBuilder:
+                                                                        (
+                                                                          context,
+                                                                          error,
+                                                                          stackTrace,
+                                                                        ) {
+                                                                          return const Center(
+                                                                            child: Icon(
+                                                                              Icons.broken_image,
+                                                                            ),
+                                                                          );
+                                                                        },
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ),
+
+                                                          /// +MORE OVERLAY
+                                                          if (imageIndex == 3 &&
+                                                              imageFiles
+                                                                      .length >
+                                                                  4)
+                                                            Container(
+                                                              width: 95,
+                                                              height: 105,
+
+                                                              decoration: BoxDecoration(
+                                                                color: Colors
+                                                                    .black
+                                                                    .withOpacity(
+                                                                      0.45,
+                                                                    ),
+                                                                borderRadius:
+                                                                    BorderRadius.circular(
+                                                                      14,
+                                                                    ),
+                                                              ),
+
+                                                              alignment:
+                                                                  Alignment
+                                                                      .center,
+
+                                                              child: Text(
+                                                                "+${imageFiles.length - 4}",
+                                                                style: const TextStyle(
+                                                                  color: Colors
+                                                                      .white,
+                                                                  fontSize: 24,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                        ],
+                                                      ),
                                                     );
+                                                  },
+                                                ),
+                                              ),
+
+                                              const SizedBox(height: 18),
+
+                                              /// DOWNLOAD ALL
+                                              Center(
+                                                child: GestureDetector(
+                                                  // onTap: () async {
+                                                  //   try {
+                                                  //     final dio = Dio();
+
+                                                  //     for (
+                                                  //       int i = 0;
+                                                  //       i < imageFiles.length;
+                                                  //       i++
+                                                  //     ) {
+                                                  //       final String imageUrl =
+                                                  //           imageFiles[i].url ??
+                                                  //           '';
+
+                                                  //       if (imageUrl.isEmpty)
+                                                  //         continue;
+
+                                                  //       final tempDir =
+                                                  //           await getTemporaryDirectory();
+
+                                                  //       final String fileName =
+                                                  //           'cristal_image_${DateTime.now().millisecondsSinceEpoch}_$i.jpg';
+
+                                                  //       final String tempPath =
+                                                  //           '${tempDir.path}/$fileName';
+
+                                                  //       /// DOWNLOAD TEMP FILE
+                                                  //       await dio.download(
+                                                  //         imageUrl,
+                                                  //         tempPath,
+                                                  //       );
+
+                                                  //       print(
+                                                  //         "Downloaded Temp File: $tempPath",
+                                                  //       );
+
+                                                  //       /// SAVE TO DOWNLOADS
+                                                  //       final MediaStore
+                                                  //       mediaStore =
+                                                  //           MediaStore();
+
+                                                  //       final result =
+                                                  //           await mediaStore
+                                                  //               .saveFile(
+                                                  //                 tempFilePath:
+                                                  //                     tempPath,
+                                                  //                 dirType: DirType
+                                                  //                     .download,
+                                                  //                 dirName: DirName
+                                                  //                     .download,
+                                                  //               );
+
+                                                  //       print(
+                                                  //         "Save Result: $result",
+                                                  //       );
+                                                  //     }
+
+                                                  //     ScaffoldMessenger.of(
+                                                  //       context,
+                                                  //     ).showSnackBar(
+                                                  //       const SnackBar(
+                                                  //         content: Text(
+                                                  //           'Images downloaded to Downloads',
+                                                  //         ),
+                                                  //       ),
+                                                  //     );
+                                                  //   } catch (e, stackTrace) {
+                                                  //     print(
+                                                  //       "DOWNLOAD ERROR: $e",
+                                                  //     );
+                                                  //     print(
+                                                  //       "STACK TRACE: $stackTrace",
+                                                  //     );
+
+                                                  //     ScaffoldMessenger.of(
+                                                  //       context,
+                                                  //     ).showSnackBar(
+                                                  //       SnackBar(
+                                                  //         content: Text(
+                                                  //           'Download failed: $e',
+                                                  //         ),
+                                                  //       ),
+                                                  //     );
+                                                  //   }
+                                                  // },
+                                                  onTap: () async {
+                                                    try {
+                                                      final dio = Dio();
+                                                      final mediaStore =
+                                                          MediaStore();
+
+                                                      for (
+                                                        int i = 0;
+                                                        i < imageFiles.length;
+                                                        i++
+                                                      ) {
+                                                        final String imageUrl =
+                                                            imageFiles[i].url ??
+                                                            '';
+
+                                                        if (imageUrl.isEmpty)
+                                                          continue;
+
+                                                        final tempDir =
+                                                            await getTemporaryDirectory();
+
+                                                        final String fileName =
+                                                            'cristal_image_${DateTime.now().millisecondsSinceEpoch}_$i.jpg';
+
+                                                        final String tempPath =
+                                                            '${tempDir.path}/$fileName';
+
+                                                        await dio.download(
+                                                          imageUrl,
+                                                          tempPath,
+                                                        );
+
+                                                        await mediaStore
+                                                            .saveFile(
+                                                              tempFilePath:
+                                                                  tempPath,
+                                                              dirType: DirType
+                                                                  .download,
+                                                              dirName: DirName
+                                                                  .download,
+                                                            );
+                                                      }
+
+                                                      ScaffoldMessenger.of(
+                                                        context,
+                                                      ).showSnackBar(
+                                                        const SnackBar(
+                                                          content: Text(
+                                                            'Images saved to Downloads/Cristal',
+                                                          ),
+                                                        ),
+                                                      );
+                                                    } catch (e, stackTrace) {
+                                                      print(
+                                                        "DOWNLOAD ERROR: $e",
+                                                      );
+                                                      print(
+                                                        "STACK TRACE: $stackTrace",
+                                                      );
+
+                                                      ScaffoldMessenger.of(
+                                                        context,
+                                                      ).showSnackBar(
+                                                        SnackBar(
+                                                          content: Text(
+                                                            'Download failed: $e',
+                                                          ),
+                                                        ),
+                                                      );
+                                                    }
+                                                  },
+
+                                                  child: const Row(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    children: [
+                                                      Icon(
+                                                        Icons.download,
+                                                        size: 18,
+                                                        color: Color(
+                                                          0xff5B8DEF,
+                                                        ),
+                                                      ),
+
+                                                      SizedBox(width: 6),
+
+                                                      Text(
+                                                        "Download All",
+                                                        style: TextStyle(
+                                                          color: Color(
+                                                            0xff5B8DEF,
+                                                          ),
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      // SizedBox(
+                                      //   height: 220,
+                                      //   child: PageView.builder(
+                                      //     itemCount: imageFiles.length,
+                                      //     controller: PageController(
+                                      //       viewportFraction: 0.92,
+                                      //     ),
+                                      //     itemBuilder: (context, imageIndex) {
+                                      //       final image =
+                                      //           imageFiles[imageIndex];
+                                      //       return Padding(
+                                      //         padding: const EdgeInsets.only(
+                                      //           right: 10,
+                                      //         ),
+                                      //         child: ClipRRect(
+                                      //           borderRadius:
+                                      //               BorderRadius.circular(18),
+                                      //           child: GestureDetector(
+                                      //             onTap: () async {
+                                      //               final uri = Uri.parse(
+                                      //                 image.url ?? '',
+                                      //               );
+                                      //               if (await canLaunchUrl(
+                                      //                 uri,
+                                      //               )) {
+                                      //                 await launchUrl(
+                                      //                   uri,
+                                      //                   mode: LaunchMode
+                                      //                       .externalApplication,
+                                      //                 );
+                                      //               }
+                                      //             },
+                                      //             child: Stack(
+                                      //               children: [
+                                      //                 /// SHIMMER LOADER
+                                      //                 Shimmer.fromColors(
+                                      //                   baseColor: Colors
+                                      //                       .grey
+                                      //                       .shade300,
+                                      //                   highlightColor: Colors
+                                      //                       .grey
+                                      //                       .shade100,
+                                      //                   child: Container(
+                                      //                     width:
+                                      //                         double.infinity,
+                                      //                     height: 220,
+                                      //                     decoration:
+                                      //                         BoxDecoration(
+                                      //                           color: Colors
+                                      //                               .white,
+                                      //                           borderRadius:
+                                      //                               BorderRadius.circular(
+                                      //                                 18,
+                                      //                               ),
+                                      //                         ),
+                                      //                   ),
+                                      //                 ),
+                                      //                 /// IMAGE
+                                      //                 Image.network(
+                                      //                   image.url ?? '',
+                                      //                   fit: BoxFit.cover,
+                                      //                   width:
+                                      //                       double.infinity,
+                                      //                   loadingBuilder:
+                                      //                       (
+                                      //                         context,
+                                      //                         child,
+                                      //                         loadingProgress,
+                                      //                       ) {
+                                      //                         if (loadingProgress ==
+                                      //                             null) {
+                                      //                           return child;
+                                      //                         }
+                                      //                         return const SizedBox();
+                                      //                       },
+                                      //                   errorBuilder:
+                                      //                       (
+                                      //                         context,
+                                      //                         error,
+                                      //                         stackTrace,
+                                      //                       ) {
+                                      //                         return const Center(
+                                      //                           child: Icon(
+                                      //                             Icons
+                                      //                                 .broken_image,
+                                      //                             size: 40,
+                                      //                           ),
+                                      //                         );
+                                      //                       },
+                                      //                 ),
+                                      //               ],
+                                      //             ),
+                                      //             // child: Stack(
+                                      //             //   alignment: Alignment.center,
+                                      //             //   children: [
+                                      //             //     /// LOADER SHOWS IMMEDIATELY
+                                      //             //     const Center(
+                                      //             //       child:
+                                      //             //           CircularProgressIndicator(),
+                                      //             //     ),
+                                      //             //     /// IMAGE
+                                      //             //     Image.network(
+                                      //             //       image.url ?? '',
+                                      //             //       fit: BoxFit.cover,
+                                      //             //       width: double.infinity,
+                                      //             //       loadingBuilder:
+                                      //             //           (
+                                      //             //             context,
+                                      //             //             child,
+                                      //             //             loadingProgress,
+                                      //             //           ) {
+                                      //             //             if (loadingProgress ==
+                                      //             //                 null) {
+                                      //             //               return child;
+                                      //             //             }
+                                      //             //             return child;
+                                      //             //           },
+                                      //             //       errorBuilder:
+                                      //             //           (
+                                      //             //             context,
+                                      //             //             error,
+                                      //             //             stackTrace,
+                                      //             //           ) {
+                                      //             //             return const Center(
+                                      //             //               child: Icon(
+                                      //             //                 Icons
+                                      //             //                     .broken_image,
+                                      //             //                 size: 40,
+                                      //             //               ),
+                                      //             //             );
+                                      //             //           },
+                                      //             //     ),
+                                      //             //   ],
+                                      //             // ),
+                                      //             // child: Image.network(
+                                      //             //   image.url ?? '',
+                                      //             //   fit: BoxFit.cover,
+                                      //             //   width: double.infinity,
+                                      //             // ),
+                                      //           ),
+                                      //         ),
+                                      //       );
+                                      //     },
+                                      //   ),
+                                      // ),
+                                      /// FILES
+                                      if (otherFiles.isNotEmpty) ...[
+                                        const SizedBox(height: 14),
+
+                                        Wrap(
+                                          spacing: 10,
+                                          runSpacing: 10,
+                                          children: otherFiles.map((file) {
+                                            final url = file.url ?? '';
+
+                                            final isPdf = url
+                                                .toLowerCase()
+                                                .endsWith('.pdf');
+
+                                            final isDoc =
+                                                url.toLowerCase().endsWith(
+                                                  '.doc',
+                                                ) ||
+                                                url.toLowerCase().endsWith(
+                                                  '.docx',
+                                                );
+
+                                            return GestureDetector(
+                                              // onTap: () async {
+                                              //   try {
+                                              //     debugPrint("FILE CLICKED");
+
+                                              //     final dir =
+                                              //         await getTemporaryDirectory();
+
+                                              //     final extension = url
+                                              //         .split('.')
+                                              //         .last;
+
+                                              //     final filePath =
+                                              //         '${dir.path}/${DateTime.now().millisecondsSinceEpoch}.$extension';
+
+                                              //     debugPrint(
+                                              //       "DOWNLOADING TO: $filePath",
+                                              //     );
+
+                                              //     await Dio().download(
+                                              //       url,
+                                              //       filePath,
+                                              //     );
+
+                                              //     debugPrint(
+                                              //       "DOWNLOAD COMPLETED",
+                                              //     );
+
+                                              //     final result =
+                                              //         await OpenFilex.open(
+                                              //           filePath,
+                                              //         );
+
+                                              //     debugPrint(
+                                              //       "OPEN RESULT: ${result.message}",
+                                              //     );
+                                              //   } catch (e) {
+                                              //     debugPrint("ERROR: $e");
+                                              //   }
+                                              // },
+                                              // onTap: () async {
+                                              //   try {
+                                              //     debugPrint(
+                                              //       "FILE DOWNLOAD STARTED",
+                                              //     );
+
+                                              //     final extension = url
+                                              //         .split('.')
+                                              //         .last
+                                              //         .split('?')
+                                              //         .first;
+
+                                              //     final fileName =
+                                              //         '${title.replaceAll(' ', '_')}_${DateTime.now().millisecondsSinceEpoch}.$extension';
+
+                                              //     /// PHONE DOWNLOADS PATH
+                                              //     final savePath =
+                                              //         '/storage/emulated/0/Download/$fileName';
+
+                                              //     debugPrint(
+                                              //       "SAVE PATH: $savePath",
+                                              //     );
+
+                                              //     /// DOWNLOAD FILE
+                                              //     await Dio().download(
+                                              //       url,
+                                              //       savePath,
+                                              //     );
+
+                                              //     debugPrint(
+                                              //       "DOWNLOAD COMPLETED",
+                                              //     );
+
+                                              //     ScaffoldMessenger.of(
+                                              //       context,
+                                              //     ).showSnackBar(
+                                              //       SnackBar(
+                                              //         content: Text(
+                                              //           'Downloaded to Downloads/$fileName',
+                                              //         ),
+                                              //       ),
+                                              //     );
+                                              //   } catch (e, stackTrace) {
+                                              //     debugPrint(
+                                              //       "DOWNLOAD ERROR: $e",
+                                              //     );
+                                              //     debugPrint(
+                                              //       "STACK TRACE: $stackTrace",
+                                              //     );
+
+                                              //     ScaffoldMessenger.of(
+                                              //       context,
+                                              //     ).showSnackBar(
+                                              //       SnackBar(
+                                              //         content: Text(
+                                              //           'Download failed: $e',
+                                              //         ),
+                                              //       ),
+                                              //     );
+                                              //   }
+                                              // },
+                                              onTap: () async {
+                                                try {
+                                                  final lowerUrl = url
+                                                      .toLowerCase();
+
+                                                  /// VIMEO VIDEO
+                                                  final isVimeo = lowerUrl
+                                                      .contains("vimeo.com");
+
+                                                  if (isVimeo) {
+                                                    final uri = Uri.parse(url);
 
                                                     if (await canLaunchUrl(
                                                       uri,
@@ -701,252 +1406,174 @@ class _DiaryCard extends StatelessWidget {
                                                             .externalApplication,
                                                       );
                                                     }
-                                                  },
-                                                  child: Stack(
-                                                    children: [
-                                                      /// SHIMMER LOADER
-                                                      Shimmer.fromColors(
-                                                        baseColor: Colors
-                                                            .grey
-                                                            .shade300,
-                                                        highlightColor: Colors
-                                                            .grey
-                                                            .shade100,
-                                                        child: Container(
-                                                          width:
-                                                              double.infinity,
-                                                          height: 220,
-                                                          decoration: BoxDecoration(
-                                                            color: Colors.white,
-                                                            borderRadius:
-                                                                BorderRadius.circular(
-                                                                  18,
-                                                                ),
-                                                          ),
+
+                                                    return;
+                                                  }
+                                                  debugPrint(
+                                                    "FILE DOWNLOAD STARTED",
+                                                  );
+
+                                                  // Request storage permission if needed
+                                                  if (Platform.isAndroid) {
+                                                    await Permission.storage
+                                                        .request();
+                                                    await Permission
+                                                        .manageExternalStorage
+                                                        .request();
+                                                  }
+
+                                                  // Get Downloads folder path
+                                                  final downloadsDir = Directory(
+                                                    '/storage/emulated/0/Download',
+                                                  );
+
+                                                  if (!await downloadsDir
+                                                      .exists()) {
+                                                    await downloadsDir.create(
+                                                      recursive: true,
+                                                    );
+                                                  }
+
+                                                  final extension = url
+                                                      .split('.')
+                                                      .last;
+
+                                                  final fileName =
+                                                      '${title}_${DateTime.now().millisecondsSinceEpoch}.$extension';
+
+                                                  final savePath =
+                                                      '${downloadsDir.path}/$fileName';
+
+                                                  debugPrint(
+                                                    "SAVE PATH: $savePath",
+                                                  );
+
+                                                  // Download file
+                                                  await Dio().download(
+                                                    url,
+                                                    savePath,
+                                                  );
+
+                                                  debugPrint(
+                                                    "DOWNLOAD COMPLETED",
+                                                  );
+
+                                                  ScaffoldMessenger.of(
+                                                    context,
+                                                  ).showSnackBar(
+                                                    SnackBar(
+                                                      content: Text(
+                                                        'File downloaded to Downloads folder',
+                                                      ),
+                                                    ),
+                                                  );
+
+                                                  // Open downloaded file
+                                                  final result =
+                                                      await OpenFilex.open(
+                                                        savePath,
+                                                      );
+
+                                                  debugPrint(
+                                                    "OPEN RESULT: ${result.message}",
+                                                  );
+                                                } catch (e) {
+                                                  debugPrint("ERROR: $e");
+
+                                                  ScaffoldMessenger.of(
+                                                    context,
+                                                  ).showSnackBar(
+                                                    SnackBar(
+                                                      content: Text(
+                                                        'Download failed',
+                                                      ),
+                                                    ),
+                                                  );
+                                                }
+                                              },
+                                              child: Container(
+                                                //width: 100,
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      horizontal: 20,
+                                                      vertical: 16,
+                                                    ),
+                                                decoration: BoxDecoration(
+                                                  border: Border.all(),
+                                                  color: Colors.white,
+                                                  borderRadius:
+                                                      BorderRadius.circular(14),
+                                                ),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    //const SizedBox(width: 20),
+                                                    Row(
+                                                      children: [
+                                                        Icon(
+                                                          isPdf
+                                                              ? Icons
+                                                                    .picture_as_pdf
+                                                              : isDoc
+                                                              ? Icons
+                                                                    .description
+                                                              : Icons
+                                                                    .insert_drive_file,
+                                                          size: 42,
+                                                          color: isPdf
+                                                              ? Colors.red
+                                                              : Colors.blue,
                                                         ),
-                                                      ),
+                                                        const SizedBox(
+                                                          width: 10,
+                                                        ),
 
-                                                      /// IMAGE
-                                                      Image.network(
-                                                        image.url ?? '',
-                                                        fit: BoxFit.cover,
-                                                        width: double.infinity,
-
-                                                        loadingBuilder:
-                                                            (
-                                                              context,
-                                                              child,
-                                                              loadingProgress,
-                                                            ) {
-                                                              if (loadingProgress ==
-                                                                  null) {
-                                                                return child;
-                                                              }
-
-                                                              return const SizedBox();
-                                                            },
-
-                                                        errorBuilder:
-                                                            (
-                                                              context,
-                                                              error,
-                                                              stackTrace,
-                                                            ) {
-                                                              return const Center(
-                                                                child: Icon(
-                                                                  Icons
-                                                                      .broken_image,
-                                                                  size: 40,
-                                                                ),
-                                                              );
-                                                            },
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  // child: Stack(
-                                                  //   alignment: Alignment.center,
-                                                  //   children: [
-                                                  //     /// LOADER SHOWS IMMEDIATELY
-                                                  //     const Center(
-                                                  //       child:
-                                                  //           CircularProgressIndicator(),
-                                                  //     ),
-
-                                                  //     /// IMAGE
-                                                  //     Image.network(
-                                                  //       image.url ?? '',
-                                                  //       fit: BoxFit.cover,
-                                                  //       width: double.infinity,
-
-                                                  //       loadingBuilder:
-                                                  //           (
-                                                  //             context,
-                                                  //             child,
-                                                  //             loadingProgress,
-                                                  //           ) {
-                                                  //             if (loadingProgress ==
-                                                  //                 null) {
-                                                  //               return child;
-                                                  //             }
-
-                                                  //             return child;
-                                                  //           },
-
-                                                  //       errorBuilder:
-                                                  //           (
-                                                  //             context,
-                                                  //             error,
-                                                  //             stackTrace,
-                                                  //           ) {
-                                                  //             return const Center(
-                                                  //               child: Icon(
-                                                  //                 Icons
-                                                  //                     .broken_image,
-                                                  //                 size: 40,
-                                                  //               ),
-                                                  //             );
-                                                  //           },
-                                                  //     ),
-                                                  //   ],
-                                                  // ),
-                                                  // child: Image.network(
-                                                  //   image.url ?? '',
-                                                  //   fit: BoxFit.cover,
-                                                  //   width: double.infinity,
-                                                  // ),
+                                                        Text(
+                                                          isPdf
+                                                              ? title
+                                                              : isDoc
+                                                              ? title
+                                                              : title,
+                                                          style:
+                                                              const TextStyle(
+                                                                fontSize: 11,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w600,
+                                                              ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    //const SizedBox(width: 20),
+                                                    // Text(
+                                                    //   isPdf
+                                                    //       ? title
+                                                    //       : isDoc
+                                                    //       ? title
+                                                    //       : title,
+                                                    //   style: const TextStyle(
+                                                    //     fontSize: 11,
+                                                    //     fontWeight:
+                                                    //         FontWeight.w600,
+                                                    //   ),
+                                                    // ),
+                                                    Icon(Icons.download),
+                                                  ],
                                                 ),
                                               ),
                                             );
-                                          },
+                                          }).toList(),
                                         ),
-                                      ),
-
-                                    /// FILES
-                                    if (otherFiles.isNotEmpty) ...[
-                                      const SizedBox(height: 14),
-
-                                      Wrap(
-                                        spacing: 10,
-                                        runSpacing: 10,
-                                        children: otherFiles.map((file) {
-                                          final url = file.url ?? '';
-
-                                          final isPdf = url
-                                              .toLowerCase()
-                                              .endsWith('.pdf');
-
-                                          final isDoc =
-                                              url.toLowerCase().endsWith(
-                                                '.doc',
-                                              ) ||
-                                              url.toLowerCase().endsWith(
-                                                '.docx',
-                                              );
-
-                                          return GestureDetector(
-                                            // onTap: () async {
-                                            //   try {
-                                            //     debugPrint("FILE CLICKED");
-
-                                            //     final dir =
-                                            //         await getTemporaryDirectory();
-
-                                            //     final extension = url
-                                            //         .split('.')
-                                            //         .last;
-
-                                            //     final filePath =
-                                            //         '${dir.path}/${DateTime.now().millisecondsSinceEpoch}.$extension';
-
-                                            //     debugPrint(
-                                            //       "DOWNLOADING TO: $filePath",
-                                            //     );
-
-                                            //     await Dio().download(
-                                            //       url,
-                                            //       filePath,
-                                            //     );
-
-                                            //     debugPrint(
-                                            //       "DOWNLOAD COMPLETED",
-                                            //     );
-
-                                            //     final result =
-                                            //         await OpenFilex.open(
-                                            //           filePath,
-                                            //         );
-
-                                            //     debugPrint(
-                                            //       "OPEN RESULT: ${result.message}",
-                                            //     );
-                                            //   } catch (e) {
-                                            //     debugPrint("ERROR: $e");
-                                            //   }
-                                            // },
-                                            onTap: () async {
-                                              final uri = Uri.parse(url);
-
-                                              if (await canLaunchUrl(uri)) {
-                                                await launchUrl(
-                                                  uri,
-                                                  mode: LaunchMode
-                                                      .externalApplication,
-                                                );
-                                              }
-                                            },
-                                            child: Container(
-                                              //width: 100,
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                    vertical: 16,
-                                                  ),
-                                              decoration: BoxDecoration(
-                                                color: Colors.white,
-                                                borderRadius:
-                                                    BorderRadius.circular(14),
-                                              ),
-                                              child: Row(
-                                                children: [
-                                                  const SizedBox(width: 20),
-
-                                                  Icon(
-                                                    isPdf
-                                                        ? Icons.picture_as_pdf
-                                                        : isDoc
-                                                        ? Icons.description
-                                                        : Icons
-                                                              .insert_drive_file,
-                                                    size: 42,
-                                                    color: isPdf
-                                                        ? Colors.red
-                                                        : Colors.blue,
-                                                  ),
-                                                  const SizedBox(width: 20),
-                                                  Text(
-                                                    isPdf
-                                                        ? title
-                                                        : isDoc
-                                                        ? title
-                                                        : title,
-                                                    style: const TextStyle(
-                                                      fontSize: 11,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          );
-                                        }).toList(),
-                                      ),
+                                      ],
                                     ],
-                                  ],
-                                );
-                              },
-                            ),
+                                  );
+                                },
+                              ),
+                            ],
                           ],
-                        ],
+                        ),
                       ),
                     ),
                   ],
@@ -1035,5 +1662,43 @@ class AllClassDiarySkeleton extends StatelessWidget {
         );
       },
     );
+  }
+
+  Future<void> downloadFile(BuildContext context, String url) async {
+    try {
+      /// STORAGE PERMISSION
+      await Permission.storage.request();
+
+      final dio = Dio();
+
+      /// FILE NAME
+      final fileName = url.split('/').last;
+
+      /// SAVE DIRECTORY
+      Directory? directory;
+
+      if (Platform.isAndroid) {
+        directory = await getExternalStorageDirectory();
+      } else {
+        directory = await getApplicationDocumentsDirectory();
+      }
+
+      final filePath = "${directory!.path}/$fileName";
+
+      /// DOWNLOAD
+      await dio.download(url, filePath);
+
+      /// SUCCESS MESSAGE
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("$fileName downloaded successfully")),
+      );
+
+      /// OPEN FILE
+      await OpenFilex.open(filePath);
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Download failed: $e")));
+    }
   }
 }

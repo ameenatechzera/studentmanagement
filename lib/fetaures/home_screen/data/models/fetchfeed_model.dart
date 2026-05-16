@@ -43,6 +43,7 @@ class FeedDetailsModel extends FeedDetails {
     super.modifiedUser,
     List<FeedFileModel>? super.files,
     super.postedBy,
+    super.designationName,
     super.likeCount,
     super.shareCount,
     super.isLiked,
@@ -83,6 +84,7 @@ class FeedDetailsModel extends FeedDetails {
                 .map((x) => FeedFileModel.fromJson(x))
                 .toList(),
       postedBy: json['PostedBy']?.toString(),
+      designationName: json['DesignationName'],
       createdDateFormatted: json['CreatedDateFormatted']?.toString(),
       createdTime: json['CreatedTime']?.toString(),
       modifiedDateFormatted: json['ModifiedDateFormatted']?.toString(),

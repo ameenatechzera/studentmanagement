@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
@@ -11,7 +10,7 @@ import 'package:studentmanagement/core/appdata/appdata.dart';
 import 'package:studentmanagement/fetaures/home_screen/domain/entities/fetchfeed_entity.dart';
 import 'package:studentmanagement/fetaures/home_screen/domain/parameters/feedaction_parameter.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/cubit/feed_cubit.dart';
-import 'package:studentmanagement/fetaures/home_screen/presentation/helper/homescreen_helper.dart';
+import 'package:studentmanagement/services/shared_preference_helper.dart';
 
 class PostCard extends StatefulWidget {
   final FeedDetails feed;
@@ -30,7 +29,6 @@ class _PostCardState extends State<PostCard> {
   @override
   void initState() {
     super.initState();
-
     isLiked = widget.feed.isLiked ?? false;
     likeCount = widget.feed.likeCount ?? 0;
   }
@@ -48,6 +46,10 @@ class _PostCardState extends State<PostCard> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              CircleAvatar(
+                radius: 20,
+                backgroundImage: NetworkImage(AppData.logo!),
+              ),
               CircleAvatar(
                 radius: 25,
                 backgroundImage:
@@ -74,7 +76,7 @@ class _PostCardState extends State<PostCard> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        AppData.studentName ?? 'No Name',
+                        feed.postedBy ?? 'No Name',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
@@ -82,7 +84,10 @@ class _PostCardState extends State<PostCard> {
                         ),
                       ),
                       const SizedBox(height: 2),
-                      Text('Principal', style: const TextStyle(fontSize: 12)),
+                      Text(
+                        feed.designationName ?? "",
+                        style: const TextStyle(fontSize: 12),
+                      ),
                     ],
                   ),
                 ),
@@ -185,12 +190,18 @@ class _PostCardState extends State<PostCard> {
                   width: 24,
                 ),
               ),
-              onPressed: () {
+              onPressed: () async {
+                final loginResponse = await SharedPreferenceHelper()
+                    .getLoginResponse();
+
+                final admissionId = loginResponse?.student?.admissionId;
+
+                if (admissionId == null) return;
                 final newValue = !isLiked;
 
                 context.read<FeedCubit>().feedAction(
                   FeedActionParameter(
-                    admissionId: 1,
+                    admissionId: admissionId,
                     feedId: feed.feedId!,
                     branchId: feed.branchId!,
                     type: "like",

@@ -720,7 +720,10 @@ class _PaidFeeState extends State<PaidFee> {
 
       if (result != null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('PDF saved in Downloads ✔')),
+          const SnackBar(
+            content: Text('PDF saved in Downloads ✔'),
+            backgroundColor: Colors.green,
+          ),
         );
       } else {
         throw Exception('Save failed');

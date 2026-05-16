@@ -18,4 +18,5 @@ class AppData {
   static String? logo;
   static String? place;
   static String? studentClass;
+  static int? branchId;
 }
