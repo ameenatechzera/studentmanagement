@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:studentmanagement/fetaures/authentication/presentation/screens/registerScreen.dart';
 import 'package:studentmanagement/services/shared_preference_helper.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/screens/register_screen.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/screens/main_splash.dart';
@@ -32,7 +33,8 @@ class _AppStartScreenState extends State<AppStartScreen> {
       /// 👉 First time → Register
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const RegisterScreen()),
+        // MaterialPageRoute(builder: (_) => const RegisterScreen()),
+        MaterialPageRoute(builder: (_) => const RegisterCodePage()),
       );
     } else {
       /// 👉 Already registered → Splash flow

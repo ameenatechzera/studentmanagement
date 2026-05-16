@@ -11,6 +11,8 @@ class FeedInitial extends FeedState {}
 
 class FeedLoading extends FeedState {}
 
+class VersionLoading extends FeedState {}
+
 class FeedLoaded extends FeedState {
   final FetchFeedResponseModel response;
 
@@ -27,6 +29,19 @@ class FeedError extends FeedState {
 
   @override
   List<Object?> get props => [message];
+}
+
+
+class VersionFetchError extends FeedState {
+  final String message;
+
+  const VersionFetchError(this.message);
+}
+
+class VersionFetchSuccess extends FeedState {
+  final FetchSchoolEntity response;
+
+  const VersionFetchSuccess(this.response);
 }
 
 class FeedActionLoading extends FeedState {

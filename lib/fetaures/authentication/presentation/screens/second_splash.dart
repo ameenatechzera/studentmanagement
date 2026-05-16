@@ -4,6 +4,8 @@ import 'package:studentmanagement/core/navigation/app_navigator.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/screens/login_screen.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/screens/third_splash.dart';
 
+import 'loginScreen.dart';
+
 class SecondSplashScreen extends StatelessWidget {
   const SecondSplashScreen({super.key});
 
@@ -119,7 +121,7 @@ class SecondSplashScreen extends StatelessWidget {
                       onPressed: () {
                         AppNavigator.pushReplacementSlide(
                           context: context,
-                          page: LoginScreen(),
+                          page: Login_Screen(),
                         );
                       },
                       child: const Text(

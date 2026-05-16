@@ -1,0 +1,410 @@
+import 'dart:io';
+
+import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:studentmanagement/core/appdata/appdata.dart';
+import 'package:studentmanagement/core/navigation/app_navigator.dart';
+import 'package:studentmanagement/core/utils/widgets/app_snackbar.dart';
+import 'package:studentmanagement/fetaures/authentication/data/models/account_details_model.dart';
+import 'package:studentmanagement/fetaures/authentication/domain/parameters/login_params.dart';
+import 'package:studentmanagement/fetaures/authentication/presentation/bloc/logincubit/login_cubit.dart';
+import 'package:studentmanagement/fetaures/home_screen/presentation/screens/main_screen.dart';
+import 'package:studentmanagement/services/shared_preference_helper.dart';
+
+class Login_Screen extends StatefulWidget {
+  const Login_Screen({super.key});
+
+  @override
+  State<Login_Screen> createState() => _Login_ScreenState();
+}
+
+class DateInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(TextEditingValue oldValue,
+      TextEditingValue newValue,) {
+    final isDeleting = newValue.text.length < oldValue.text.length;
+
+    if (isDeleting) {
+      return newValue;
+    }
+
+    String digits = newValue.text.replaceAll(RegExp(r'[^0-9]'), '');
+
+    if (digits.length > 8) {
+      return oldValue;
+    }
+
+    String formatted = '';
+
+    if (digits.length >= 2) {
+      formatted = digits.substring(0, 2) + '-';
+    } else {
+      formatted = digits;
+    }
+
+    if (digits.length > 2) {
+      if (digits.length >= 4) {
+        formatted += digits.substring(2, 4) + '-';
+      } else {
+        formatted += digits.substring(2);
+      }
+    }
+
+    if (digits.length > 4) {
+      formatted += digits.substring(4);
+    }
+
+    return TextEditingValue(
+      text: formatted,
+      selection: TextSelection.collapsed(offset: formatted.length),
+    );
+  }
+}
+
+String convertDobToApiFormat(String input) {
+  final parts = input.split('-');
+
+  if (parts.length != 3) return '';
+
+  final day = parts[0].padLeft(2, '0');
+  final month = parts[1].padLeft(2, '0');
+  final year = parts[2];
+
+  return '$year-$month-$day';
+}
+
+class _Login_ScreenState extends State<Login_Screen> {
+  final TextEditingController admNoCtrl = TextEditingController();
+
+  final TextEditingController dobCtrl = TextEditingController();
+
+  final TextEditingController _deviceIdController = TextEditingController();
+
+  @override
+  void initState() {
+    getDeviceId();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              // Top Image Section
+              Container(
+                height: 340,
+                width: double.infinity,
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(50),
+                  ),
+                  image: DecorationImage(
+                    image: AssetImage('assets/images/dummy_image.png'),
+
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF8B84E8).withOpacity(0.55),
+                    borderRadius: const BorderRadius.only(
+                      bottomLeft: Radius.circular(50),
+                    ),
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 40,
+                  ),
+                  child: const Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(
+                        "Welcome",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 42,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        "North Park Academy",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 22,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                    ],
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 40),
+
+              // Title
+              const Text(
+                "Sign Up",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+
+              const SizedBox(height: 35),
+
+              // Admission Field
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 18),
+                child: TextField(
+                  controller: admNoCtrl,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9]')),
+                    // UpperCaseTextFormatter(),
+                  ],
+                  textCapitalization: TextCapitalization.characters,
+                  decoration: InputDecoration(
+                    hintText: "Admission",
+                    hintStyle: TextStyle(
+                      color: Colors.grey.shade700,
+                      fontSize: 15,
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 15,
+                      vertical: 10,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // DOB Field
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 18),
+                child: TextField(
+                  controller: dobCtrl,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [DateInputFormatter()],
+                  decoration: InputDecoration(
+                    hintText: "DOB (DD-MM--YYYY)",
+                    hintStyle: TextStyle(
+                      color: Colors.grey.shade700,
+                      fontSize: 15,
+                    ),
+                    suffixIcon: const Icon(Icons.calendar_month),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 15,
+                      vertical: 10,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 50),
+
+              // Login Button
+              BlocConsumer<LoginCubit, LoginState>(
+                listener: (context, state) async {
+                  if (state is LoginSuccess) {
+                    final sharedPrefHelper = SharedPreferenceHelper();
+
+                    await sharedPrefHelper.setToken(
+                      state.loginResponse.token,
+                    );
+                    await sharedPrefHelper.saveLoginResponse(
+                      state.loginResponse,
+                    );
+                    AppData.admissionNo = state.loginResponse.student!.admno
+                        .toString();
+                    AppData.studentName = state.loginResponse.student!.name
+                        .toString();
+                    AppData.studentStdId = state
+                        .loginResponse
+                        .student!
+                        .currentStudentStandardId
+                        .toString();
+                    AppData.studentDivId = state
+                        .loginResponse
+                        .student!
+                        .currentStudentDivisionId
+                        .toString();
+                    AppData.accYear = state.loginResponse.student!.accYear
+                        .toString();
+                    AppData.gender = state.loginResponse.student!.gender
+                        .toString();
+                    AppData.studentClass =
+                        '${state.loginResponse.student!.studentStandard} - ${state.loginResponse.student!.studentDivision}'
+                            .toString();
+                    print(
+                      'profileUrl ${state.loginResponse.student!.imageUrl.toString()}',
+                    );
+                    AppData.profileUrl = state
+                        .loginResponse
+                        .student!
+                        .imageUrl
+                        .toString();
+                    await SharedPreferenceHelper.saveNewAccount(
+                      AccountDetails(
+                        admissionNo: state.loginResponse.student!.admno
+                            .toString(),
+                        dob: state.loginResponse.student!.dob.toString(),
+                        stdId: state
+                            .loginResponse
+                            .student!
+                            .currentStudentStandardId
+                            .toString(),
+                        divId: state
+                            .loginResponse
+                            .student!
+                            .currentStudentDivisionId,
+                        accYear: state.loginResponse.student!.accYear
+                            .toString(),
+                        name: state.loginResponse.student!.name,
+                      ),
+                    );
+                    AppNavigator.pushAndRemoveUntilSlide(
+                      context: context,
+                      page: MainScreen(loginResponse: state.loginResponse),
+                      predicate: (route) => false,
+                    );
+                    // Navigator.of(context).pushReplacement(
+                    //   MaterialPageRoute(
+                    //     builder: (context) {
+                    //       return MainScreen(
+                    //         loginResponse: state.loginResponse,
+                    //       );
+                    //     },
+                    //   ),
+                    // );
+                  }
+                  if (state is DeviceRegisterStatusSuccess) {
+                    if (state.registerResponse.data?.result == true) {
+                      final apiDob = convertDobToApiFormat(
+                        dobCtrl.text.trim(),
+                      );
+
+                      if (apiDob.isEmpty) {
+                        showAppSnackBar(context, 'Invalid DOB format');
+                        return;
+                      }
+
+                      context.read<LoginCubit>().loginUser(
+                        LoginRequest(
+                          admno: admNoCtrl.text.trim(),
+                          dob: apiDob,
+                        ),
+                      );
+                      // context.read<LoginCubit>().loginUser(
+                      //   LoginRequest(
+                      //     admno: admNoCtrl.text,
+                      //     dob: dobCtrl.text,
+                      //   ),
+                      // );
+                    } else {
+                      showAppSnackBar(context, 'Device Not Registered..!');
+                    }
+                  }
+                  if (state is DeviceRegisterStatusFailure) {
+                    showAppSnackBar(context, state.error);
+                  }
+                  if (state is LoginFailure) {
+                    showAppSnackBar(context, 'Invalid Credentials');
+                  }
+                },
+                builder: (context, state) {
+                  final isLoading = state is LoginLoading;
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 24,
+                    ),
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF8B84E8),
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        onPressed: isLoading
+                            ? null
+                            : () {
+                          // context.read<LoginCubit>().checkDeviceRegisterStatus(
+                          //   DeviceRegisterRequest(
+                          //     deviceId: _deviceIdController.text.toString(),
+                          //   ),
+                          // );
+                          final apiDob = convertDobToApiFormat(
+                            dobCtrl.text.trim(),
+                          );
+
+                          if (apiDob.isEmpty) {
+                            showAppSnackBar(
+                              context,
+                              'Invalid DOB format',
+                            );
+                            return;
+                          }
+                          context.read<LoginCubit>().loginUser(
+                            LoginRequest(
+                              admno: admNoCtrl.text.trim(),
+                              dob: apiDob,
+                            ),
+                          );
+                        },
+                        child: const Text(
+                          "Login",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<String> getDeviceId() async {
+    final deviceInfo = DeviceInfoPlugin();
+
+    if (Platform.isAndroid) {
+      final androidInfo = await deviceInfo.androidInfo;
+      print('androidInfo.id ${androidInfo.id}');
+      _deviceIdController.text = androidInfo.id.toString();
+      return androidInfo.id; // ANDROID_ID
+    }
+
+    if (Platform.isIOS) {
+      final iosInfo = await deviceInfo.iosInfo;
+      return iosInfo.identifierForVendor ?? 'unknown-ios-id';
+    }
+
+    return 'unsupported-platform';
+  }
+}

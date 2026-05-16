@@ -30,6 +30,7 @@ class RegisterScreen extends StatelessWidget {
           }
 
           if (state is FetchSchoolSuccess) {
+
             Navigator.pop(context); // close loader
 
             // final school = state.response.schoolDetails?.first;
@@ -46,8 +47,14 @@ class RegisterScreen extends StatelessWidget {
               /// ✅ SAVE BASE URL
               await pref.setBaseUrl(school.baseUrl ?? '');
 
+              // School Code
+              await pref.setSchoolCode(schoolCodeController.text.toString() ?? "");
+
               /// ✅ SAVE DB NAME
               await pref.setDatabaseName(school.dbName ?? '');
+
+              await pref.setAppStoreVersion(school.appStoreVersion!);
+              await pref.setPlayStoreVersion(school.playStoreVersion!);
 
               print("BaseURL saved: ${school.baseUrl}");
               print("DB Name saved: ${school.dbName}");

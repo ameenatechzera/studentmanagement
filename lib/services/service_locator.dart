@@ -138,7 +138,7 @@ class ServiceLocator {
     // ------------------- FEED -------------------
 
     sl.registerFactory(
-      () => FeedCubit(fetchFeedUseCase: sl(), feedActionUseCase: sl()),
+      () => FeedCubit(fetchFeedUseCase: sl(), feedActionUseCase: sl(), fetchSchoolUseCase: sl()),
     );
 
     sl.registerLazySingleton(() => FetchFeedUseCase(sl()));

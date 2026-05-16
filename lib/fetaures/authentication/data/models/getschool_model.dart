@@ -34,6 +34,8 @@ class SchoolDetailsModel extends SchoolDetails {
     super.createdDate,
     super.createdUser,
     super.dbNameDecrypt,
+    super.appStoreVersion,
+    super.playStoreVersion
   });
 
   factory SchoolDetailsModel.fromJson(Map<String, dynamic> json) {
@@ -50,6 +52,8 @@ class SchoolDetailsModel extends SchoolDetails {
       createdUser: json['CreatedUser']?.toString(),
 
       dbNameDecrypt: json['dbNameDecrypt']?.toString(),
+      appStoreVersion: json['AppStoreVersion']?.toString(),
+      playStoreVersion: json['PlayStoreVersion']?.toString(),
     );
   }
 }

@@ -21,6 +21,8 @@ class SchoolDetails {
   final String? createdDate;
   final String? createdUser;
   final String? dbNameDecrypt;
+  final String? appStoreVersion;
+  final String? playStoreVersion;
 
   SchoolDetails({
     this.schoolId,
@@ -31,5 +33,7 @@ class SchoolDetails {
     this.createdDate,
     this.createdUser,
     this.dbNameDecrypt,
+    this.appStoreVersion,
+    this.playStoreVersion,
   });
 }

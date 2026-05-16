@@ -14,6 +14,9 @@ class SharedPreferenceHelper {
   static const String _loginDataKey = 'login_data';
   static const String _isSchoolRegisteredKey = 'is_school_registered';
   static const String _branchDataKey = 'branch_data';
+  static const String _playStoreVersionKey = 'playstore_version';
+  static const String _appStoreVersionKey = 'appstore_version';
+  static const String _schoolCodeKey = 'school_code';
 
   /// ------------------ SAVE FULL BRANCH DATA ------------------
   Future<void> saveBranchData(Map<String, dynamic> data) async {
@@ -57,6 +60,39 @@ class SharedPreferenceHelper {
   Future<String?> getBaseUrl() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_baseUrlKey);
+  }
+
+  /// ------------------ Play store version ------------------
+  Future<void> setPlayStoreVersion(String url) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_playStoreVersionKey, url);
+  }
+
+  Future<String?> getPlayStoreVersion() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_playStoreVersionKey);
+  }
+
+  /// ------------------ App store version ------------------
+  Future<void> setAppStoreVersion(String url) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_appStoreVersionKey, url);
+  }
+
+  Future<String?> getAppStoreVersion() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_appStoreVersionKey);
+  }
+
+  /// ------------------ School Code version ------------------
+  Future<void> setSchoolCode(String url) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_schoolCodeKey, url);
+  }
+
+  Future<String?> getSchoolCode() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_schoolCodeKey);
   }
 
   /// ------------------ TOKEN ------------------

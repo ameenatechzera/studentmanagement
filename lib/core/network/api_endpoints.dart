@@ -58,6 +58,11 @@ class ApiConstants {
     return '${baseUrl}app/class-wise-material-get';
   }
 
+  /// Returns the full URL for fetchingmaterials by subject
+  static String getMaterialsBySubjectPath(String baseUrl) {
+    return '${baseUrl}app/get-all-materials';
+  }
+
   /// Returns the full URL for fetch subjects
   static String getSubjectsPath(String baseUrl) {
     return '${baseUrl}app/subjects/1';

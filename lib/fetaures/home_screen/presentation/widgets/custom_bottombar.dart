@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studentmanagement/core/appdata/appdata.dart';
+import 'package:studentmanagement/fetaures/authentication/domain/parameters/fetchschool_parameter.dart';
 import 'package:studentmanagement/fetaures/home_screen/domain/parameters/fetchfeed_parameter.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/cubit/feed_cubit.dart';
+import 'package:studentmanagement/services/shared_preference_helper.dart';
 
 class CustomBottomBar extends StatelessWidget {
   final int selectedIndex;
@@ -45,19 +47,11 @@ class CustomBottomBar extends StatelessWidget {
 
           return GestureDetector(
             // onTap: () => onItemSelected(index),
-            onTap: () {
+            onTap: () async {
+              final schoolCode = await SharedPreferenceHelper().getSchoolCode();
               if (index == 0) {
-                context.read<FeedCubit>().fetchFeeds(
-                  FetchFeedParameter(
-                    //accYear: AppData.accYear!,
-                    standardId: AppData.studentStdId!,
-                    divisionId: AppData.studentDivId!,
-                    fromDateTime: "",
-                    admissionNo: AppData.admissionNo!,
-                    branchId: 1,
-                    page: 1,
-                    perPage: 10,
-                  ),
+                context.read<FeedCubit>().fetchVersionDetails(
+                  FetchSchoolRequest(slno: schoolCode),
                 );
                 onItemSelected(index);
               } else {
