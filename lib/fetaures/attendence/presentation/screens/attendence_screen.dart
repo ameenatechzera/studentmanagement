@@ -99,244 +99,465 @@ class _AttendenceScreenState extends State<AttendenceScreen> {
           children: [
             /// ✅ ALWAYS VISIBLE CALENDAR
             _buildCalendarSection(),
-
             BlocBuilder<AttendenceCubit, AttendenceState>(
               builder: (context, state) {
-                if (state is AttendenceMonthLoading) {
-                  return const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(30),
-                      child: CircularProgressIndicator(),
-                    ),
-                  );
-                }
-                if (state is AttendenceMonthError) {
-                  return Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Text(state.message),
-                    ),
-                  );
-                }
+                bool isLoading = state is AttendenceMonthLoading;
+
+                int totalPresent = 0;
+                int totalAbsent = 0;
+
                 if (state is AttendenceMonthLoaded) {
                   final student = state.data.data?.isNotEmpty == true
                       ? state.data.data!.first
                       : null;
 
-                  final totalPresent =
+                  totalPresent =
                       int.tryParse(student?.totalPresent?.toString() ?? "0") ??
                       0;
 
-                  final totalAbsent =
+                  totalAbsent =
                       int.tryParse(student?.totalAbsent?.toString() ?? "0") ??
                       0;
+                }
 
-                  // final totalLeave =
-                  //     int.tryParse(student?.totalAbsent.toString() ?? "0") ?? 0;
+                final totalWorkingDays = totalPresent + totalAbsent;
 
-                  final totalWorkingDays = totalPresent + totalAbsent;
+                final attendancePercentage = totalWorkingDays == 0
+                    ? 0.0
+                    : totalPresent / totalWorkingDays;
 
-                  final attendancePercentage = totalWorkingDays == 0
-                      ? 0.0
-                      : totalPresent / totalWorkingDays;
-                  return Stack(
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.all(16),
-                        padding: const EdgeInsets.all(18),
-                        decoration: BoxDecoration(
-                          color: const Color(0xffc5c4ff),
-                          borderRadius: BorderRadius.circular(28),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                return Stack(
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(18),
+                      decoration: BoxDecoration(
+                        color: const Color(0xffc5c4ff),
+                        borderRadius: BorderRadius.circular(28),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      "Total working days",
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w800,
+                                        color: Color(0xff111827),
+                                      ),
+                                    ),
+
+                                    const SizedBox(height: 35),
+
+                                    isLoading
+                                        ? const SizedBox(
+                                            height: 34,
+                                            width: 34,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 3,
+                                              color: Colors.black,
+                                            ),
+                                          )
+                                        : Text(
+                                            "$totalWorkingDays",
+                                            style: const TextStyle(
+                                              fontSize: 34,
+                                              fontWeight: FontWeight.w900,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                  ],
+                                ),
+                              ),
+
+                              Expanded(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      "Total Attendance",
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w800,
+                                        color: Color(0xff111827),
+                                      ),
+                                    ),
+
+                                    const SizedBox(height: 16),
+
+                                    SizedBox(
+                                      width: 100,
+                                      height: 100,
+                                      child: Stack(
+                                        alignment: Alignment.center,
+                                        children: [
+                                          Transform.scale(
+                                            scale: 1.8,
+                                            child: CircularProgressIndicator(
+                                              value: isLoading
+                                                  ? null
+                                                  : attendancePercentage,
+                                              strokeWidth: 8,
+                                              backgroundColor: Colors.white,
+                                              valueColor:
+                                                  const AlwaysStoppedAnimation(
+                                                    Color(0xff807fd8),
+                                                  ),
+                                            ),
+                                          ),
+
+                                          isLoading
+                                              ? const SizedBox.shrink()
+                                              : Text(
+                                                  "${(attendancePercentage * 100).toInt()}%",
+                                                  style: const TextStyle(
+                                                    fontSize: 17,
+                                                    fontWeight: FontWeight.w900,
+                                                    color: Color(0xff111827),
+                                                  ),
+                                                ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(height: 25),
+
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 22,
+                              vertical: 12,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(18),
+                            ),
+                            child: Column(
                               children: [
-                                Expanded(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "Total working days",
-                                        style: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w800,
-                                          color: Color(0xff111827),
-                                        ),
-                                      ),
-
-                                      SizedBox(height: 35),
-
-                                      Text(
-                                        "$totalWorkingDays",
-                                        style: TextStyle(
-                                          fontSize: 34,
-                                          fontWeight: FontWeight.w900,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    _attendanceLegendDot(
+                                      title: "Present",
+                                      color: const Color(0xff22c55e),
+                                    ),
+                                    _attendanceLegendDot(
+                                      title: "Absent",
+                                      color: const Color(0xffff4b4b),
+                                    ),
+                                  ],
                                 ),
 
-                                Expanded(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      const Text(
-                                        "Total Attendance",
-                                        style: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w800,
-                                          color: Color(0xff111827),
-                                        ),
-                                      ),
+                                const SizedBox(height: 12),
 
-                                      const SizedBox(height: 16),
-
-                                      SizedBox(
-                                        width: 100,
-                                        height: 100,
-                                        child: Stack(
-                                          alignment: Alignment.center,
-                                          children: [
-                                            Transform.scale(
-                                              scale: 1.8,
-                                              child: CircularProgressIndicator(
-                                                value: attendancePercentage,
-                                                strokeWidth: 8,
-                                                backgroundColor: Colors.white,
-                                                valueColor:
-                                                    const AlwaysStoppedAnimation(
-                                                      Color(0xff807fd8),
-                                                    ),
-                                              ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    isLoading
+                                        ? const SizedBox(
+                                            width: 18,
+                                            height: 18,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
                                             ),
-
-                                            Text(
-                                              "${(attendancePercentage * 100).toInt()}%",
-                                              style: TextStyle(
-                                                fontSize: 17,
-                                                fontWeight: FontWeight.w900,
-                                                color: Color(0xff111827),
-                                              ),
+                                          )
+                                        : Text(
+                                            "$totalPresent",
+                                            style: const TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.w900,
                                             ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                          ),
+
+                                    isLoading
+                                        ? const SizedBox(
+                                            width: 18,
+                                            height: 18,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                            ),
+                                          )
+                                        : Text(
+                                            "$totalAbsent",
+                                            style: const TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.w900,
+                                            ),
+                                          ),
+                                  ],
                                 ),
                               ],
                             ),
-
-                            // const SizedBox(height: 20),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 22,
-                                vertical: 5,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(18),
-                              ),
-                              child: Column(
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
-                                    children: [
-                                      _attendanceLegendDot(
-                                        title: "Present",
-                                        color: const Color(0xff22c55e),
-                                      ),
-                                      _attendanceLegendDot(
-                                        title: "Absent",
-                                        color: const Color(0xffff4b4b),
-                                      ),
-                                      // Row(
-                                      //   children: [
-                                      //     Container(
-                                      //       width: 11,
-                                      //       height: 11,
-                                      //       decoration: const BoxDecoration(
-                                      //         shape: BoxShape.circle,
-                                      //         gradient: LinearGradient(
-                                      //           colors: [
-                                      //             Color(0xff22c55e),
-                                      //             Color(0xffff4b4b),
-                                      //           ],
-                                      //         ),
-                                      //       ),
-                                      //     ),
-                                      //     const SizedBox(width: 6),
-                                      //     const Text(
-                                      //       "Half day",
-                                      //       style: TextStyle(
-                                      //         fontSize: 13,
-                                      //         fontWeight: FontWeight.w700,
-                                      //       ),
-                                      //     ),
-                                      //   ],
-                                      // ),
-                                    ],
-                                  ),
-
-                                  const SizedBox(height: 12),
-
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
-                                    children: [
-                                      Text(
-                                        "$totalPresent",
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w900,
-                                        ),
-                                      ),
-                                      Text(
-                                        "$totalAbsent",
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w900,
-                                        ),
-                                      ),
-                                      // Text(
-                                      //   "1",
-                                      //   style: TextStyle(
-                                      //     fontSize: 20,
-                                      //     fontWeight: FontWeight.w900,
-                                      //   ),
-                                      // ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
+                    ),
 
-                      Positioned(
-                        right: 100,
-                        top: 40,
-                        child: Image.asset(
-                          "assets/images/mask_bg.png",
-                          width: 250,
-                          height: 200,
-                          fit: BoxFit.contain,
-                          color: Colors.black,
-                        ),
+                    Positioned(
+                      right: 100,
+                      top: 40,
+                      child: Image.asset(
+                        "assets/images/mask_bg.png",
+                        width: 250,
+                        height: 200,
+                        fit: BoxFit.contain,
+                        color: Colors.black,
                       ),
-                    ],
-                  );
-                }
-                return const SizedBox();
+                    ),
+                  ],
+                );
               },
             ),
+            // BlocBuilder<AttendenceCubit, AttendenceState>(
+            //   builder: (context, state) {
+            //     if (state is AttendenceMonthLoading) {
+            //       return const Center(
+            //         child: Padding(
+            //           padding: EdgeInsets.all(30),
+            //           child: CircularProgressIndicator(),
+            //         ),
+            //       );
+            //     }
+            //     if (state is AttendenceMonthError) {
+            //       return Center(
+            //         child: Padding(
+            //           padding: const EdgeInsets.all(20),
+            //           child: Text(state.message),
+            //         ),
+            //       );
+            //     }
+            //     if (state is AttendenceMonthLoaded) {
+            //       final student = state.data.data?.isNotEmpty == true
+            //           ? state.data.data!.first
+            //           : null;
+
+            //       final totalPresent =
+            //           int.tryParse(student?.totalPresent?.toString() ?? "0") ??
+            //           0;
+
+            //       final totalAbsent =
+            //           int.tryParse(student?.totalAbsent?.toString() ?? "0") ??
+            //           0;
+
+            //       // final totalLeave =
+            //       //     int.tryParse(student?.totalAbsent.toString() ?? "0") ?? 0;
+
+            //       final totalWorkingDays = totalPresent + totalAbsent;
+
+            //       final attendancePercentage = totalWorkingDays == 0
+            //           ? 0.0
+            //           : totalPresent / totalWorkingDays;
+            //       return Stack(
+            //         children: [
+            //           Container(
+            //             margin: const EdgeInsets.all(16),
+            //             padding: const EdgeInsets.all(18),
+            //             decoration: BoxDecoration(
+            //               color: const Color(0xffc5c4ff),
+            //               borderRadius: BorderRadius.circular(28),
+            //             ),
+            //             child: Column(
+            //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //               children: [
+            //                 Row(
+            //                   crossAxisAlignment: CrossAxisAlignment.start,
+            //                   children: [
+            //                     Expanded(
+            //                       child: Column(
+            //                         mainAxisAlignment: MainAxisAlignment.start,
+            //                         children: [
+            //                           Text(
+            //                             "Total working days",
+            //                             style: TextStyle(
+            //                               fontSize: 15,
+            //                               fontWeight: FontWeight.w800,
+            //                               color: Color(0xff111827),
+            //                             ),
+            //                           ),
+
+            //                           SizedBox(height: 35),
+
+            //                           Text(
+            //                             "$totalWorkingDays",
+            //                             style: TextStyle(
+            //                               fontSize: 34,
+            //                               fontWeight: FontWeight.w900,
+            //                               color: Colors.black,
+            //                             ),
+            //                           ),
+            //                         ],
+            //                       ),
+            //                     ),
+
+            //                     Expanded(
+            //                       child: Column(
+            //                         mainAxisAlignment: MainAxisAlignment.start,
+            //                         children: [
+            //                           const Text(
+            //                             "Total Attendance",
+            //                             style: TextStyle(
+            //                               fontSize: 15,
+            //                               fontWeight: FontWeight.w800,
+            //                               color: Color(0xff111827),
+            //                             ),
+            //                           ),
+
+            //                           const SizedBox(height: 16),
+
+            //                           SizedBox(
+            //                             width: 100,
+            //                             height: 100,
+            //                             child: Stack(
+            //                               alignment: Alignment.center,
+            //                               children: [
+            //                                 Transform.scale(
+            //                                   scale: 1.8,
+            //                                   child: CircularProgressIndicator(
+            //                                     value: attendancePercentage,
+            //                                     strokeWidth: 8,
+            //                                     backgroundColor: Colors.white,
+            //                                     valueColor:
+            //                                         const AlwaysStoppedAnimation(
+            //                                           Color(0xff807fd8),
+            //                                         ),
+            //                                   ),
+            //                                 ),
+
+            //                                 Text(
+            //                                   "${(attendancePercentage * 100).toInt()}%",
+            //                                   style: TextStyle(
+            //                                     fontSize: 17,
+            //                                     fontWeight: FontWeight.w900,
+            //                                     color: Color(0xff111827),
+            //                                   ),
+            //                                 ),
+            //                               ],
+            //                             ),
+            //                           ),
+            //                         ],
+            //                       ),
+            //                     ),
+            //                   ],
+            //                 ),
+
+            //                 // const SizedBox(height: 20),
+            //                 Container(
+            //                   padding: const EdgeInsets.symmetric(
+            //                     horizontal: 22,
+            //                     vertical: 5,
+            //                   ),
+            //                   decoration: BoxDecoration(
+            //                     color: Colors.white,
+            //                     borderRadius: BorderRadius.circular(18),
+            //                   ),
+            //                   child: Column(
+            //                     children: [
+            //                       Row(
+            //                         mainAxisAlignment:
+            //                             MainAxisAlignment.spaceAround,
+            //                         children: [
+            //                           _attendanceLegendDot(
+            //                             title: "Present",
+            //                             color: const Color(0xff22c55e),
+            //                           ),
+            //                           _attendanceLegendDot(
+            //                             title: "Absent",
+            //                             color: const Color(0xffff4b4b),
+            //                           ),
+            //                           // Row(
+            //                           //   children: [
+            //                           //     Container(
+            //                           //       width: 11,
+            //                           //       height: 11,
+            //                           //       decoration: const BoxDecoration(
+            //                           //         shape: BoxShape.circle,
+            //                           //         gradient: LinearGradient(
+            //                           //           colors: [
+            //                           //             Color(0xff22c55e),
+            //                           //             Color(0xffff4b4b),
+            //                           //           ],
+            //                           //         ),
+            //                           //       ),
+            //                           //     ),
+            //                           //     const SizedBox(width: 6),
+            //                           //     const Text(
+            //                           //       "Half day",
+            //                           //       style: TextStyle(
+            //                           //         fontSize: 13,
+            //                           //         fontWeight: FontWeight.w700,
+            //                           //       ),
+            //                           //     ),
+            //                           //   ],
+            //                           // ),
+            //                         ],
+            //                       ),
+
+            //                       const SizedBox(height: 12),
+
+            //                       Row(
+            //                         mainAxisAlignment:
+            //                             MainAxisAlignment.spaceAround,
+            //                         children: [
+            //                           Text(
+            //                             "$totalPresent",
+            //                             style: TextStyle(
+            //                               fontSize: 20,
+            //                               fontWeight: FontWeight.w900,
+            //                             ),
+            //                           ),
+            //                           Text(
+            //                             "$totalAbsent",
+            //                             style: TextStyle(
+            //                               fontSize: 20,
+            //                               fontWeight: FontWeight.w900,
+            //                             ),
+            //                           ),
+            //                           // Text(
+            //                           //   "1",
+            //                           //   style: TextStyle(
+            //                           //     fontSize: 20,
+            //                           //     fontWeight: FontWeight.w900,
+            //                           //   ),
+            //                           // ),
+            //                         ],
+            //                       ),
+            //                     ],
+            //                   ),
+            //                 ),
+            //               ],
+            //             ),
+            //           ),
+
+            //           Positioned(
+            //             right: 100,
+            //             top: 40,
+            //             child: Image.asset(
+            //               "assets/images/mask_bg.png",
+            //               width: 250,
+            //               height: 200,
+            //               fit: BoxFit.contain,
+            //               color: Colors.black,
+            //             ),
+            //           ),
+            //         ],
+            //       );
+            //     }
+            //     return const SizedBox();
+            //   },
+            // ),
           ],
         ),
       ),
