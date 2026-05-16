@@ -107,7 +107,7 @@ class MaterialList extends Equatable {
   final String subjectName;
   static const String subjectNameKey = "SubjectName";
 
-  final String material;
+   String material;
   static const String materialKey = "Material";
 
   final int branchId;

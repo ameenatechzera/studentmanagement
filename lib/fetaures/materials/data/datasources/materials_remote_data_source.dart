@@ -126,7 +126,7 @@ class MaterialRemoteDataSourceImpl implements MaterialRemoteDataSource {
       }
 
       /// 🔹 Build API URL
-      final url = ApiConstants.getMaterialsPath(baseUrl);
+      final url = ApiConstants.getMaterialsBySubjectPath(baseUrl);
       print('url $url');
 
       final options = await ApiHelper.getAuthOptions(withToken: true);

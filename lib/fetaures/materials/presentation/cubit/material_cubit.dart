@@ -21,6 +21,7 @@ class MaterialCubit extends Cubit<MaterialsState> {
     : super(MaterialInitial());
 
   Future<void> fetchMaterials(FetchMaterialParameter params) async {
+    print('materialRequest $params ');
     emit(MaterialLoading());
 
     final result = await fetchMaterialUseCase(params);
@@ -36,6 +37,7 @@ class MaterialCubit extends Cubit<MaterialsState> {
   }
 
   Future<void> fetchMaterialsBySubjectId(FetchMaterialBySubjectIdParameter params) async {
+    print('MaterialSubjectReq ${params.toJson()}');
     emit(MaterialLoading());
 
     final result = await fetchMaterialBySubjectUseCase(params);

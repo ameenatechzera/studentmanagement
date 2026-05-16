@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:studentmanagement/fetaures/materials/domain/entities/materialsBySubject_entity.dart';
+import 'package:studentmanagement/fetaures/materials/domain/parameters/fetch_materialsbysubjectId.dart';
 import 'package:studentmanagement/fetaures/materials/presentation/widgets/pdfViewer_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:studentmanagement/core/appdata/appdata.dart';
@@ -30,21 +32,20 @@ class _MaterialListPageState extends State<MaterialListPage>
 
   late TabController _tabController;
 
-  List<FetchMaterialDetails> allMaterials = [];
+  List<MaterialList> allMaterials = [];
   final Set<int> bookmarkedIds = {};
 
   @override
   void initState() {
     super.initState();
+    print('SubjectIdFromSubjectList ${widget.subjectId}');
     _tabController = TabController(length: tabs.length, vsync: this);
     _tabController.addListener(() => setState(() {}));
 
-    context.read<MaterialCubit>().fetchMaterials(
-      FetchMaterialParameter(
+    context.read<MaterialCubit>().fetchMaterialsBySubjectId(
+      FetchMaterialBySubjectIdParameter(
         branchId: 1,
-        accYear: AppData.accYear!.toString(),
-        standardId: AppData.studentStdId!.toString(),
-        divisionId: AppData.studentDivId!.toString(),
+        userId: '1', subjectId: widget.subjectId,
       ),
     );
   }
@@ -82,13 +83,16 @@ class _MaterialListPageState extends State<MaterialListPage>
     }
   }
 
-  // ---------- Filter by tab + search ----------
-  List<FetchMaterialDetails> getFilteredList(String tab) {
+  // ----r by tab + search ----------
+  List<MaterialList> getFilteredList(String tab) {
     return allMaterials.where((item) {
-      final matchesSubject = item.subjectId == widget.subjectId;
-
+      //final matchesSubject = item.subjectId == widget.subjectId;
+      print('item.subjectId ${item.subjectId}');
+      print('widget.subjectId ${widget.subjectId}');
+      final matchesSubject = true;
       bool matchesTab = false;
       if (tab == "PDF") {
+        item.material = 'https://online.cristaledu.com/Api/public/'+item.material;
         matchesTab = item.material?.toLowerCase() == "pdf" ||
             (item.documentName != null && item.documentName!.isNotEmpty);
       } else if (tab == "Links") {
@@ -107,7 +111,7 @@ class _MaterialListPageState extends State<MaterialListPage>
     }).toList();
   }
 
-  String _getDisplayName(FetchMaterialDetails item, String tab) {
+  String _getDisplayName(MaterialList item, String tab) {
     if (tab == "PDF") return item.documentName ?? "Unnamed Document";
     if (tab == "Links") return item.link ?? "No Link";
     if (tab == "Notes") return item.notes ?? "No Notes";
@@ -136,7 +140,7 @@ class _MaterialListPageState extends State<MaterialListPage>
       ),
       body: BlocBuilder<MaterialCubit, MaterialsState>(
         builder: (context, state) {
-          if (state is MaterialLoaded) {
+          if (state is MaterialBySubjectLoaded) {
             allMaterials = state.response;
             for (final item in allMaterials) {
               if (item.favorite == true && item.materialId != null) {
@@ -229,7 +233,7 @@ class _MaterialListPageState extends State<MaterialListPage>
     );
   }
 
-  Widget _buildList(List<FetchMaterialDetails> list, String tab) {
+  Widget _buildList(List<MaterialList> list, String tab) {
     if (list.isEmpty) {
       return Center(
         child: Text(
