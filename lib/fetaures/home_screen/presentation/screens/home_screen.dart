@@ -139,14 +139,14 @@ class _HomeScreenState extends State<HomeScreen> {
       storeVersion = appStoreVersion ?? '';
     }
 
-    Fluttertoast.showToast(
-      msg: "Store Version: $storeVersion",
-      toastLength: Toast.LENGTH_SHORT,
-      gravity: ToastGravity.BOTTOM,
-      backgroundColor: Colors.black87,
-      textColor: Colors.white,
-      fontSize: 16.0,
-    );
+    // Fluttertoast.showToast(
+    //   msg: "Store Version: $storeVersion",
+    //   toastLength: Toast.LENGTH_SHORT,
+    //   gravity: ToastGravity.BOTTOM,
+    //   backgroundColor: Colors.black87,
+    //   textColor: Colors.white,
+    //   fontSize: 16.0,
+    // );
 
     if (storeVersion.isNotEmpty &&
         storeVersion.trim() != appVersion.trim()) {

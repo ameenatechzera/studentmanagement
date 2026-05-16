@@ -45,7 +45,7 @@ class _MaterialListPageState extends State<MaterialListPage>
     context.read<MaterialCubit>().fetchMaterialsBySubjectId(
       FetchMaterialBySubjectIdParameter(
         branchId: 1,
-        userId: '1', subjectId: widget.subjectId,
+        userId: '1', subjectId: widget.subjectId, standardId: AppData.studentStdId!, divisionId: AppData.studentDivId!,
       ),
     );
   }
@@ -92,7 +92,7 @@ class _MaterialListPageState extends State<MaterialListPage>
       final matchesSubject = true;
       bool matchesTab = false;
       if (tab == "PDF") {
-        item.material = 'https://online.cristaledu.com/Api/public/'+item.material;
+
         matchesTab = item.material?.toLowerCase() == "pdf" ||
             (item.documentName != null && item.documentName!.isNotEmpty);
       } else if (tab == "Links") {
