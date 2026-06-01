@@ -50,6 +50,7 @@ dev_dependencies:
   floor_generator: ^1.4.2
   flutter_launcher_icons: ^0.14.4
   flutter_lints: ^6.0.0
+  flutter_html: ^3.0.0
 
 # ✅ ONLY KEEP THIS (removed duplicate flutter_icons)
 flutter_launcher_icons:

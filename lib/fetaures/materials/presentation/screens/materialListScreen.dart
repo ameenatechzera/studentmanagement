@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studentmanagement/fetaures/materials/domain/entities/materialsBySubject_entity.dart';
 import 'package:studentmanagement/fetaures/materials/domain/parameters/fetch_materialsbysubjectId.dart';
+import 'package:studentmanagement/fetaures/materials/presentation/widgets/materialNotes.dart';
 import 'package:studentmanagement/fetaures/materials/presentation/widgets/pdfViewer_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:studentmanagement/core/appdata/appdata.dart';
@@ -279,7 +280,12 @@ class _MaterialListPageState extends State<MaterialListPage>
             } else if (tab == "Links") {
               _openUrl(item.link);
             } else if (tab == "Notes") {
-              _openUrl(item.notes);
+              // _openUrl(item.notes);
+              Navigator.push(context, MaterialPageRoute(
+                builder: (_) => MaterialNotesScreen(noteData: item.notes,
+
+                ),
+              ));
             }
           },
         );

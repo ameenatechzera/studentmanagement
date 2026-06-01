@@ -218,7 +218,7 @@ import 'package:studentmanagement/fetaures/classdiary/domain/entities/fetch_diar
 import 'package:studentmanagement/fetaures/classdiary/domain/parameters/fetch_diary_parameter.dart';
 import 'package:studentmanagement/fetaures/classdiary/presentation/cubit/diary_cubit.dart';
 import 'package:url_launcher/url_launcher.dart';
-
+import 'package:flutter_html/flutter_html.dart';
 final ValueNotifier<String> selectedSubject = ValueNotifier<String>(
   'Mathematics',
 );
@@ -397,6 +397,7 @@ class _DiaryCard extends StatelessWidget {
       builder: (_, expandedIndex, __) {
         final isExpanded = expandedIndex == index;
 
+        //String plainText = parse(description).body?.text ?? '';
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -463,14 +464,18 @@ class _DiaryCard extends StatelessWidget {
                       child: Row(
                         children: [
                           Expanded(
-                            child: Text(
-                              title,
-                              style: const TextStyle(
-                                color: Color(0xFF171717),
-                                fontSize: 15,
-                                fontWeight: FontWeight.w900,
-                              ),
+                           child: Html(data:  description.isEmpty
+                                ? 'No Description'
+                                : description,
                             ),
+                            // child: Text(
+                            //   title,
+                            //   style: const TextStyle(
+                            //     color: Color(0xFF171717),
+                            //     fontSize: 15,
+                            //     fontWeight: FontWeight.w900,
+                            //   ),
+                            // ),
                           ),
                           Container(
                             padding: const EdgeInsets.symmetric(
@@ -540,10 +545,12 @@ class _DiaryCard extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            Html(data:  description.isEmpty
+                                ? 'No Description'
+                                : description,
+                            ),
                             Text(
-                              description.isEmpty
-                                  ? 'No Description'
-                                  : description,
+                              '',
                               maxLines: isExpanded ? null : 2, // 👈 KEY CHANGE
                               overflow: isExpanded
                                   ? TextOverflow.visible
@@ -556,100 +563,7 @@ class _DiaryCard extends StatelessWidget {
                               ),
                             ),
 
-                            //       /// SHOW FILES ONLY WHEN EXPANDED
-                            //       if (isExpanded && files.isNotEmpty) ...[
-                            //         const SizedBox(height: 14),
 
-                            //         Wrap(
-                            //           spacing: 10,
-                            //           runSpacing: 10,
-                            //           children: files.map((file) {
-                            //             final url = file.url ?? '';
-                            //             final type = (file.type ?? '').toLowerCase();
-
-                            //             final isImage =
-                            //                 type.contains('image') ||
-                            //                 url.endsWith('.png') ||
-                            //                 url.endsWith('.jpg') ||
-                            //                 url.endsWith('.jpeg');
-
-                            //             final isPdf = url.toLowerCase().endsWith(
-                            //               '.pdf',
-                            //             );
-
-                            //             final isDoc =
-                            //                 url.toLowerCase().endsWith('.doc') ||
-                            //                 url.toLowerCase().endsWith('.docx');
-
-                            //             return GestureDetector(
-                            //               onTap: () async {
-                            //                 final uri = Uri.parse(url);
-
-                            //                 if (await canLaunchUrl(uri)) {
-                            //                   await launchUrl(
-                            //                     uri,
-                            //                     mode: LaunchMode.externalApplication,
-                            //                   );
-                            //                 }
-                            //               },
-                            //               child: isImage
-                            //                   ? ClipRRect(
-                            //                       borderRadius: BorderRadius.circular(
-                            //                         12,
-                            //                       ),
-                            //                       child: Image.network(
-                            //                         url,
-                            //                         // width: 100,
-                            //                         // height: 100,
-                            //                         fit: BoxFit.cover,
-                            //                       ),
-                            //                     )
-                            //                   : Container(
-                            //                       width: 100,
-                            //                       padding: const EdgeInsets.symmetric(
-                            //                         vertical: 16,
-                            //                       ),
-                            //                       decoration: BoxDecoration(
-                            //                         color: Colors.white,
-                            //                         borderRadius: BorderRadius.circular(
-                            //                           14,
-                            //                         ),
-                            //                       ),
-                            //                       child: Column(
-                            //                         children: [
-                            //                           Icon(
-                            //                             isPdf
-                            //                                 ? Icons.picture_as_pdf
-                            //                                 : isDoc
-                            //                                 ? Icons.description
-                            //                                 : Icons.insert_drive_file,
-                            //                             size: 42,
-                            //                             color: isPdf
-                            //                                 ? Colors.red
-                            //                                 : Colors.blue,
-                            //                           ),
-                            //                           const SizedBox(height: 8),
-                            //                           Text(
-                            //                             isPdf
-                            //                                 ? 'PDF File'
-                            //                                 : isDoc
-                            //                                 ? 'Document'
-                            //                                 : 'File',
-                            //                             style: const TextStyle(
-                            //                               fontSize: 11,
-                            //                               fontWeight: FontWeight.w600,
-                            //                             ),
-                            //                           ),
-                            //                         ],
-                            //                       ),
-                            //                     ),
-                            //             );
-                            //           }).toList(),
-                            //         ),
-                            //       ],
-                            //     ],
-                            //   ),
-                            // ),
                             /// SHOW FILES ONLY WHEN EXPANDED
                             if (isExpanded && files.isNotEmpty) ...[
                               const SizedBox(height: 14),
@@ -696,14 +610,19 @@ class _DiaryCard extends StatelessWidget {
                                                 CrossAxisAlignment.start,
                                             children: [
                                               /// TITLE
-                                              Text(
-                                                title,
-                                                style: TextStyle(
-                                                  fontSize: 18,
-                                                  fontWeight: FontWeight.w700,
-                                                  color: Colors.black87,
-                                                ),
+                                              Html(data:  title.isEmpty
+                                                  ? 'No Description'
+                                                  : title,
                                               ),
+                                              // Text(
+                                              //   title,
+                                              //
+                                              //   style: TextStyle(
+                                              //     fontSize: 18,
+                                              //     fontWeight: FontWeight.w700,
+                                              //     color: Colors.black87,
+                                              //   ),
+                                              // ),
 
                                               const SizedBox(height: 16),
 
@@ -930,90 +849,6 @@ class _DiaryCard extends StatelessWidget {
                                               /// DOWNLOAD ALL
                                               Center(
                                                 child: GestureDetector(
-                                                  // onTap: () async {
-                                                  //   try {
-                                                  //     final dio = Dio();
-
-                                                  //     for (
-                                                  //       int i = 0;
-                                                  //       i < imageFiles.length;
-                                                  //       i++
-                                                  //     ) {
-                                                  //       final String imageUrl =
-                                                  //           imageFiles[i].url ??
-                                                  //           '';
-
-                                                  //       if (imageUrl.isEmpty)
-                                                  //         continue;
-
-                                                  //       final tempDir =
-                                                  //           await getTemporaryDirectory();
-
-                                                  //       final String fileName =
-                                                  //           'cristal_image_${DateTime.now().millisecondsSinceEpoch}_$i.jpg';
-
-                                                  //       final String tempPath =
-                                                  //           '${tempDir.path}/$fileName';
-
-                                                  //       /// DOWNLOAD TEMP FILE
-                                                  //       await dio.download(
-                                                  //         imageUrl,
-                                                  //         tempPath,
-                                                  //       );
-
-                                                  //       print(
-                                                  //         "Downloaded Temp File: $tempPath",
-                                                  //       );
-
-                                                  //       /// SAVE TO DOWNLOADS
-                                                  //       final MediaStore
-                                                  //       mediaStore =
-                                                  //           MediaStore();
-
-                                                  //       final result =
-                                                  //           await mediaStore
-                                                  //               .saveFile(
-                                                  //                 tempFilePath:
-                                                  //                     tempPath,
-                                                  //                 dirType: DirType
-                                                  //                     .download,
-                                                  //                 dirName: DirName
-                                                  //                     .download,
-                                                  //               );
-
-                                                  //       print(
-                                                  //         "Save Result: $result",
-                                                  //       );
-                                                  //     }
-
-                                                  //     ScaffoldMessenger.of(
-                                                  //       context,
-                                                  //     ).showSnackBar(
-                                                  //       const SnackBar(
-                                                  //         content: Text(
-                                                  //           'Images downloaded to Downloads',
-                                                  //         ),
-                                                  //       ),
-                                                  //     );
-                                                  //   } catch (e, stackTrace) {
-                                                  //     print(
-                                                  //       "DOWNLOAD ERROR: $e",
-                                                  //     );
-                                                  //     print(
-                                                  //       "STACK TRACE: $stackTrace",
-                                                  //     );
-
-                                                  //     ScaffoldMessenger.of(
-                                                  //       context,
-                                                  //     ).showSnackBar(
-                                                  //       SnackBar(
-                                                  //         content: Text(
-                                                  //           'Download failed: $e',
-                                                  //         ),
-                                                  //       ),
-                                                  //     );
-                                                  //   }
-                                                  // },
                                                   onTap: () async {
                                                     try {
                                                       final dio = Dio();
@@ -1117,151 +952,6 @@ class _DiaryCard extends StatelessWidget {
                                             ],
                                           ),
                                         ),
-                                      // SizedBox(
-                                      //   height: 220,
-                                      //   child: PageView.builder(
-                                      //     itemCount: imageFiles.length,
-                                      //     controller: PageController(
-                                      //       viewportFraction: 0.92,
-                                      //     ),
-                                      //     itemBuilder: (context, imageIndex) {
-                                      //       final image =
-                                      //           imageFiles[imageIndex];
-                                      //       return Padding(
-                                      //         padding: const EdgeInsets.only(
-                                      //           right: 10,
-                                      //         ),
-                                      //         child: ClipRRect(
-                                      //           borderRadius:
-                                      //               BorderRadius.circular(18),
-                                      //           child: GestureDetector(
-                                      //             onTap: () async {
-                                      //               final uri = Uri.parse(
-                                      //                 image.url ?? '',
-                                      //               );
-                                      //               if (await canLaunchUrl(
-                                      //                 uri,
-                                      //               )) {
-                                      //                 await launchUrl(
-                                      //                   uri,
-                                      //                   mode: LaunchMode
-                                      //                       .externalApplication,
-                                      //                 );
-                                      //               }
-                                      //             },
-                                      //             child: Stack(
-                                      //               children: [
-                                      //                 /// SHIMMER LOADER
-                                      //                 Shimmer.fromColors(
-                                      //                   baseColor: Colors
-                                      //                       .grey
-                                      //                       .shade300,
-                                      //                   highlightColor: Colors
-                                      //                       .grey
-                                      //                       .shade100,
-                                      //                   child: Container(
-                                      //                     width:
-                                      //                         double.infinity,
-                                      //                     height: 220,
-                                      //                     decoration:
-                                      //                         BoxDecoration(
-                                      //                           color: Colors
-                                      //                               .white,
-                                      //                           borderRadius:
-                                      //                               BorderRadius.circular(
-                                      //                                 18,
-                                      //                               ),
-                                      //                         ),
-                                      //                   ),
-                                      //                 ),
-                                      //                 /// IMAGE
-                                      //                 Image.network(
-                                      //                   image.url ?? '',
-                                      //                   fit: BoxFit.cover,
-                                      //                   width:
-                                      //                       double.infinity,
-                                      //                   loadingBuilder:
-                                      //                       (
-                                      //                         context,
-                                      //                         child,
-                                      //                         loadingProgress,
-                                      //                       ) {
-                                      //                         if (loadingProgress ==
-                                      //                             null) {
-                                      //                           return child;
-                                      //                         }
-                                      //                         return const SizedBox();
-                                      //                       },
-                                      //                   errorBuilder:
-                                      //                       (
-                                      //                         context,
-                                      //                         error,
-                                      //                         stackTrace,
-                                      //                       ) {
-                                      //                         return const Center(
-                                      //                           child: Icon(
-                                      //                             Icons
-                                      //                                 .broken_image,
-                                      //                             size: 40,
-                                      //                           ),
-                                      //                         );
-                                      //                       },
-                                      //                 ),
-                                      //               ],
-                                      //             ),
-                                      //             // child: Stack(
-                                      //             //   alignment: Alignment.center,
-                                      //             //   children: [
-                                      //             //     /// LOADER SHOWS IMMEDIATELY
-                                      //             //     const Center(
-                                      //             //       child:
-                                      //             //           CircularProgressIndicator(),
-                                      //             //     ),
-                                      //             //     /// IMAGE
-                                      //             //     Image.network(
-                                      //             //       image.url ?? '',
-                                      //             //       fit: BoxFit.cover,
-                                      //             //       width: double.infinity,
-                                      //             //       loadingBuilder:
-                                      //             //           (
-                                      //             //             context,
-                                      //             //             child,
-                                      //             //             loadingProgress,
-                                      //             //           ) {
-                                      //             //             if (loadingProgress ==
-                                      //             //                 null) {
-                                      //             //               return child;
-                                      //             //             }
-                                      //             //             return child;
-                                      //             //           },
-                                      //             //       errorBuilder:
-                                      //             //           (
-                                      //             //             context,
-                                      //             //             error,
-                                      //             //             stackTrace,
-                                      //             //           ) {
-                                      //             //             return const Center(
-                                      //             //               child: Icon(
-                                      //             //                 Icons
-                                      //             //                     .broken_image,
-                                      //             //                 size: 40,
-                                      //             //               ),
-                                      //             //             );
-                                      //             //           },
-                                      //             //     ),
-                                      //             //   ],
-                                      //             // ),
-                                      //             // child: Image.network(
-                                      //             //   image.url ?? '',
-                                      //             //   fit: BoxFit.cover,
-                                      //             //   width: double.infinity,
-                                      //             // ),
-                                      //           ),
-                                      //         ),
-                                      //       );
-                                      //     },
-                                      //   ),
-                                      // ),
                                       /// FILES
                                       if (otherFiles.isNotEmpty) ...[
                                         const SizedBox(height: 14),
@@ -1285,106 +975,6 @@ class _DiaryCard extends StatelessWidget {
                                                 );
 
                                             return GestureDetector(
-                                              // onTap: () async {
-                                              //   try {
-                                              //     debugPrint("FILE CLICKED");
-
-                                              //     final dir =
-                                              //         await getTemporaryDirectory();
-
-                                              //     final extension = url
-                                              //         .split('.')
-                                              //         .last;
-
-                                              //     final filePath =
-                                              //         '${dir.path}/${DateTime.now().millisecondsSinceEpoch}.$extension';
-
-                                              //     debugPrint(
-                                              //       "DOWNLOADING TO: $filePath",
-                                              //     );
-
-                                              //     await Dio().download(
-                                              //       url,
-                                              //       filePath,
-                                              //     );
-
-                                              //     debugPrint(
-                                              //       "DOWNLOAD COMPLETED",
-                                              //     );
-
-                                              //     final result =
-                                              //         await OpenFilex.open(
-                                              //           filePath,
-                                              //         );
-
-                                              //     debugPrint(
-                                              //       "OPEN RESULT: ${result.message}",
-                                              //     );
-                                              //   } catch (e) {
-                                              //     debugPrint("ERROR: $e");
-                                              //   }
-                                              // },
-                                              // onTap: () async {
-                                              //   try {
-                                              //     debugPrint(
-                                              //       "FILE DOWNLOAD STARTED",
-                                              //     );
-
-                                              //     final extension = url
-                                              //         .split('.')
-                                              //         .last
-                                              //         .split('?')
-                                              //         .first;
-
-                                              //     final fileName =
-                                              //         '${title.replaceAll(' ', '_')}_${DateTime.now().millisecondsSinceEpoch}.$extension';
-
-                                              //     /// PHONE DOWNLOADS PATH
-                                              //     final savePath =
-                                              //         '/storage/emulated/0/Download/$fileName';
-
-                                              //     debugPrint(
-                                              //       "SAVE PATH: $savePath",
-                                              //     );
-
-                                              //     /// DOWNLOAD FILE
-                                              //     await Dio().download(
-                                              //       url,
-                                              //       savePath,
-                                              //     );
-
-                                              //     debugPrint(
-                                              //       "DOWNLOAD COMPLETED",
-                                              //     );
-
-                                              //     ScaffoldMessenger.of(
-                                              //       context,
-                                              //     ).showSnackBar(
-                                              //       SnackBar(
-                                              //         content: Text(
-                                              //           'Downloaded to Downloads/$fileName',
-                                              //         ),
-                                              //       ),
-                                              //     );
-                                              //   } catch (e, stackTrace) {
-                                              //     debugPrint(
-                                              //       "DOWNLOAD ERROR: $e",
-                                              //     );
-                                              //     debugPrint(
-                                              //       "STACK TRACE: $stackTrace",
-                                              //     );
-
-                                              //     ScaffoldMessenger.of(
-                                              //       context,
-                                              //     ).showSnackBar(
-                                              //       SnackBar(
-                                              //         content: Text(
-                                              //           'Download failed: $e',
-                                              //         ),
-                                              //       ),
-                                              //     );
-                                              //   }
-                                              // },
                                               onTap: () async {
                                                 try {
                                                   final lowerUrl = url
