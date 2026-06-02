@@ -28,6 +28,7 @@ class FeedDetails {
   final String? modifiedUser;
   final List<FeedFile>? files;
   final List<String>? image;
+  final List<String>? videoUrl;
   final String? postedBy;
   final dynamic designationName;
   final int? classStandardId;
@@ -57,6 +58,7 @@ class FeedDetails {
     this.modifiedUser,
     this.files,
     this.image,
+    this.videoUrl,
     this.postedBy,
     this.designationName,
     this.classStandardId,

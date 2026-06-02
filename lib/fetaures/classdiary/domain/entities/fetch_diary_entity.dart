@@ -435,6 +435,7 @@ class FetchDiaryDetails {
   final String? modifiedUserCd;
 
   final List<DiaryFileEntity>? files;
+  final List<String>? videoUrl;
 
   FetchDiaryDetails({
     this.admissionId,
@@ -473,6 +474,7 @@ class FetchDiaryDetails {
     this.modifiedDateCd,
     this.modifiedUserCd,
     this.files,
+    this.videoUrl,
   });
 }
 

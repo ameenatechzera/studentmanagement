@@ -44,6 +44,14 @@ dependencies:
   photo_view: ^0.15.0
   open_filex: ^4.4.0
   package_info_plus: ^9.0.1
+  webview_flutter: ^4.9.0
+  android_intent_plus: ^5.2.1
+  webview_flutter_android: ^3.16.0
+  emoji_picker_flutter: ^4.3.0
+  photo_manager: ^3.0.0
+  image_picker: ^1.2.2
+  record: ^6.1.2
+  audioplayers: ^6.5.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -100,3 +108,17 @@ flutter:
     - assets/images/ChatGPT Image May 11, 2026, 09_40_13 AM 1.png
     - assets/images/cristal_white.png
     - assets/images/dummy_image.png
+    - assets/images/profile_photo_sample_3.webp
+    - assets/images/ChatGPT Image May 19, 2026, 04_41_29 PM 1 (1).png
+
+  fonts:
+    - family: TitilliumWeb
+      fonts:
+        - asset: assets/fonts/TitilliumWeb-Regular.ttf
+          weight: 400
+
+        - asset: assets/fonts/TitilliumWeb-SemiBold.ttf
+          weight: 600
+
+        - asset: assets/fonts/TitilliumWeb-Bold.ttf
+          weight: 700

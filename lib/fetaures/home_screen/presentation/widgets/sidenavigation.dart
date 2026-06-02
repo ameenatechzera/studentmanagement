@@ -9,6 +9,7 @@ import 'package:studentmanagement/fetaures/authentication/presentation/bloc/logi
 import 'package:studentmanagement/fetaures/authentication/presentation/screens/loginScreen.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/screens/login_screen.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/widget/switch_account.dart';
+import 'package:studentmanagement/fetaures/chat/presentation/screens/chat_screen.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/screens/main_screen.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/screens/noti.dart';
 import 'package:studentmanagement/fetaures/notification/presentation/notification_screen.dart';
@@ -61,6 +62,12 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => SettingsScreen()),
+                  );
+                }),
+                _menuItem(Icons.settings_outlined, "Chat", () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => ChatScreen()),
                   );
                 }),
                 const Spacer(),

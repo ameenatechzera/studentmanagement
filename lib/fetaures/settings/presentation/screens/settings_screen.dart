@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:studentmanagement/core/appdata/appdata.dart';
@@ -86,7 +88,284 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                   ),
                 ),
+                Positioned(
+                  top: 45,
+                  right: 16,
+                  child: GestureDetector(
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        barrierColor: Colors.black.withOpacity(.45),
+                        builder: (context) {
+                          return Dialog(
+                            backgroundColor: Colors.transparent,
+                            insetPadding: const EdgeInsets.symmetric(
+                              horizontal: 24,
+                            ),
 
+                            child: Container(
+                              padding: const EdgeInsets.fromLTRB(
+                                24,
+                                22,
+                                24,
+                                24,
+                              ),
+
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(28),
+                              ),
+
+                              child: Stack(
+                                children: [
+                                  Column(
+                                    mainAxisSize: MainAxisSize.min,
+
+                                    children: [
+                                      const Text(
+                                        "About Us",
+
+                                        style: TextStyle(
+                                          fontSize: 28,
+                                          fontWeight: FontWeight.w700,
+                                          color: Color(0xff2B2B2B),
+                                        ),
+                                      ),
+
+                                      // const SizedBox(height: 26),
+                                      Image.network(
+                                        branchData!["logo"] ?? "",
+                                        fit: BoxFit.cover,
+                                        width: 120,
+                                        height: 120,
+                                      ),
+
+                                      // const SizedBox(height: 34),
+                                      //
+                                      /// EMAIL
+                                      Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            height: 54,
+                                            width: 54,
+
+                                            decoration: BoxDecoration(
+                                              color: const Color(0xffFFF1E7),
+                                              shape: BoxShape.circle,
+                                            ),
+
+                                            child: const Icon(
+                                              Icons.email_rounded,
+                                              color: Color(0xffFF8A3D),
+                                              size: 26,
+                                            ),
+                                          ),
+
+                                          const SizedBox(width: 18),
+
+                                          Expanded(
+                                            child: Padding(
+                                              padding: EdgeInsets.only(top: 12),
+
+                                              child: Text(
+                                                branchData?["Email"]
+                                                        .toString() ??
+                                                    "No Email",
+
+                                                style: TextStyle(
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: Color(0xff333333),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+
+                                      const SizedBox(height: 10),
+
+                                      /// WEBSITE
+                                      Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            height: 54,
+                                            width: 54,
+
+                                            decoration: BoxDecoration(
+                                              color: const Color(0xffFFE9F2),
+                                              shape: BoxShape.circle,
+                                            ),
+
+                                            child: const Icon(
+                                              Icons.language_rounded,
+                                              color: Color(0xffFF5EA8),
+                                              size: 26,
+                                            ),
+                                          ),
+
+                                          const SizedBox(width: 18),
+
+                                          Expanded(
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                top: 12,
+                                              ),
+
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  // launch url
+                                                },
+
+                                                child: Text(
+                                                  branchData?["Website"]
+                                                          .toString() ??
+                                                      "No Website",
+                                                  style: TextStyle(
+                                                    fontSize: 15,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: Colors.blue,
+                                                    decoration: TextDecoration
+                                                        .underline,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+
+                                      const SizedBox(height: 10),
+
+                                      /// LOCATION
+                                      Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            height: 54,
+                                            width: 54,
+
+                                            decoration: BoxDecoration(
+                                              color: const Color(0xffEAF8EF),
+                                              shape: BoxShape.circle,
+                                            ),
+
+                                            child: const Icon(
+                                              Icons.location_on_rounded,
+                                              color: Color(0xff29A35A),
+                                              size: 28,
+                                            ),
+                                          ),
+
+                                          const SizedBox(width: 18),
+
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                branchData!["post_Pin"] ??
+                                                    "No Postpin",
+                                                style: TextStyle(
+                                                  fontSize: 12.5,
+                                                  height: 1.4,
+                                                  fontWeight: FontWeight.w500,
+                                                  color: Color(0xff252525),
+                                                ),
+                                              ),
+
+                                              SizedBox(height: 3),
+
+                                              Text(
+                                                branchData!["District"] ??
+                                                    "No District",
+                                                style: TextStyle(
+                                                  fontSize: 12.5,
+                                                  height: 1.4,
+                                                  fontWeight: FontWeight.w500,
+                                                  color: Color(0xff252525),
+                                                ),
+                                              ),
+
+                                              SizedBox(height: 3),
+
+                                              Text(
+                                                branchData!["State"] ??
+                                                    "No State",
+
+                                                style: TextStyle(
+                                                  fontSize: 12.5,
+                                                  height: 1.4,
+                                                  fontWeight: FontWeight.w500,
+                                                  color: Color(0xff252525),
+                                                ),
+                                              ),
+
+                                              SizedBox(height: 3),
+
+                                              Text(
+                                                AppData.place!,
+                                                style: TextStyle(
+                                                  fontSize: 12.5,
+                                                  height: 1.4,
+                                                  fontWeight: FontWeight.w500,
+                                                  color: Color(0xff252525),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+
+                                  /// CLOSE BUTTON
+                                  Positioned(
+                                    top: 0,
+                                    right: 0,
+
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        Navigator.pop(context);
+                                      },
+
+                                      child: const Icon(
+                                        Icons.close,
+                                        color: Colors.red,
+                                        size: 28,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
+
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(.60),
+                        borderRadius: BorderRadius.circular(30),
+                        border: Border.all(color: Colors.white.withOpacity(.2)),
+                      ),
+
+                      child: const Icon(
+                        Icons.info_outline,
+                        color: Colors.white,
+                        size: 18,
+                      ),
+                    ),
+                  ),
+                ),
                 Positioned(
                   bottom: -42,
                   child: Container(
@@ -113,6 +392,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ],
             ),
+            //   ],
+            // ),
             const SizedBox(height: 55),
 
             Text(

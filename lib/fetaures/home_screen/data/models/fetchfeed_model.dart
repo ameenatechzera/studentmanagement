@@ -42,6 +42,8 @@ class FeedDetailsModel extends FeedDetails {
     super.modifiedDate,
     super.modifiedUser,
     List<FeedFileModel>? super.files,
+    super.image,
+    super.videoUrl,
     super.postedBy,
     super.designationName,
     super.likeCount,
@@ -66,11 +68,15 @@ class FeedDetailsModel extends FeedDetails {
 
       // rest same...
       feedTarget: json['feedTarget']?.toString(),
-      standardId: json['StandardId'] == null
-          ? []
-          : (json['StandardId'] as List)
-                .map((x) => StandardDivisionModel.fromJson(x))
-                .toList(),
+      standardId: json['StandardId'] is List
+          ? (json['StandardId'] as List)
+                .map(
+                  (x) =>
+                      StandardDivisionModel.fromJson(x as Map<String, dynamic>),
+                )
+                .toList()
+          : [],
+
       userId: json['userId']?.toString(),
       branchId: json['branchId'] as int?,
       accYear: json['AccYear']?.toString(),
@@ -83,6 +89,22 @@ class FeedDetailsModel extends FeedDetails {
           : (json['Files'] as List)
                 .map((x) => FeedFileModel.fromJson(x))
                 .toList(),
+      image: json['Image'] == null
+          ? []
+          : json['Image'] is List
+          ? List<String>.from(json['Image'])
+          : json['Image'].toString().isNotEmpty
+          ? [json['Image'].toString()]
+          : [],
+
+      videoUrl: json['videoUrl'] == null
+          ? []
+          : json['videoUrl'] is List
+          ? List<String>.from(json['videoUrl'])
+          : json['videoUrl'].toString().isNotEmpty
+          ? [json['videoUrl'].toString()]
+          : [],
+
       postedBy: json['PostedBy']?.toString(),
       designationName: json['DesignationName'],
       createdDateFormatted: json['CreatedDateFormatted']?.toString(),

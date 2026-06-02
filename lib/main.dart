@@ -66,6 +66,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'Cristal',
         theme: ThemeData(
+          fontFamily: 'TitilliumWeb',
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           appBarTheme: const AppBarTheme(
