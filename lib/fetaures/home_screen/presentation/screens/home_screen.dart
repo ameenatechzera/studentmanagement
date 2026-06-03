@@ -54,67 +54,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
 
-
-  // Future<void> checkForUpdate(
-  //     BuildContext context,
-  //     String appStoreVersion,
-  //     String playStoreVersion,
-  //     String appVersion,
-  //     ) async {
-  //   final playStoreVersion = await SharedPreferenceHelper().getPlayStoreVersion();
-  //   final appStoreVersion = await SharedPreferenceHelper().getAppStoreVersion();
-  //   print('playStoreVersion $playStoreVersion');
-  //   print('appVersion $appVersion');
-  //   if (appStoreVersion!.isNotEmpty &&
-  //       playStoreVersion!.isNotEmpty &&
-  //       playStoreVersion != appVersion) {
-  //
-  //     showDialog(
-  //       context: context,
-  //       barrierDismissible: false,
-  //       builder: (context) {
-  //         return AlertDialog(
-  //           title: const Text("Update Available"),
-  //           content: const Text(
-  //             "You have an update. Please update the app.",
-  //           ),
-  //           actions: [
-  //             TextButton(
-  //               onPressed: () {
-  //                 Navigator.pop(context); // dismiss dialog
-  //                 _fetchFeeds(page: 1);
-  //               },
-  //               child: const Text("Cancel"),
-  //             ),
-  //             ElevatedButton(
-  //               onPressed: () async {
-  //                 Navigator.pop(context); // dismiss dialog
-  //                 _fetchFeeds(page: 1);
-  //                 const url =
-  //                     'https://play.google.com/store/apps/details?id=com.techzera.studentmanagement';
-  //
-  //                 final Uri uri = Uri.parse(url);
-  //
-  //                 if (await canLaunchUrl(uri)) {
-  //                   await launchUrl(
-  //                     uri,
-  //                     mode: LaunchMode.externalApplication,
-  //                   );
-  //                 }
-  //               },
-  //               child: const Text("OK"),
-  //             ),
-  //           ],
-  //         );
-  //       },
-  //     );
-  //   }
-  //   else{
-  //     _fetchFeeds(page: 1);
-  //   }
-  //
-  // }
-
   Future<void> checkForUpdate(
       BuildContext context,
       String appVersion,
@@ -199,10 +138,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
   Future<void> getVersion() async {
     final packageInfo = await PackageInfo.fromPlatform();
-    print(packageInfo.appName);
-    print(packageInfo.packageName);
-    print(packageInfo.version);
-    print(packageInfo.buildNumber);
     String st_appVersion = packageInfo.version+"+"+packageInfo.buildNumber;
     print('st_appVersion $st_appVersion');
    // final schoolCode = await SharedPreferenceHelper().getSchoolCode();
@@ -276,10 +211,7 @@ class _HomeScreenState extends State<HomeScreen> {
           listener: (context, state) async {
             if(state is VersionFetchSuccess){
               final packageInfo = await PackageInfo.fromPlatform();
-              print(packageInfo.appName);
-              print(packageInfo.packageName);
-              print(packageInfo.version);
-              print(packageInfo.buildNumber);
+
               String st_appVersion = packageInfo.version+"+"+packageInfo.buildNumber;
               print('st_appVersion $st_appVersion');
               final schoolCode = await SharedPreferenceHelper().getSchoolCode();

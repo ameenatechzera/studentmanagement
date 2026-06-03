@@ -11,6 +11,7 @@ import 'package:studentmanagement/fetaures/home_screen/domain/entities/fetchfeed
 import 'package:studentmanagement/fetaures/home_screen/domain/parameters/feedaction_parameter.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/cubit/feed_cubit.dart';
 import 'package:studentmanagement/services/shared_preference_helper.dart';
+import 'package:flutter_html/flutter_html.dart';
 
 class PostCard extends StatefulWidget {
   final FeedDetails feed;
@@ -211,10 +212,14 @@ class _PostCardState extends State<PostCard> {
         ),
         Padding(
           padding: const EdgeInsets.all(12),
-          child: Text(
-            feed.feedText ?? "",
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          child:  Html(data:  feed.feedText!.isEmpty
+              ? 'No Description'
+              : feed.feedText,
           ),
+          // Text(
+          //   feed.feedText ?? "",
+          //   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          // ),
         ),
       ],
     );
