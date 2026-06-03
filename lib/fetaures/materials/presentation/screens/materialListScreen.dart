@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studentmanagement/fetaures/materials/domain/entities/materialsBySubject_entity.dart';
 import 'package:studentmanagement/fetaures/materials/domain/parameters/fetch_materialsbysubjectId.dart';
+import 'package:studentmanagement/fetaures/materials/presentation/widgets/materialNotes.dart';
 import 'package:studentmanagement/fetaures/materials/presentation/widgets/pdfViewer_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:studentmanagement/core/appdata/appdata.dart';
@@ -45,7 +46,7 @@ class _MaterialListPageState extends State<MaterialListPage>
     context.read<MaterialCubit>().fetchMaterialsBySubjectId(
       FetchMaterialBySubjectIdParameter(
         branchId: 1,
-        userId: '1', subjectId: widget.subjectId,
+        userId: '1', subjectId: widget.subjectId, standardId: AppData.studentStdId!, divisionId: AppData.studentDivId!,
       ),
     );
   }
@@ -92,7 +93,7 @@ class _MaterialListPageState extends State<MaterialListPage>
       final matchesSubject = true;
       bool matchesTab = false;
       if (tab == "PDF") {
-        item.material = 'https://online.cristaledu.com/Api/public/'+item.material;
+
         matchesTab = item.material?.toLowerCase() == "pdf" ||
             (item.documentName != null && item.documentName!.isNotEmpty);
       } else if (tab == "Links") {
@@ -279,7 +280,12 @@ class _MaterialListPageState extends State<MaterialListPage>
             } else if (tab == "Links") {
               _openUrl(item.link);
             } else if (tab == "Notes") {
-              _openUrl(item.notes);
+              // _openUrl(item.notes);
+              Navigator.push(context, MaterialPageRoute(
+                builder: (_) => MaterialNotesScreen(noteData: item.notes,
+
+                ),
+              ));
             }
           },
         );
