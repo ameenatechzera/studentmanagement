@@ -6,7 +6,7 @@ publish_to: 'none'
 #version: 1.0.1+2 #second update
 #version: 1.0.2+3
 #version: 1.0.3+4 #third update playstore
-version: 1.0.4+5 #third update playstore 12-05-2026
+version: 1.0.5+6 #third update playstore 12-05-2026
 environment:
   sdk: ^3.10.4
 
@@ -53,6 +53,7 @@ dependencies:
   record: ^6.1.2
   audioplayers: ^6.5.1
   flutter_html: ^3.0.0
+
   
 dev_dependencies:
   flutter_test:
