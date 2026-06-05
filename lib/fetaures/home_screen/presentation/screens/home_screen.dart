@@ -192,8 +192,6 @@ class _HomeScreenState extends State<HomeScreen> {
       key: _scaffoldKey,
       backgroundColor: Colors.white,
       drawer: SideNavigationBar(),
-
-      //appBar: AppBar(backgroundColor: Colors.white, title: const Text("Home")),
       body: SafeArea(
         child: Stack(
           children: [
@@ -201,30 +199,20 @@ class _HomeScreenState extends State<HomeScreen> {
               listener: (context, state) async {
                 if (state is VersionFetchSuccess) {
                   final packageInfo = await PackageInfo.fromPlatform();
-
                   String st_appVersion =
                       packageInfo.version + "+" + packageInfo.buildNumber;
                   print('st_appVersion $st_appVersion');
-                  final schoolCode = await SharedPreferenceHelper()
-                      .getSchoolCode();
+                  final schoolCode =
+                  await SharedPreferenceHelper().getSchoolCode();
                   await context.read<LoginCubit>().fetchSchools(
                     FetchSchoolRequest(slno: schoolCode),
                   );
-
-                  // final playStoreVersion = await SharedPreferenceHelper().getPlayStoreVersion();
-                  // final appStoreVersion = await SharedPreferenceHelper().getAppStoreVersion();
-                  // print('playStoreVersionPref $playStoreVersion');
                   await checkForUpdate(context, st_appVersion);
                 }
+
                 if (state is FeedLoaded) {
                   final newFeeds = state.response.data ?? [];
                   final pagination = state.response.pagination;
-
-                  // print("✅ API SUCCESS → page: ${currentPageNotifier.value}");
-                  // print("📊 New items count: ${newFeeds.length}");
-                  // print(
-                  //   "🆕 New Feed IDs: ${newFeeds.map((e) => e.feedId).toList()}",
-                  // );
 
                   isFirstLoadingNotifier.value = false;
                   isLoadingMoreNotifier.value = false;
@@ -235,48 +223,26 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   if (currentPageNotifier.value == 1) {
                     allFeedsNotifier.value = List<FeedDetails>.from(newFeeds);
-                    //print("🧹 RESET LIST (page 1)");
                   } else {
                     allFeedsNotifier.value = [
                       ...allFeedsNotifier.value,
                       ...newFeeds,
                     ];
-                    // print("➕ APPENDED DATA");
                   }
 
-                  // print(
-                  //   "📦 ALL Feed IDs: ${allFeedsNotifier.value.map((e) => e.feedId).toList()}",
-                  // );
-
-                  final ids = allFeedsNotifier.value
-                      .map((e) => e.feedId)
-                      .toList();
+                  final ids = allFeedsNotifier.value.map((e) => e.feedId).toList();
                   final uniqueIds = ids.toSet();
-
                   if (ids.length != uniqueIds.length) {
-                    // print("❌ DUPLICATE DETECTED!");
-                  } else {
-                    // print("✅ NO DUPLICATES");
+                    // duplicate detected
                   }
-
-                  // print(
-                  //   "📄 PAGINATION → currentPage: ${currentPageNotifier.value} | lastPage: ${lastPageNotifier.value} | hasMoreData: ${hasMoreDataNotifier.value}",
-                  // );
-                  // print(
-                  //   "📌 FINAL STATE → totalItems: ${allFeedsNotifier.value.length}",
-                  // );
-                  //getVersion();
                 }
 
                 if (state is FeedError) {
-                  //print("❌ API ERROR: ${state.message}");
-
                   isFirstLoadingNotifier.value = false;
                   isLoadingMoreNotifier.value = false;
 
                   if (currentPageNotifier.value > 1) {
                     currentPageNotifier.value = currentPageNotifier.value - 1;
-                    // print("↩️ PAGE ROLLBACK → ${currentPageNotifier.value}");
                   }
                 }
               },
@@ -296,9 +262,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         }
 
                         if (allFeeds.isEmpty) {
-                          return const Center(
-                            child: Text("No feeds available"),
-                          );
+                          return const Center(child: Text("No feeds available"));
                         }
 
                         return ValueListenableBuilder<bool>(
@@ -310,42 +274,34 @@ class _HomeScreenState extends State<HomeScreen> {
                                 return CustomScrollView(
                                   controller: _scrollController,
                                   slivers: [
-                                    // const SliverToBoxAdapter(
-                                    //   child: HeaderSection(),
-                                    // ),
                                     SliverList(
-                                      delegate: SliverChildBuilderDelegate((
-                                        context,
-                                        index,
-                                      ) {
-                                        if (index == allFeeds.length) {
+                                      delegate: SliverChildBuilderDelegate(
+                                            (context, index) {
+                                          if (index == allFeeds.length) {
+                                            return Padding(
+                                              padding: const EdgeInsets.symmetric(
+                                                vertical: 20,
+                                              ),
+                                              child: Center(
+                                                child: isLoadingMore
+                                                    ? const CircularProgressIndicator()
+                                                    : !hasMoreData
+                                                    ? const Text("No more feeds")
+                                                    : const SizedBox(),
+                                              ),
+                                            );
+                                          }
+
                                           return Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                              vertical: 20,
-                                            ),
-                                            child: Center(
-                                              child: isLoadingMore
-                                                  ? const CircularProgressIndicator()
-                                                  : !hasMoreData
-                                                  ? const Text("No more feeds")
-                                                  : const SizedBox(),
+                                            padding:
+                                            const EdgeInsets.only(top: 8.0),
+                                            child: PostCard(
+                                              feed: allFeeds[index],
                                             ),
                                           );
-                                        }
-
-                                        return Padding(
-                                          padding: const EdgeInsets.only(
-                                            top: 8.0,
-                                          ),
-                                          child: Column(
-                                            children: [
-                                              // const SizedBox(height: 0),
-                                              PostCard(feed: allFeeds[index]),
-                                              // const SizedBox(height: 16),
-                                            ],
-                                          ),
-                                        );
-                                      }, childCount: allFeeds.length + 1),
+                                        },
+                                        childCount: allFeeds.length + 1,
+                                      ),
                                     ),
                                   ],
                                 );
@@ -359,17 +315,20 @@ class _HomeScreenState extends State<HomeScreen> {
                 );
               },
             ),
+
+            // ✅ FIXED: Drawer toggle button with HitTestBehavior.opaque
             Positioned(
               left: 0,
               top: MediaQuery.of(context).size.height * 0.4,
-              child: InkWell(
+              child: GestureDetector(
                 onTap: () {
                   _scaffoldKey.currentState?.openDrawer();
                 },
+                behavior: HitTestBehavior.opaque, // ✅ Key fix — transparent areas now receive taps
                 child: Container(
-                  width: 18,
+                  width: 24,
                   height: 80,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: Colors.black12,
                     borderRadius: BorderRadius.horizontal(
                       right: Radius.circular(20),
