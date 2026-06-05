@@ -210,17 +210,7 @@ class _PostCardState extends State<PostCard> {
             Text(feed.shareCount.toString()),
           ],
         ),
-        Padding(
-          padding: const EdgeInsets.all(12),
-          child:  Html(data:  feed.feedText!.isEmpty
-              ? 'No Description'
-              : feed.feedText,
-          ),
-          // Text(
-          //   feed.feedText ?? "",
-          //   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-          // ),
-        ),
+        Html(data: feed.feedText!.isEmpty ? 'No Description' : feed.feedText),
       ],
     );
   }

@@ -1569,6 +1569,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:intl/intl.dart';
 import 'package:media_store_plus/media_store_plus.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
@@ -1973,7 +1974,7 @@ class _AllClassDiaryScreenState extends State<AllClassDiaryScreen> {
 
                   return _DiaryCard(
                     index: index,
-                    teacherName: '${diary.name}',
+                    teacherName: '${diary.employeeName}',
                     teacherRole: diary.employeeName != null
                         ? '${diary.employeeName}'
                         : '',
@@ -2079,15 +2080,15 @@ class _DiaryCard extends StatelessWidget {
                         const Icon(Icons.push_pin, size: 18, color: Colors.red),
                       ],
                     ),
-                    const SizedBox(height: 2),
-                    Text(
-                      teacherRole,
-                      style: const TextStyle(
-                        color: Color(0xFF444444),
-                        fontSize: 11,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
+                    // const SizedBox(height: 2),
+                    // Text(
+                    //   teacherRole,
+                    //   style: const TextStyle(
+                    //     color: Color(0xFF444444),
+                    //     fontSize: 11,
+                    //     fontWeight: FontWeight.w500,
+                    //   ),
+                    // ),
                   ],
                 ),
               ],
@@ -2123,8 +2124,16 @@ class _DiaryCard extends StatelessWidget {
                               color: Colors.white.withOpacity(0.42),
                               borderRadius: BorderRadius.circular(20),
                             ),
+                            // child: Text(
+                            //   date.isEmpty ? 'Today' : date,
                             child: Text(
-                              date.isEmpty ? 'Today' : date,
+                              date.isEmpty
+                                  ? DateFormat(
+                                      'dd-MM-yyyy',
+                                    ).format(DateTime.now())
+                                  : DateFormat(
+                                      'dd-MM-yyyy',
+                                    ).format(DateTime.parse(date)),
                               style: const TextStyle(
                                 color: Color(0xFF151515),
                                 fontSize: 10,
@@ -2157,11 +2166,45 @@ class _DiaryCard extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Html(
-                              data: description.isEmpty
-                                  ? 'No Description'
-                                  : description,
-                            ),
+                            isExpanded
+                                ? Html(
+                                    data: description.isEmpty
+                                        ? 'No Description'
+                                        : description,
+                                    style: {
+                                      "body": Style(
+                                        margin: Margins.zero,
+                                        padding: HtmlPaddings.zero,
+                                        fontSize: FontSize(12),
+                                        lineHeight: const LineHeight(1.7),
+                                        color: const Color(0xFF222222),
+                                      ),
+                                    },
+                                  )
+                                : SizedBox(
+                                    height: 40,
+                                    child: ClipRect(
+                                      child: Html(
+                                        data: description.isEmpty
+                                            ? 'No Description'
+                                            : description,
+                                        style: {
+                                          "body": Style(
+                                            margin: Margins.zero,
+                                            padding: HtmlPaddings.zero,
+                                            fontSize: FontSize(12),
+                                            lineHeight: const LineHeight(1.7),
+                                            color: const Color(0xFF222222),
+                                          ),
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                            // Html(
+                            //   data: description.isEmpty
+                            //       ? 'No Description'
+                            //       : description,
+                            // ),
                             Text(
                               '',
                               maxLines: isExpanded ? null : 2,

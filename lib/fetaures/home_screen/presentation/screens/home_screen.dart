@@ -1,8 +1,8 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:studentmanagement/core/appdata/appdata.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/parameters/fetchschool_parameter.dart';
@@ -10,7 +10,6 @@ import 'package:studentmanagement/fetaures/authentication/presentation/bloc/logi
 import 'package:studentmanagement/fetaures/home_screen/domain/entities/fetchfeed_entity.dart';
 import 'package:studentmanagement/fetaures/home_screen/domain/parameters/fetchfeed_parameter.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/cubit/feed_cubit.dart';
-import 'package:studentmanagement/fetaures/home_screen/presentation/widgets/header_cristal.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/widgets/post_card_cristal.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/widgets/sidenavigation.dart';
 import 'package:studentmanagement/services/shared_preference_helper.dart';
@@ -33,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final ValueNotifier<bool> isFirstLoadingNotifier = ValueNotifier<bool>(true);
   final ValueNotifier<List<FeedDetails>> allFeedsNotifier =
       ValueNotifier<List<FeedDetails>>([]);
-
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   void initState() {
     super.initState();
@@ -53,16 +52,11 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  Future<void> checkForUpdate(BuildContext context, String appVersion) async {
+    final playStoreVersion = await SharedPreferenceHelper()
+        .getPlayStoreVersion();
 
-  Future<void> checkForUpdate(
-      BuildContext context,
-      String appVersion,
-      ) async {
-    final playStoreVersion =
-    await SharedPreferenceHelper().getPlayStoreVersion();
-
-    final appStoreVersion =
-    await SharedPreferenceHelper().getAppStoreVersion();
+    final appStoreVersion = await SharedPreferenceHelper().getAppStoreVersion();
 
     print('playStoreVersion: $playStoreVersion');
     print('appStoreVersion: $appStoreVersion');
@@ -87,18 +81,14 @@ class _HomeScreenState extends State<HomeScreen> {
     //   fontSize: 16.0,
     // );
 
-    if (storeVersion.isNotEmpty &&
-        storeVersion.trim() != appVersion.trim()) {
-
+    if (storeVersion.isNotEmpty && storeVersion.trim() != appVersion.trim()) {
       showDialog(
         context: context,
         barrierDismissible: false,
         builder: (context) {
           return AlertDialog(
             title: const Text("Update Available"),
-            content: const Text(
-              "You have an update. Please update the app.",
-            ),
+            content: const Text("You have an update. Please update the app."),
             actions: [
               TextButton(
                 onPressed: () {
@@ -120,10 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   final Uri uri = Uri.parse(url);
 
                   if (await canLaunchUrl(uri)) {
-                    await launchUrl(
-                      uri,
-                      mode: LaunchMode.externalApplication,
-                    );
+                    await launchUrl(uri, mode: LaunchMode.externalApplication);
                   }
                 },
                 child: const Text("Update"),
@@ -136,23 +123,22 @@ class _HomeScreenState extends State<HomeScreen> {
       _fetchFeeds(page: 1);
     }
   }
+
   Future<void> getVersion() async {
     final packageInfo = await PackageInfo.fromPlatform();
-    String st_appVersion = packageInfo.version+"+"+packageInfo.buildNumber;
+    String st_appVersion = packageInfo.version + "+" + packageInfo.buildNumber;
     print('st_appVersion $st_appVersion');
-   // final schoolCode = await SharedPreferenceHelper().getSchoolCode();
+    // final schoolCode = await SharedPreferenceHelper().getSchoolCode();
     // await context.read<LoginCubit>().fetchSchools(
     //   FetchSchoolRequest(slno: schoolCode),
     // );
 
-   // final playStoreVersion = await SharedPreferenceHelper().getPlayStoreVersion();
-   // final appStoreVersion = await SharedPreferenceHelper().getAppStoreVersion();
-   // print('playStoreVersionPref $playStoreVersion');
-    checkForUpdate(
-      context,
-      st_appVersion!,
-    );
+    // final playStoreVersion = await SharedPreferenceHelper().getPlayStoreVersion();
+    // final appStoreVersion = await SharedPreferenceHelper().getAppStoreVersion();
+    // print('playStoreVersionPref $playStoreVersion');
+    checkForUpdate(context, st_appVersion!);
   }
+
   void _fetchFeeds({required int page}) {
     print("🌐 API CALL → page: $page");
 
@@ -203,157 +189,167 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     getVersion();
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: Colors.white,
       drawer: SideNavigationBar(),
+
       //appBar: AppBar(backgroundColor: Colors.white, title: const Text("Home")),
       body: SafeArea(
-        child: BlocConsumer<FeedCubit, FeedState>(
-          listener: (context, state) async {
-            if(state is VersionFetchSuccess){
-              final packageInfo = await PackageInfo.fromPlatform();
+        child: Stack(
+          children: [
+            BlocConsumer<FeedCubit, FeedState>(
+              listener: (context, state) async {
+                if (state is VersionFetchSuccess) {
+                  final packageInfo = await PackageInfo.fromPlatform();
 
-              String st_appVersion = packageInfo.version+"+"+packageInfo.buildNumber;
-              print('st_appVersion $st_appVersion');
-              final schoolCode = await SharedPreferenceHelper().getSchoolCode();
-              await context.read<LoginCubit>().fetchSchools(
-                FetchSchoolRequest(slno: schoolCode),
-              );
+                  String st_appVersion =
+                      packageInfo.version + "+" + packageInfo.buildNumber;
+                  print('st_appVersion $st_appVersion');
+                  final schoolCode = await SharedPreferenceHelper()
+                      .getSchoolCode();
+                  await context.read<LoginCubit>().fetchSchools(
+                    FetchSchoolRequest(slno: schoolCode),
+                  );
 
-             // final playStoreVersion = await SharedPreferenceHelper().getPlayStoreVersion();
-             // final appStoreVersion = await SharedPreferenceHelper().getAppStoreVersion();
-             // print('playStoreVersionPref $playStoreVersion');
-              await checkForUpdate(
-                  context,
-                  st_appVersion
-              );
-            }
-            if (state is FeedLoaded) {
-              final newFeeds = state.response.data ?? [];
-              final pagination = state.response.pagination;
+                  // final playStoreVersion = await SharedPreferenceHelper().getPlayStoreVersion();
+                  // final appStoreVersion = await SharedPreferenceHelper().getAppStoreVersion();
+                  // print('playStoreVersionPref $playStoreVersion');
+                  await checkForUpdate(context, st_appVersion);
+                }
+                if (state is FeedLoaded) {
+                  final newFeeds = state.response.data ?? [];
+                  final pagination = state.response.pagination;
 
-              // print("✅ API SUCCESS → page: ${currentPageNotifier.value}");
-              // print("📊 New items count: ${newFeeds.length}");
-              // print(
-              //   "🆕 New Feed IDs: ${newFeeds.map((e) => e.feedId).toList()}",
-              // );
+                  // print("✅ API SUCCESS → page: ${currentPageNotifier.value}");
+                  // print("📊 New items count: ${newFeeds.length}");
+                  // print(
+                  //   "🆕 New Feed IDs: ${newFeeds.map((e) => e.feedId).toList()}",
+                  // );
 
-              isFirstLoadingNotifier.value = false;
-              isLoadingMoreNotifier.value = false;
+                  isFirstLoadingNotifier.value = false;
+                  isLoadingMoreNotifier.value = false;
 
-              lastPageNotifier.value = pagination?.lastPage ?? 1;
-              hasMoreDataNotifier.value =
-                  currentPageNotifier.value < lastPageNotifier.value;
+                  lastPageNotifier.value = pagination?.lastPage ?? 1;
+                  hasMoreDataNotifier.value =
+                      currentPageNotifier.value < lastPageNotifier.value;
 
-              if (currentPageNotifier.value == 1) {
-                allFeedsNotifier.value = List<FeedDetails>.from(newFeeds);
-                //print("🧹 RESET LIST (page 1)");
-              } else {
-                allFeedsNotifier.value = [
-                  ...allFeedsNotifier.value,
-                  ...newFeeds,
-                ];
-                // print("➕ APPENDED DATA");
-              }
+                  if (currentPageNotifier.value == 1) {
+                    allFeedsNotifier.value = List<FeedDetails>.from(newFeeds);
+                    //print("🧹 RESET LIST (page 1)");
+                  } else {
+                    allFeedsNotifier.value = [
+                      ...allFeedsNotifier.value,
+                      ...newFeeds,
+                    ];
+                    // print("➕ APPENDED DATA");
+                  }
 
-              // print(
-              //   "📦 ALL Feed IDs: ${allFeedsNotifier.value.map((e) => e.feedId).toList()}",
-              // );
+                  // print(
+                  //   "📦 ALL Feed IDs: ${allFeedsNotifier.value.map((e) => e.feedId).toList()}",
+                  // );
 
-              final ids = allFeedsNotifier.value.map((e) => e.feedId).toList();
-              final uniqueIds = ids.toSet();
+                  final ids = allFeedsNotifier.value
+                      .map((e) => e.feedId)
+                      .toList();
+                  final uniqueIds = ids.toSet();
 
-              if (ids.length != uniqueIds.length) {
-                // print("❌ DUPLICATE DETECTED!");
-              } else {
-                // print("✅ NO DUPLICATES");
-              }
+                  if (ids.length != uniqueIds.length) {
+                    // print("❌ DUPLICATE DETECTED!");
+                  } else {
+                    // print("✅ NO DUPLICATES");
+                  }
 
-              // print(
-              //   "📄 PAGINATION → currentPage: ${currentPageNotifier.value} | lastPage: ${lastPageNotifier.value} | hasMoreData: ${hasMoreDataNotifier.value}",
-              // );
-              // print(
-              //   "📌 FINAL STATE → totalItems: ${allFeedsNotifier.value.length}",
-              // );
-              //getVersion();
+                  // print(
+                  //   "📄 PAGINATION → currentPage: ${currentPageNotifier.value} | lastPage: ${lastPageNotifier.value} | hasMoreData: ${hasMoreDataNotifier.value}",
+                  // );
+                  // print(
+                  //   "📌 FINAL STATE → totalItems: ${allFeedsNotifier.value.length}",
+                  // );
+                  //getVersion();
+                }
 
-            }
+                if (state is FeedError) {
+                  //print("❌ API ERROR: ${state.message}");
 
-            if (state is FeedError) {
-              //print("❌ API ERROR: ${state.message}");
+                  isFirstLoadingNotifier.value = false;
+                  isLoadingMoreNotifier.value = false;
 
-              isFirstLoadingNotifier.value = false;
-              isLoadingMoreNotifier.value = false;
+                  if (currentPageNotifier.value > 1) {
+                    currentPageNotifier.value = currentPageNotifier.value - 1;
+                    // print("↩️ PAGE ROLLBACK → ${currentPageNotifier.value}");
+                  }
+                }
+              },
+              builder: (context, state) {
+                return ValueListenableBuilder<bool>(
+                  valueListenable: isFirstLoadingNotifier,
+                  builder: (context, isFirstLoading, _) {
+                    return ValueListenableBuilder<List<FeedDetails>>(
+                      valueListenable: allFeedsNotifier,
+                      builder: (context, allFeeds, __) {
+                        if (isFirstLoading && state is FeedLoading) {
+                          return PostCardSkeleton();
+                        }
 
-              if (currentPageNotifier.value > 1) {
-                currentPageNotifier.value = currentPageNotifier.value - 1;
-                // print("↩️ PAGE ROLLBACK → ${currentPageNotifier.value}");
-              }
-            }
-          },
-          builder: (context, state) {
-            return ValueListenableBuilder<bool>(
-              valueListenable: isFirstLoadingNotifier,
-              builder: (context, isFirstLoading, _) {
-                return ValueListenableBuilder<List<FeedDetails>>(
-                  valueListenable: allFeedsNotifier,
-                  builder: (context, allFeeds, __) {
-                    if (isFirstLoading && state is FeedLoading) {
-                      return PostCardSkeleton();
-                    }
+                        if (state is FeedError && allFeeds.isEmpty) {
+                          return Center(child: Text(state.message));
+                        }
 
-                    if (state is FeedError && allFeeds.isEmpty) {
-                      return Center(child: Text(state.message));
-                    }
+                        if (allFeeds.isEmpty) {
+                          return const Center(
+                            child: Text("No feeds available"),
+                          );
+                        }
 
-                    if (allFeeds.isEmpty) {
-                      return const Center(child: Text("No feeds available"));
-                    }
-
-                    return ValueListenableBuilder<bool>(
-                      valueListenable: isLoadingMoreNotifier,
-                      builder: (context, isLoadingMore, ___) {
                         return ValueListenableBuilder<bool>(
-                          valueListenable: hasMoreDataNotifier,
-                          builder: (context, hasMoreData, ____) {
-                            return CustomScrollView(
-                              controller: _scrollController,
-                              slivers: [
-                                // const SliverToBoxAdapter(
-                                //   child: HeaderSection(),
-                                // ),
-                                SliverList(
-                                  delegate: SliverChildBuilderDelegate((
-                                    context,
-                                    index,
-                                  ) {
-                                    if (index == allFeeds.length) {
-                                      return Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          vertical: 20,
-                                        ),
-                                        child: Center(
-                                          child: isLoadingMore
-                                              ? const CircularProgressIndicator()
-                                              : !hasMoreData
-                                              ? const Text("No more feeds")
-                                              : const SizedBox(),
-                                        ),
-                                      );
-                                    }
+                          valueListenable: isLoadingMoreNotifier,
+                          builder: (context, isLoadingMore, ___) {
+                            return ValueListenableBuilder<bool>(
+                              valueListenable: hasMoreDataNotifier,
+                              builder: (context, hasMoreData, ____) {
+                                return CustomScrollView(
+                                  controller: _scrollController,
+                                  slivers: [
+                                    // const SliverToBoxAdapter(
+                                    //   child: HeaderSection(),
+                                    // ),
+                                    SliverList(
+                                      delegate: SliverChildBuilderDelegate((
+                                        context,
+                                        index,
+                                      ) {
+                                        if (index == allFeeds.length) {
+                                          return Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                              vertical: 20,
+                                            ),
+                                            child: Center(
+                                              child: isLoadingMore
+                                                  ? const CircularProgressIndicator()
+                                                  : !hasMoreData
+                                                  ? const Text("No more feeds")
+                                                  : const SizedBox(),
+                                            ),
+                                          );
+                                        }
 
-                                    return Padding(
-                                      padding: const EdgeInsets.only(top: 8.0),
-                                      child: Column(
-                                        children: [
-                                          const SizedBox(height: 16),
-                                          PostCard(feed: allFeeds[index]),
-                                          const SizedBox(height: 16),
-                                        ],
-                                      ),
-                                    );
-                                  }, childCount: allFeeds.length + 1),
-                                ),
-                              ],
+                                        return Padding(
+                                          padding: const EdgeInsets.only(
+                                            top: 8.0,
+                                          ),
+                                          child: Column(
+                                            children: [
+                                              // const SizedBox(height: 0),
+                                              PostCard(feed: allFeeds[index]),
+                                              // const SizedBox(height: 16),
+                                            ],
+                                          ),
+                                        );
+                                      }, childCount: allFeeds.length + 1),
+                                    ),
+                                  ],
+                                );
+                              },
                             );
                           },
                         );
@@ -362,8 +358,28 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                 );
               },
-            );
-          },
+            ),
+            Positioned(
+              left: 0,
+              top: MediaQuery.of(context).size.height * 0.4,
+              child: InkWell(
+                onTap: () {
+                  _scaffoldKey.currentState?.openDrawer();
+                },
+                child: Container(
+                  width: 18,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    color: Colors.black12,
+                    borderRadius: BorderRadius.horizontal(
+                      right: Radius.circular(20),
+                    ),
+                  ),
+                  child: const Icon(Icons.chevron_right, size: 18),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
