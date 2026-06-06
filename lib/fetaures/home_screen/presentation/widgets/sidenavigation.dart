@@ -37,6 +37,9 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
   Widget build(BuildContext context) {
     return Drawer(
       width: MediaQuery.of(context).size.width * 0.80,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.zero,
+      ),
       child: SafeArea(
         child: ConstrainedBox(
           constraints: BoxConstraints(
@@ -130,6 +133,7 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
             isScrollControlled: true, // important for full height
             shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+
             ),
             builder: (context) {
               return AddAccount();
