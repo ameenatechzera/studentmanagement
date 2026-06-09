@@ -203,6 +203,7 @@ class _Login_ScreenState extends State<Login_Screen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     TextField(
+                      textInputAction:TextInputAction.next,
                       controller: admNoCtrl,
                       inputFormatters: [
                         FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9]')),

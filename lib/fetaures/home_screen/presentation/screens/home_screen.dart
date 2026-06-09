@@ -202,11 +202,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   String st_appVersion =
                       packageInfo.version + "+" + packageInfo.buildNumber;
                   print('st_appVersion $st_appVersion');
-                  final schoolCode =
-                  await SharedPreferenceHelper().getSchoolCode();
-                  await context.read<LoginCubit>().fetchSchools(
-                    FetchSchoolRequest(slno: schoolCode),
-                  );
+                  // final schoolCode =
+                  // await SharedPreferenceHelper().getSchoolCode();
+                  // await context.read<LoginCubit>().fetchSchools(
+                  //   FetchSchoolRequest(slno: schoolCode),
+                  // );
                   await checkForUpdate(context, st_appVersion);
                 }
 
@@ -235,6 +235,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   if (ids.length != uniqueIds.length) {
                     // duplicate detected
                   }
+                  final schoolCode =
+                  await SharedPreferenceHelper().getSchoolCode();
+                  await context.read<LoginCubit>().fetchSchools(
+                    FetchSchoolRequest(slno: schoolCode),
+                  );
+
                 }
 
                 if (state is FeedError) {

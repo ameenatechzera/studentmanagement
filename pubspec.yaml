@@ -59,6 +59,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   floor_generator: ^1.4.2
+  build_runner: ^2.1.2
   flutter_launcher_icons: ^0.14.4
   flutter_lints: ^6.0.0
 

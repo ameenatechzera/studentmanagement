@@ -27,6 +27,7 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
     try {
       final response = await http.get(Uri.parse(widget.pdfUrl));
       final dir = await getTemporaryDirectory();
+
       final file = File('${dir.path}/temp.pdf');
       await file.writeAsBytes(response.bodyBytes);
       setState(() {

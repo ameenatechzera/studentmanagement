@@ -27,6 +27,7 @@ class AttendanceRemoteDataSourceImpl implements AttendanceRemoteDataSource {
   Future<AttendanceReportByDateEntity> getAttendanceReportByDate(
     AttendanceReportByDateParameter params,
   ) async {
+    print('AttendanceReportByDateParameter ${params.toJson()}');
     try {
       final baseUrl = await SharedPreferenceHelper().getBaseUrl();
 
@@ -67,6 +68,7 @@ class AttendanceRemoteDataSourceImpl implements AttendanceRemoteDataSource {
   Future<AttendanceReportByMonthEntity> getAttendanceReportByMonth(
     AttendanceReportByMonthParameter params,
   ) async {
+    print('AttendanceReportByMonthParameter ${params.toJson()}');
     try {
       final baseUrl = await SharedPreferenceHelper().getBaseUrl();
 

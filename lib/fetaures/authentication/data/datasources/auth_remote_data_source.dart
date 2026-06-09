@@ -75,9 +75,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final url = ApiConstants.getLoginPath(baseUrl);
       final options = await ApiHelper.getAuthOptions();
 
-      // print('🔹 Login URL: $url');
-      // print('🔹 Request Body: ${params.toJson()}');
-      // print('🔹 dbName: $dbName');
+       print('🔹 Login URL: $url');
+       print('🔹 Request Body: ${params.toJson()}');
+     //  print('🔹 dbName: $dbName');
       // print('🔹 token: $dbName');
 
       final response = await dio.post(

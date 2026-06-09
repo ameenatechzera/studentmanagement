@@ -95,7 +95,7 @@ class _MaterialListPageState extends State<MaterialListPage>
       if (tab == "PDF") {
 
         matchesTab = item.material?.toLowerCase() == "pdf" ||
-            (item.documentName != null && item.documentName!.isNotEmpty);
+            (item.material != null && item.material!.isNotEmpty);
       } else if (tab == "Links") {
         matchesTab = item.material?.toLowerCase() == "link" ||
             (item.link != null && item.link!.isNotEmpty);
@@ -113,10 +113,10 @@ class _MaterialListPageState extends State<MaterialListPage>
   }
 
   String _getDisplayName(MaterialList item, String tab) {
-    if (tab == "PDF") return item.documentName ?? "Unnamed Document";
+    if (tab == "PDF") return item.material ?? "Unnamed Document";
     if (tab == "Links") return item.link ?? "No Link";
     if (tab == "Notes") return item.notes ?? "No Notes";
-    return item.documentName ?? "";
+    return item.material ?? "";
   }
 
   @override
@@ -274,7 +274,7 @@ class _MaterialListPageState extends State<MaterialListPage>
               // _openUrl(item.material);
               Navigator.push(context, MaterialPageRoute(
                 builder: (_) => PdfViewerScreen(
-                  pdfUrl: item.material!,
+                  pdfUrl: 'https://alhidaya.cristaledu.com/Api/public/'+item.material!,
                 ),
               ));
             } else if (tab == "Links") {
