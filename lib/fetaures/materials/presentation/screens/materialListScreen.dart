@@ -4,6 +4,7 @@ import 'package:studentmanagement/fetaures/materials/domain/entities/materialsBy
 import 'package:studentmanagement/fetaures/materials/domain/parameters/fetch_materialsbysubjectId.dart';
 import 'package:studentmanagement/fetaures/materials/presentation/widgets/materialNotes.dart';
 import 'package:studentmanagement/fetaures/materials/presentation/widgets/pdfViewer_screen.dart';
+import 'package:studentmanagement/services/shared_preference_helper.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:studentmanagement/core/appdata/appdata.dart';
 import 'package:studentmanagement/fetaures/materials/domain/entities/fetch_material_entity.dart';
@@ -269,12 +270,14 @@ class _MaterialListPageState extends State<MaterialListPage>
             });
           },
           // ✅ Opens in browser based on tab type
-          onTap: () {
+          onTap: () async {
             if (tab == "PDF") {
               // _openUrl(item.material);
+              final baseUrl = await SharedPreferenceHelper().getBaseUrl();
+              String? updatedUrl = baseUrl?.replaceAll("api/", "");
               Navigator.push(context, MaterialPageRoute(
                 builder: (_) => PdfViewerScreen(
-                  pdfUrl: 'https://alhidaya.cristaledu.com/Api/public/'+item.material!,
+                  pdfUrl: updatedUrl! +item.material!,
                 ),
               ));
             } else if (tab == "Links") {
