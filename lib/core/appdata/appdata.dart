@@ -11,6 +11,7 @@ class AppData {
   static String? dob;
   static String? profileUrl;
   static String? gender;
+  static String? schoolName;
   // Simple global state manager
   static ValueNotifier<bool> showDeleteButtonNotifier = ValueNotifier(false);
   //final deleteButtonNotifier = ValueNotifier<bool>(false);

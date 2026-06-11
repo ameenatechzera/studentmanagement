@@ -82,6 +82,8 @@ class _Login_ScreenState extends State<Login_Screen> {
 
   final TextEditingController _deviceIdController = TextEditingController();
 
+  String schoolName ='';
+
   // ── ADDED: error state variables ──
   String? _admNoError;
   String? _dobError;
@@ -155,7 +157,7 @@ class _Login_ScreenState extends State<Login_Screen> {
                     horizontal: 24,
                     vertical: 40,
                   ),
-                  child: const Column(
+                  child:  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
@@ -169,7 +171,7 @@ class _Login_ScreenState extends State<Login_Screen> {
                       ),
                       SizedBox(height: 8),
                       Text(
-                        "North Park Academy",
+                        AppData.schoolName!,
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 22,
@@ -546,6 +548,10 @@ class _Login_ScreenState extends State<Login_Screen> {
       return iosInfo.identifierForVendor ?? 'unknown-ios-id';
     }
 
+
+     schoolName =
+    (await SharedPreferenceHelper().getSchoolName())!;
+    print('schoolName $schoolName');
     return 'unsupported-platform';
   }
 }

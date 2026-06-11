@@ -106,9 +106,9 @@ class PendingFee extends StatelessWidget {
 
                                   const SizedBox(height: 6),
 
-                                  /// RED TEXT (like design)
+                                  /// RED TEXT (like Due Date)
                                   Text(
-                                    fee.ledgerName,
+                                    fee.dueDate,
                                     style: const TextStyle(
                                       fontSize: 13,
                                       color: Colors.red,

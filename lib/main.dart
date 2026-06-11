@@ -1,3 +1,5 @@
+// import 'package:firebase_core/firebase_core.dart';
+// import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:media_store_plus/media_store_plus.dart';
@@ -9,6 +11,7 @@ import 'package:studentmanagement/fetaures/home_screen/presentation/cubit/feed_c
 import 'package:studentmanagement/fetaures/marklist/presentation/cubit/marklist_cubit.dart';
 import 'package:studentmanagement/fetaures/materials/presentation/cubit/material_cubit.dart';
 import 'package:studentmanagement/fetaures/timetable/presentation/cubit/timetable_cubit.dart';
+// import 'package:studentmanagement/services/notification_service.dart';
 import 'package:studentmanagement/services/service_locator.dart';
 import 'fetaures/authentication/presentation/bloc/logincubit/login_cubit.dart';
 import 'fetaures/fees/presentation/unPaidFee/un_paid_fee_cubit.dart';
@@ -27,21 +30,16 @@ void main() async {
   // );
   // appDb = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
   await ServiceLocator.init();
-  //final sharedPrefHelper = SharedPreferenceHelper();
+  WidgetsFlutterBinding.ensureInitialized();
 
-  // set the default URL if not already set
-  // final currentBaseUrl = await sharedPrefHelper.getBaseUrl();
-  // if (currentBaseUrl == null) {
-  //   // await sharedPrefHelper.setBaseUrl(
-  //   //   // 'https://cristalofflineweb.techzera.in/Api/public/api',
-  //   //   //'https://test.cristaledu.com/Api/public/api',
-  //   //   //'https://cristalwebonline.techzera.in/Api/public/api',
-  //   //   // 'https://online.cristaledu.com/Api/public/api/app',
-
-  //   //   //'https://fsp.cristaledu.com/Api/public/api',
-  //   //   'https://online.cristaledu.com/Api/public/api',
-  //   // );
-  // }
+  // // ✅ Initialize Firebase first
+  // await Firebase.initializeApp();
+  //
+  // // ✅ Register background handler before runApp
+  // FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+  //
+  // // ✅ Initialize notification service
+  // await NotificationService.init();
   runApp(MyApp());
 }
 
