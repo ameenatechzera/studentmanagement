@@ -1,5 +1,5 @@
-// import 'package:firebase_core/firebase_core.dart';
-// import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:media_store_plus/media_store_plus.dart';
@@ -11,43 +11,34 @@ import 'package:studentmanagement/fetaures/home_screen/presentation/cubit/feed_c
 import 'package:studentmanagement/fetaures/marklist/presentation/cubit/marklist_cubit.dart';
 import 'package:studentmanagement/fetaures/materials/presentation/cubit/material_cubit.dart';
 import 'package:studentmanagement/fetaures/timetable/presentation/cubit/timetable_cubit.dart';
-// import 'package:studentmanagement/services/notification_service.dart';
+import 'package:studentmanagement/services/notification_service.dart';
 import 'package:studentmanagement/services/service_locator.dart';
 import 'fetaures/authentication/presentation/bloc/logincubit/login_cubit.dart';
 import 'fetaures/fees/presentation/unPaidFee/un_paid_fee_cubit.dart';
 
-// late final AppDatabase appDb;
+
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await MediaStore.ensureInitialized();
-  MediaStore.appFolder = "Cristal";
-  // SystemChrome.setSystemUIOverlayStyle(
-  //   const SystemUiOverlayStyle(
-  //     statusBarColor: AppColors.theme,
-  //     statusBarIconBrightness: Brightness.dark,
-  //     //statusBarBrightness: Brightness.dark,
-  //   ),
-  // );
-  // appDb = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
+   MediaStore.appFolder = "Cristal";
+  // try {
+  //   await Firebase.initializeApp(); // ← no options needed
+  //   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+  //   await NotificationService.init();
+  //   await MediaStore.ensureInitialized();
+  //
+  // } catch (e, st) {
+  //   debugPrint('Startup error: $e\n$st');
+  // }
   await ServiceLocator.init();
-  WidgetsFlutterBinding.ensureInitialized();
-
-  // // ✅ Initialize Firebase first
-  // await Firebase.initializeApp();
-  //
-  // // ✅ Register background handler before runApp
-  // FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-  //
-  // // ✅ Initialize notification service
-  // await NotificationService.init();
-  runApp(MyApp());
+  runApp(const MyApp());
 }
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
+
     return MultiBlocProvider(
       providers: [
         BlocProvider<LoginCubit>(create: (_) => sl<LoginCubit>()),

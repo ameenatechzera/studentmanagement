@@ -1,9 +1,12 @@
 import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:media_store_plus/media_store_plus.dart';
 import 'package:studentmanagement/core/appdata/appdata.dart';
 import 'package:studentmanagement/core/navigation/app_navigator.dart';
 import 'package:studentmanagement/core/utils/widgets/app_snackbar.dart';
@@ -11,6 +14,7 @@ import 'package:studentmanagement/fetaures/authentication/data/models/account_de
 import 'package:studentmanagement/fetaures/authentication/domain/parameters/login_params.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/bloc/logincubit/login_cubit.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/screens/main_screen.dart';
+import 'package:studentmanagement/services/notification_service.dart';
 import 'package:studentmanagement/services/shared_preference_helper.dart';
 
 class Login_Screen extends StatefulWidget {
@@ -91,6 +95,7 @@ class _Login_ScreenState extends State<Login_Screen> {
 
   @override
   void initState() {
+
     getDeviceId();
     super.initState();
   }
@@ -171,8 +176,8 @@ class _Login_ScreenState extends State<Login_Screen> {
                       ),
                       SizedBox(height: 8),
                       Text(
-                        AppData.schoolName!,
-                        style: TextStyle(
+                        AppData.schoolName ?? 'School Name',
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 22,
                           fontWeight: FontWeight.w700,
@@ -389,14 +394,14 @@ class _Login_ScreenState extends State<Login_Screen> {
                     AppData.studentClass =
                         '${state.loginResponse.student!.studentStandard} - ${state.loginResponse.student!.studentDivision}'
                             .toString();
-                    print(
-                      'profileUrl ${state.loginResponse.student!.imageUrl.toString()}',
-                    );
-                    AppData.profileUrl = state
-                        .loginResponse
-                        .student!
-                        .imageUrl
-                        .toString();
+                    // print(
+                    //   'profileUrl ${state.loginResponse.student!.imageUrl.toString()}',
+                    // );
+                    // AppData.profileUrl = state
+                    //     .loginResponse
+                    //     .student!
+                    //     .imageUrl
+                    //     .toString();
                     await SharedPreferenceHelper.saveNewAccount(
                       AccountDetails(
                         admissionNo: state.loginResponse.student!.admno
@@ -534,6 +539,8 @@ class _Login_ScreenState extends State<Login_Screen> {
   }
 
   Future<String> getDeviceId() async {
+
+
     final deviceInfo = DeviceInfoPlugin();
 
     if (Platform.isAndroid) {

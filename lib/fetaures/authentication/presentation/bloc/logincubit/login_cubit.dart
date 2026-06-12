@@ -90,21 +90,17 @@ class LoginCubit extends Cubit<LoginState> {
           emit(FetchSchoolFailure(failure.message));
         },
         (response) async {
-          print(response.status);
-          print("schoolResponse $response");
-          if(response.status==200) {
+          if(response.status==200 || response.status==201) {
+            print("schoolResponse $response");
             final pref = SharedPreferenceHelper();
             await pref.setAppStoreVersion(
                 response.schoolDetails!.first.appStoreVersion!);
             await pref.setPlayStoreVersion(
                 response.schoolDetails!.first.playStoreVersion!);
-            await pref.setSchoolName(response.schoolDetails!.first.schoolName!);
             AppData.schoolName = response.schoolDetails!.first.schoolName!;
             emit(FetchSchoolSuccess(response));
           }
-          else if(response.status==404){
-            print('message ${response.message}');
-
+          else{
             emit(FetchSchoolSuccess(response));
           }
         },

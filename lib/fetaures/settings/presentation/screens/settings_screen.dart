@@ -145,9 +145,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                         branchData!["currencyId"] == "1"
                                             ? 'assets/images/cristal_horizontal.png'
                                             : 'assets/images/cristal_horizontal.png',
-                                        fit: BoxFit.cover,
-                                        width: 120,
-                                        height: 120,
+                                        //fit: BoxFit.cover,
+                                        width: 150,
+                                        height: 150,
                                       ),
                                       // const SizedBox(height: 34),
                                       //
@@ -179,9 +179,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                               padding: EdgeInsets.only(top: 12),
 
                                               child: Text(
-                                                branchData?["Email"]
-                                                        .toString() ??
-                                                    "No Email",
+                                                "Ctistaledu.com",
 
                                                 style: TextStyle(
                                                   fontSize: 15,
@@ -231,9 +229,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                                 },
 
                                                 child: Text(
-                                                  branchData?["Website"]
-                                                          .toString() ??
-                                                      "No Website",
+                                                 "Support@cristaledu.com",
                                                   style: TextStyle(
                                                     fontSize: 15,
                                                     fontWeight: FontWeight.w500,
@@ -251,84 +247,84 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                       const SizedBox(height: 10),
 
                                       /// LOCATION
-                                      Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Container(
-                                            height: 54,
-                                            width: 54,
-
-                                            decoration: BoxDecoration(
-                                              color: const Color(0xffEAF8EF),
-                                              shape: BoxShape.circle,
-                                            ),
-
-                                            child: const Icon(
-                                              Icons.location_on_rounded,
-                                              color: Color(0xff29A35A),
-                                              size: 28,
-                                            ),
-                                          ),
-
-                                          const SizedBox(width: 18),
-
-                                          Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                branchData!["post_Pin"] ??
-                                                    "",
-                                                style: TextStyle(
-                                                  fontSize: 12.5,
-                                                  height: 1.4,
-                                                  fontWeight: FontWeight.w500,
-                                                  color: Color(0xff252525),
-                                                ),
-                                              ),
-
-                                              SizedBox(height: 3),
-                                              Text(
-                                                branchData!["District"] ??
-                                                    "",
-                                                style: TextStyle(
-                                                  fontSize: 12.5,
-                                                  height: 1.4,
-                                                  fontWeight: FontWeight.w500,
-                                                  color: Color(0xff252525),
-                                                ),
-                                              ),
-
-                                              SizedBox(height: 3),
-
-                                              Text(
-                                                branchData!["State"] ??
-                                                    "",
-
-                                                style: TextStyle(
-                                                  fontSize: 12.5,
-                                                  height: 1.4,
-                                                  fontWeight: FontWeight.w500,
-                                                  color: Color(0xff252525),
-                                                ),
-                                              ),
-
-                                              SizedBox(height: 3),
-
-                                              Text(
-                                                AppData.place!,
-                                                style: TextStyle(
-                                                  fontSize: 12.5,
-                                                  height: 1.4,
-                                                  fontWeight: FontWeight.w500,
-                                                  color: Color(0xff252525),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
+                                      // Row(
+                                      //   crossAxisAlignment:
+                                      //       CrossAxisAlignment.start,
+                                      //   children: [
+                                      //     Container(
+                                      //       height: 54,
+                                      //       width: 54,
+                                      //
+                                      //       decoration: BoxDecoration(
+                                      //         color: const Color(0xffEAF8EF),
+                                      //         shape: BoxShape.circle,
+                                      //       ),
+                                      //
+                                      //       child: const Icon(
+                                      //         Icons.location_on_rounded,
+                                      //         color: Color(0xff29A35A),
+                                      //         size: 28,
+                                      //       ),
+                                      //     ),
+                                      //
+                                      //     const SizedBox(width: 18),
+                                      //
+                                      //     // Column(
+                                      //     //   crossAxisAlignment:
+                                      //     //       CrossAxisAlignment.start,
+                                      //     //   children: [
+                                      //     //     Text(
+                                      //     //       branchData!["post_Pin"] ??
+                                      //     //           "",
+                                      //     //       style: TextStyle(
+                                      //     //         fontSize: 12.5,
+                                      //     //         height: 1.4,
+                                      //     //         fontWeight: FontWeight.w500,
+                                      //     //         color: Color(0xff252525),
+                                      //     //       ),
+                                      //     //     ),
+                                      //     //
+                                      //     //     SizedBox(height: 3),
+                                      //     //     Text(
+                                      //     //       branchData!["District"] ??
+                                      //     //           "",
+                                      //     //       style: TextStyle(
+                                      //     //         fontSize: 12.5,
+                                      //     //         height: 1.4,
+                                      //     //         fontWeight: FontWeight.w500,
+                                      //     //         color: Color(0xff252525),
+                                      //     //       ),
+                                      //     //     ),
+                                      //     //
+                                      //     //     SizedBox(height: 3),
+                                      //     //
+                                      //     //     Text(
+                                      //     //       branchData!["State"] ??
+                                      //     //           "",
+                                      //     //
+                                      //     //       style: TextStyle(
+                                      //     //         fontSize: 12.5,
+                                      //     //         height: 1.4,
+                                      //     //         fontWeight: FontWeight.w500,
+                                      //     //         color: Color(0xff252525),
+                                      //     //       ),
+                                      //     //     ),
+                                      //     //
+                                      //     //     SizedBox(height: 3),
+                                      //     //
+                                      //     //     Text(
+                                      //     //       AppData.place!,
+                                      //     //       style: TextStyle(
+                                      //     //         fontSize: 12.5,
+                                      //     //         height: 1.4,
+                                      //     //         fontWeight: FontWeight.w500,
+                                      //     //         color: Color(0xff252525),
+                                      //     //       ),
+                                      //     //     ),
+                                      //     //   ],
+                                      //     // ),
+                                      //   ],
+                                      // ),
                                     ],
                                   ),
 

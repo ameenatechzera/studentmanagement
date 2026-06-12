@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl/intl.dart';
 import 'package:studentmanagement/fetaures/fees/presentation/unPaidFee/un_paid_fee_cubit.dart';
 import 'package:studentmanagement/fetaures/fees/presentation/widgets/pendingfee_skeleton.dart';
 
@@ -24,7 +25,13 @@ class PendingFee extends StatelessWidget {
             physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
               final fee = feesUnpaidList[index];
+              String formatedDate = fee.dueDate;
+              try {
+                formatedDate = DateFormat('dd-MM-yyyy')
+                    .format(DateTime.parse(fee.dueDate ?? ''));
+              }catch(_){
 
+              }
               return Padding(
                 padding: const EdgeInsets.only(top: 8),
                 child: Container(
@@ -108,7 +115,8 @@ class PendingFee extends StatelessWidget {
 
                                   /// RED TEXT (like Due Date)
                                   Text(
-                                    fee.dueDate,
+                                      formatedDate,
+
                                     style: const TextStyle(
                                       fontSize: 13,
                                       color: Colors.red,
