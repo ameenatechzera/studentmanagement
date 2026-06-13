@@ -38,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
 
     print("🚀 INIT → Fetch page 1");
-    getVersion();
+    //getVersion();
     _fetchFeeds(page: 1);
 
     _scrollController.addListener(() {
@@ -81,7 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
     //   fontSize: 16.0,
     // );
 
-    if (storeVersion.isNotEmpty && storeVersion.trim() != appVersion.trim()) {
+    if (storeVersion.isNotEmpty && storeVersion.trim() == appVersion.trim()) {
       showDialog(
         context: context,
         barrierDismissible: false,
@@ -139,7 +139,7 @@ class _HomeScreenState extends State<HomeScreen> {
     checkForUpdate(context, st_appVersion!);
   }
 
-  void _fetchFeeds({required int page}) {
+  Future<void> _fetchFeeds({required int page}) async {
     print("🌐 API CALL → page: $page");
 
     context.read<FeedCubit>().fetchFeeds(
@@ -153,6 +153,7 @@ class _HomeScreenState extends State<HomeScreen> {
         perPage: 12,
       ),
     );
+
   }
 
   void loadMoreData() {
@@ -187,7 +188,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    getVersion();
+    //getVersion();
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: Colors.white,
@@ -201,12 +202,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   final packageInfo = await PackageInfo.fromPlatform();
                   String st_appVersion =
                       packageInfo.version + "+" + packageInfo.buildNumber;
-                  print('st_appVersion $st_appVersion');
-                  // final schoolCode =
-                  // await SharedPreferenceHelper().getSchoolCode();
-                  // await context.read<LoginCubit>().fetchSchools(
-                  //   FetchSchoolRequest(slno: schoolCode),
-                  // );
+                  print('st_appVersionVersion $st_appVersion');
+
                   await checkForUpdate(context, st_appVersion);
                 }
 
@@ -237,7 +234,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   }
                   final schoolCode =
                   await SharedPreferenceHelper().getSchoolCode();
-                  await context.read<LoginCubit>().fetchSchools(
+                  await context.read<FeedCubit>().fetchVersionDetails(
                     FetchSchoolRequest(slno: schoolCode),
                   );
 
