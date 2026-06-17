@@ -119,9 +119,10 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         },
       );
-    } else {
-      _fetchFeeds(page: 1);
     }
+    // else {
+    //   _fetchFeeds(page: 1);
+    // }
   }
 
   Future<void> getVersion() async {

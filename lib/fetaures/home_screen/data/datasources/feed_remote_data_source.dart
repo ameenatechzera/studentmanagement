@@ -159,10 +159,11 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
       print('\n🔥 RAW RESPONSE TYPE: ${response.data.runtimeType}');
       print('🔥 RAW RESPONSE FULL: ${response.data}');
 
+
       if (response.statusCode == 200 || response.statusCode == 201) {
         final dataList = response.data['data'];
 
-        print('\n📦 TOTAL ITEMS: ${dataList.length}');
+       // print('\n📦 TOTAL ITEMS: ${dataList.length}');
 
         /// 🔥 LOOP ALL ITEMS
         for (var item in dataList) {

@@ -16,7 +16,12 @@ class UnpaidFeeResult extends Equatable {
   final List<Datum> data;
   static const String dataKey = "data";
 
-  UnpaidFeeResult copyWith({int? status, bool? error, List<Datum>? data}) {
+
+  UnpaidFeeResult copyWith({
+    int? status,
+    bool? error,
+    List<Datum>? data,
+  }) {
     return UnpaidFeeResult(
       status: status ?? this.status,
       error: error ?? this.error,
@@ -24,60 +29,96 @@ class UnpaidFeeResult extends Equatable {
     );
   }
 
-  factory UnpaidFeeResult.fromJson(Map<String, dynamic> json) {
+  factory UnpaidFeeResult.fromJson(Map<String, dynamic> json){
     return UnpaidFeeResult(
       status: json["status"] ?? 0,
       error: json["error"] ?? false,
-      data: json["data"] == null
-          ? []
-          : List<Datum>.from(json["data"]!.map((x) => Datum.fromJson(x))),
+      data: json["data"] == null ? [] : List<Datum>.from(json["data"]!.map((x) => Datum.fromJson(x))),
     );
   }
 
   Map<String, dynamic> toJson() => {
     "status": status,
     "error": error,
-    "data": data.map((x) => x.toJson()).toList(),
+    "data": data.map((x) => x?.toJson()).toList(),
   };
 
   @override
-  String toString() {
+  String toString(){
     return "$status, $error, $data, ";
   }
 
   @override
-  List<Object?> get props => [status, error, data];
+  List<Object?> get props => [
+    status, error, data, ];
 }
 
 class Datum extends Equatable {
   Datum({
-    required this.accYear,
-    required this.feeMonthId,
     required this.feeMonth,
-    required this.ledgerId,
-    required this.ledgerName,
-    required this.amount,
-    required this.paidAmount,
-    required this.feePaymentDetailsId,
-    required this.taxId,
-    required this.taxName,
-    required this.taxAmt,
-    required this.floodCess,
-    required this.narration,
-    required this.dueDate
+    required this.dueDate,
+    required this.totalBalance,
+    required this.details,
   });
-
-  final String accYear;
-  static const String accYearKey = "AccYear";
-
-  final String feeMonthId;
-  static const String feeMonthIdKey = "FeeMonthId";
 
   final String feeMonth;
   static const String feeMonthKey = "FeeMonth";
 
-  final String ledgerId;
-  static const String ledgerIdKey = "LedgerId";
+  final String? dueDate;
+  static const String dueDateKey = "DueDate";
+
+  final String totalBalance;
+  static const String totalBalanceKey = "TotalBalance";
+
+  final List<Detail> details;
+  static const String detailsKey = "details";
+
+
+  Datum copyWith({
+    String? feeMonth,
+    String? dueDate,
+    String? totalBalance,
+    List<Detail>? details,
+  }) {
+    return Datum(
+      feeMonth: feeMonth ?? this.feeMonth,
+      dueDate: dueDate ?? this.dueDate,
+      totalBalance: totalBalance ?? this.totalBalance,
+      details: details ?? this.details,
+    );
+  }
+
+  factory Datum.fromJson(Map<String, dynamic> json){
+    return Datum(
+      feeMonth: json["FeeMonth"] ?? "",
+      dueDate: json["DueDate"] ?? "",
+      totalBalance: json["TotalBalance"] ?? "",
+      details: json["details"] == null ? [] : List<Detail>.from(json["details"]!.map((x) => Detail.fromJson(x))),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    "FeeMonth": feeMonth,
+    "DueDate": dueDate,
+    "TotalBalance": totalBalance,
+    "details": details.map((x) => x?.toJson()).toList(),
+  };
+
+  @override
+  String toString(){
+    return "$feeMonth, $dueDate, $totalBalance, $details, ";
+  }
+
+  @override
+  List<Object?> get props => [
+    feeMonth, dueDate, totalBalance, details, ];
+}
+
+class Detail extends Equatable {
+  Detail({
+    required this.ledgerName,
+    required this.amount,
+  });
 
   final String ledgerName;
   static const String ledgerNameKey = "LedgerName";
@@ -85,119 +126,35 @@ class Datum extends Equatable {
   final String amount;
   static const String amountKey = "Amount";
 
-  final String paidAmount;
-  static const String paidAmountKey = "PaidAmount";
 
-  final String feePaymentDetailsId;
-  static const String feePaymentDetailsIdKey = "FeePaymentDetailsId";
-
-  final dynamic taxId;
-  static const String taxIdKey = "taxId";
-
-  final dynamic taxName;
-  static const String taxNameKey = "taxName";
-
-  final String taxAmt;
-  static const String taxAmtKey = "TaxAmt";
-
-  final String floodCess;
-  static const String floodCessKey = "FloodCess";
-
-  final String narration;
-  static const String narrationKey = "Narration";
-
-  final String dueDate;
-  static const String dueDateKey = "DueDate";
-
-  Datum copyWith({
-    String? accYear,
-    String? feeMonthId,
-    String? feeMonth,
-    String? ledgerId,
+  Detail copyWith({
     String? ledgerName,
     String? amount,
-    String? paidAmount,
-    String? feePaymentDetailsId,
-    dynamic taxId,
-    dynamic taxName,
-    String? taxAmt,
-    String? floodCess,
-    String? narration,
   }) {
-    return Datum(
-      accYear: accYear ?? this.accYear,
-      feeMonthId: feeMonthId ?? this.feeMonthId,
-      feeMonth: feeMonth ?? this.feeMonth,
-      ledgerId: ledgerId ?? this.ledgerId,
+    return Detail(
       ledgerName: ledgerName ?? this.ledgerName,
       amount: amount ?? this.amount,
-      paidAmount: paidAmount ?? this.paidAmount,
-      feePaymentDetailsId: feePaymentDetailsId ?? this.feePaymentDetailsId,
-      taxId: taxId ?? this.taxId,
-      taxName: taxName ?? this.taxName,
-      taxAmt: taxAmt ?? this.taxAmt,
-      floodCess: floodCess ?? this.floodCess,
-      narration: narration ?? this.narration,
-      dueDate: narration ?? this.dueDate,
     );
   }
 
-  factory Datum.fromJson(Map<String, dynamic> json) {
-    return Datum(
-      accYear: json["AccYear"] ?? "",
-      feeMonthId: json["FeeMonthId"] ?? "",
-      feeMonth: json["FeeMonth"] ?? "",
-      ledgerId: json["LedgerId"] ?? "",
+  factory Detail.fromJson(Map<String, dynamic> json){
+    return Detail(
       ledgerName: json["LedgerName"] ?? "",
       amount: json["Amount"] ?? "",
-      paidAmount: json["PaidAmount"] ?? "",
-      feePaymentDetailsId: json["FeePaymentDetailsId"] ?? "",
-      taxId: json["taxId"],
-      taxName: json["taxName"],
-      taxAmt: json["TaxAmt"] ?? "",
-      floodCess: json["FloodCess"] ?? "",
-      narration: json["Narration"] ?? "",
-        dueDate: json["DueDate"] ?? ""
     );
   }
 
   Map<String, dynamic> toJson() => {
-    "AccYear": accYear,
-    "FeeMonthId": feeMonthId,
-    "FeeMonth": feeMonth,
-    "LedgerId": ledgerId,
     "LedgerName": ledgerName,
     "Amount": amount,
-    "PaidAmount": paidAmount,
-    "FeePaymentDetailsId": feePaymentDetailsId,
-    "taxId": taxId,
-    "taxName": taxName,
-    "TaxAmt": taxAmt,
-    "FloodCess": floodCess,
-    "Narration": narration,
-    "DueDate": dueDate,
   };
 
   @override
-  String toString() {
-    return "$accYear, $feeMonthId, $feeMonth, $ledgerId, $ledgerName, $amount, $paidAmount, $feePaymentDetailsId, $taxId, $taxName, $taxAmt, $floodCess, $narration,$dueDate ";
+  String toString(){
+    return "$ledgerName, $amount, ";
   }
 
   @override
   List<Object?> get props => [
-    accYear,
-    feeMonthId,
-    feeMonth,
-    ledgerId,
-    ledgerName,
-    amount,
-    paidAmount,
-    feePaymentDetailsId,
-    taxId,
-    taxName,
-    taxAmt,
-    floodCess,
-    narration,
-    dueDate
-  ];
+    ledgerName, amount, ];
 }

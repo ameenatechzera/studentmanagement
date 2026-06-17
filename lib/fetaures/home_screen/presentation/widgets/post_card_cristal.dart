@@ -49,7 +49,12 @@ class _PostCardState extends State<PostCard> {
             children: [
               CircleAvatar(
                 radius: 20,
-                backgroundImage: NetworkImage(AppData.logo!),
+                backgroundImage: AppData.logo != null
+                    ? NetworkImage(AppData.logo!)
+                    : null,
+                child: AppData.logo == null
+                    ? const Icon(Icons.person)
+                    : null,
               ),
               //
               Expanded(
