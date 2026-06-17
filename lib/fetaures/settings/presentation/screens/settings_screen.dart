@@ -172,7 +172,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                               child: Text(
                                                 branchData?["Email"]
                                                         .toString() ??
-                                                    "No Email",
+                                                    "Null",
 
                                                 style: TextStyle(
                                                   fontSize: 15,
@@ -224,7 +224,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                                 child: Text(
                                                   branchData?["Website"]
                                                           .toString() ??
-                                                      "No Website",
+                                                      "Null",
                                                   style: TextStyle(
                                                     fontSize: 15,
                                                     fontWeight: FontWeight.w500,
@@ -270,7 +270,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                             children: [
                                               Text(
                                                 branchData!["post_Pin"] ??
-                                                    "No Postpin",
+                                                    "Null",
                                                 style: TextStyle(
                                                   fontSize: 12.5,
                                                   height: 1.4,
@@ -283,7 +283,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                                               Text(
                                                 branchData!["District"] ??
-                                                    "No District",
+                                                    "Null",
                                                 style: TextStyle(
                                                   fontSize: 12.5,
                                                   height: 1.4,
@@ -295,8 +295,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                               SizedBox(height: 3),
 
                                               Text(
-                                                branchData!["State"] ??
-                                                    "No State",
+                                                branchData!["State"] ?? "Null",
 
                                                 style: TextStyle(
                                                   fontSize: 12.5,
@@ -501,7 +500,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           SizedBox(height: 3),
 
                           Text(
-                            AppData.place!,
+                            AppData.place ?? '',
                             style: TextStyle(
                               fontSize: 12.5,
                               height: 1.4,

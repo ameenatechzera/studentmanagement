@@ -53,6 +53,11 @@ class FeedDetailsModel extends FeedDetails {
     super.createdTime,
     super.modifiedDateFormatted,
     super.modifiedTime,
+    super.classStandardId,
+    super.classDivisionId,
+    super.classStandardName,
+    super.classDivisionName,
+    super.subjects,
   });
   factory FeedDetailsModel.fromJson(Map<String, dynamic> json) {
     print("🧩 FROM JSON → IsLiked: ${json['IsLiked']}");
@@ -111,6 +116,16 @@ class FeedDetailsModel extends FeedDetails {
       createdTime: json['CreatedTime']?.toString(),
       modifiedDateFormatted: json['ModifiedDateFormatted']?.toString(),
       modifiedTime: json['ModifiedTime']?.toString(),
+      classStandardId: json['ClassStandardId'],
+      classDivisionId: json['ClassDivisionId'],
+      classStandardName: json['ClassStandardName']?.toString(),
+      classDivisionName: json['ClassDivisionName']?.toString(),
+
+      subjects: json['Subjects'] == null
+          ? []
+          : (json['Subjects'] as List)
+                .map((e) => FeedSubjectModel.fromJson(e))
+                .toList(),
     );
   }
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:media_store_plus/media_store_plus.dart';
+import 'package:studentmanagement/core/database/app_database.dart';
+import 'package:studentmanagement/core/database/database_init.dart';
 import 'package:studentmanagement/fetaures/attendence/presentation/cubit/attendence_cubit.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/screens/appstart_screen.dart';
 import 'package:studentmanagement/fetaures/classdiary/presentation/cubit/diary_cubit.dart';
@@ -13,9 +15,10 @@ import 'package:studentmanagement/services/service_locator.dart';
 import 'fetaures/authentication/presentation/bloc/logincubit/login_cubit.dart';
 import 'fetaures/fees/presentation/unPaidFee/un_paid_fee_cubit.dart';
 
-// late final AppDatabase appDb;
+//late AppDatabase db;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  print("🚀 STEP 1: Flutter binding ready");
   await MediaStore.ensureInitialized();
   MediaStore.appFolder = "Cristal";
   // SystemChrome.setSystemUIOverlayStyle(
@@ -25,10 +28,18 @@ void main() async {
   //     //statusBarBrightness: Brightness.dark,
   //   ),
   // );
-  // appDb = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
-  await ServiceLocator.init();
-  //final sharedPrefHelper = SharedPreferenceHelper();
+  // 1. CREATE DB FIRST
+  // ✅ initialize Floor DB here
+  // 1️⃣ INIT DB FIRST
+  await DatabaseInit.init();
 
+  print("🟢 STEP 2: DB initialized");
+  await ServiceLocator.init();
+  print("🟢 STEP 3: ServiceLocator ready");
+
+  //final sharedPrefHelper = SharedPreferenceHelper();
+  //db = await $FloorAppDatabase.databaseBuilder('app.db').build();
+  // db = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
   // set the default URL if not already set
   // final currentBaseUrl = await sharedPrefHelper.getBaseUrl();
   // if (currentBaseUrl == null) {
@@ -42,7 +53,13 @@ void main() async {
   //   //   'https://online.cristaledu.com/Api/public/api',
   //   // );
   // }
+  FlutterError.onError = (FlutterErrorDetails details) {
+    debugPrint("🔥 FLUTTER ERROR");
+    debugPrint(details.exceptionAsString());
+    debugPrint(details.stack.toString());
+  };
   runApp(MyApp());
+  print("🟢 STEP 4: App started");
 }
 
 class MyApp extends StatelessWidget {

@@ -31,7 +31,6 @@ class FeedError extends FeedState {
   List<Object?> get props => [message];
 }
 
-
 class VersionFetchError extends FeedState {
   final String message;
 
@@ -67,4 +66,30 @@ class FeedActionError extends FeedState {
 
   @override
   List<Object?> get props => [message];
+}
+
+class CachedFeedLoading extends FeedState {}
+
+class CachedFeedLoaded extends FeedState {
+  final List<FeedDetails> feeds;
+
+  const CachedFeedLoaded({required this.feeds});
+
+  @override
+  List<Object?> get props => [feeds];
+}
+
+class CachedFeedError extends FeedState {
+  final String message;
+
+  const CachedFeedError(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
+class FeedLoadedFromLocal extends FeedState {
+  final List<FeedDetails> feeds;
+
+  FeedLoadedFromLocal(this.feeds);
 }

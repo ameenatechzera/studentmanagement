@@ -738,51 +738,74 @@ class _TimeTableScreenState extends State<TimeTableScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: _buildAppBar(),
         body: SafeArea(
-          child: BlocBuilder<TimetableCubit, TimetableState>(
-            builder: (context, state) {
-              return CustomScrollView(
-                slivers: [
-                  SliverToBoxAdapter(child: _buildCalendar()),
-      
-                  const SliverToBoxAdapter(child: SizedBox(height: 18)),
-      
-                  if (state is TimetableLoading)
-                    SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(12, 0, 12, 20),
-                      sliver: SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                          (context, index) => const Padding(
-                            padding: EdgeInsets.only(bottom: 12),
-                            child: PendingFeeShimmer(),
+          child: GestureDetector(
+            onHorizontalDragEnd: (details) {
+              if (details.primaryVelocity == null) return;
+
+              if (details.primaryVelocity! < 0) {
+                // swipe left → next day
+                _changeDay(1);
+              } else if (details.primaryVelocity! > 0) {
+                // swipe right → previous day
+                _changeDay(-1);
+              }
+            },
+            child: BlocBuilder<TimetableCubit, TimetableState>(
+              builder: (context, state) {
+                return CustomScrollView(
+                  slivers: [
+                    SliverToBoxAdapter(child: _buildCalendar()),
+
+                    const SliverToBoxAdapter(child: SizedBox(height: 18)),
+
+                    if (state is TimetableLoading)
+                      SliverPadding(
+                        padding: const EdgeInsets.fromLTRB(12, 0, 12, 20),
+                        sliver: SliverList(
+                          delegate: SliverChildBuilderDelegate(
+                            (context, index) => const Padding(
+                              padding: EdgeInsets.only(bottom: 12),
+                              child: PendingFeeShimmer(),
+                            ),
+                            childCount: 6,
                           ),
-                          childCount: 6,
                         ),
                       ),
-                    ),
-      
-                  if (state is TimetableError)
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: Center(child: Text(state.message)),
+
+                    if (state is TimetableError)
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Center(child: Text(state.message)),
+                        ),
                       ),
-                    ),
-      
-                  if (state is TimetableLoaded) _buildTimetableList(state),
-                  if (state is DaySelectionChanged)
-                    _buildTimetableDaySelectedList(state),
-                ],
-              );
-            },
+
+                    if (state is TimetableLoaded) _buildTimetableList(state),
+                    if (state is DaySelectionChanged)
+                      _buildTimetableDaySelectedList(state),
+                  ],
+                );
+              },
+            ),
           ),
         ),
       ),
     );
+  }
+
+  void _changeDay(int offset) {
+    final current = _selectedDay.value ?? _focusedDay.value;
+
+    final changedDay = current.add(Duration(days: offset));
+
+    _selectedDay.value = changedDay;
+    _focusedDay.value = changedDay;
+
+    _fetchTimetable();
   }
 
   Widget _buildTimetableList(TimetableLoaded state) {

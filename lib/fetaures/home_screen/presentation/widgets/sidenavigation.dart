@@ -122,50 +122,63 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
   Widget _headerSection() {
     return Padding(
       padding: const EdgeInsets.all(16.0),
-      child: InkWell(
-        onTap: () {
-          Navigator.pop(context);
-          showModalBottomSheet(
-            context: context,
-            isScrollControlled: true, // important for full height
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-            ),
-            builder: (context) {
-              return AddAccount();
-            },
-          );
-        },
-        child: Row(
-          children: [
-            const CircleAvatar(
-              radius: 30,
-              backgroundImage: AssetImage('assets/images/man.png'),
-            ),
-            const SizedBox(width: 12),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  "Welcome",
-                  style: TextStyle(fontSize: 13, color: Colors.grey),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 25,
+            backgroundImage:
+                (AppData.profileUrl != null && AppData.profileUrl!.isNotEmpty)
+                ? NetworkImage(AppData.profileUrl!)
+                : null,
+            child: (AppData.profileUrl == null || AppData.profileUrl!.isEmpty)
+                ? ClipOval(
+                    child: Image.asset(
+                      getGenderImage(),
+                      fit: BoxFit.cover,
+                      width: 50,
+                      height: 50,
+                    ),
+                  )
+                : null,
+          ),
+          // const CircleAvatar(
+          //   radius: 30,
+          //   backgroundImage: AssetImage('assets/images/man.png'),
+          // ),
+          const SizedBox(width: 12),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Welcome",
+                style: TextStyle(fontSize: 13, color: Colors.grey),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                AppData.studentName!,
+                style: const TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  AppData.studentName!,
-                  style: const TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
 
+  String getGenderImage() {
+    final g = (AppData.gender ?? '').toLowerCase().trim();
+
+    if (g == 'male') {
+      return "assets/icons/c0d90970-7626-47b6-a097-ca0834c7a05f_removalai_preview.png";
+    } else if (g == 'female') {
+      return "assets/icons/1f5debb8-6e36-4d25-bde8-526f4dd89820_removalai_preview.png";
+    } else {
+      return "assets/icons/c0d90970-7626-47b6-a097-ca0834c7a05f_removalai_preview.png";
+    }
+  }
   // Widget _accountSwitchSection(BuildContext context) {
   //   if (isLoading) {
   //     return const Center(child: CircularProgressIndicator());
@@ -301,7 +314,27 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
             ),
             child: Row(
               children: [
-                CircleAvatar(radius: 24, backgroundImage: AssetImage(imageUrl)),
+                CircleAvatar(
+                  radius: 25,
+                  backgroundImage:
+                      (AppData.profileUrl != null &&
+                          AppData.profileUrl!.isNotEmpty)
+                      ? NetworkImage(AppData.profileUrl!)
+                      : null,
+                  child:
+                      (AppData.profileUrl == null ||
+                          AppData.profileUrl!.isEmpty)
+                      ? ClipOval(
+                          child: Image.asset(
+                            getGenderImage(),
+                            fit: BoxFit.cover,
+                            width: 50,
+                            height: 50,
+                          ),
+                        )
+                      : null,
+                ),
+                //CircleAvatar(radius: 24, backgroundImage: AssetImage(imageUrl)),
                 const SizedBox(width: 14),
                 Text(
                   name,
