@@ -21,7 +21,7 @@ class ApiHelper {
     final pref = SharedPreferenceHelper();
 
     final dbName = await pref.getDatabaseName();
-    print(dbName);
+    print('dbName $dbName');
     if (dbName == null || dbName.isEmpty) {
       throw Exception("Database name not set");
     }

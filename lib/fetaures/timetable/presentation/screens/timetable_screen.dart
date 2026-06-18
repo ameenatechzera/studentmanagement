@@ -479,6 +479,7 @@
 //   return colors[index % colors.length];
 // }
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:studentmanagement/core/appdata/appdata.dart';
@@ -613,6 +614,10 @@ class _TimeTableScreenState extends State<TimeTableScreen> {
 
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
+      systemOverlayStyle: const SystemUiOverlayStyle(
+        statusBarColor: Colors.white,
+        statusBarIconBrightness: Brightness.dark,
+      ),
       backgroundColor: Colors.white,
       elevation: 0,
       centerTitle: false,

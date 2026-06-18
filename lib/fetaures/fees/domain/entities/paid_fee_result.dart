@@ -146,10 +146,10 @@ class Detail extends Equatable {
   final String ledgerName;
   static const String ledgerNameKey = "ledgerName";
 
-  final int paidAmount;
+  final double paidAmount;
   static const String paidAmountKey = "paidAmount";
 
-  Detail copyWith({String? feeMonth, String? ledgerName, int? paidAmount}) {
+  Detail copyWith({String? feeMonth, String? ledgerName, double? paidAmount}) {
     return Detail(
       feeMonth: feeMonth ?? this.feeMonth,
       ledgerName: ledgerName ?? this.ledgerName,
@@ -161,7 +161,7 @@ class Detail extends Equatable {
     return Detail(
       feeMonth: json["feeMonth"] ?? "",
       ledgerName: json["ledgerName"] ?? "",
-      paidAmount: json["paidAmount"] ?? 0,
+      paidAmount: (json["paidAmount"] ?? 0.0).toDouble(),
     );
   }
 

@@ -12,6 +12,7 @@ class TimetableCubit extends Cubit<TimetableState> {
     : super(TimetableInitial());
 
   Future<void> fetchTimeTable(FetchTimeTableParameter params) async {
+    print('FetchTimeTableParameter ${params.toJson()}');
     emit(TimetableLoading());
 
     final result = await fetchTimeTableUseCase(params);

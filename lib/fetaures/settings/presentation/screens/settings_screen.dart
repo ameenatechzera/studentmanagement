@@ -38,6 +38,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> loadBranchData() async {
     final data = await SharedPreferenceHelper().getBranchData();
+    print('BranchDetails $data');
 
     setState(() {
       branchData = data;
@@ -133,13 +134,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                       ),
 
                                       // const SizedBox(height: 26),
-                                      Image.network(
-                                        branchData!["logo"] ?? "",
-                                        fit: BoxFit.cover,
-                                        width: 120,
-                                        height: 120,
+                                      // Image.network(
+                                      //   branchData!["logo"] ?? "",
+                                      //   fit: BoxFit.cover,
+                                      //   width: 120,
+                                      //   height: 120,
+                                      // ),
+                                      Image.asset(
+                                        branchData!["currencyId"] == "1"
+                                            ? 'assets/images/cristal_horizontal.png'
+                                            : 'assets/images/cristal_horizontal.png',
+                                        //fit: BoxFit.cover,
+                                        width: 150,
+                                        height: 150,
                                       ),
-
                                       // const SizedBox(height: 34),
                                       //
                                       /// EMAIL
@@ -462,41 +470,49 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            branchData!["post_Pin"] ?? "No Postpin",
-                            style: TextStyle(
-                              fontSize: 12.5,
-                              height: 1.4,
-                              fontWeight: FontWeight.w500,
-                              color: Color(0xff252525),
+                          if (branchData!["post_Pin"] != null &&
+                              branchData!["post_Pin"]
+                                  .toString()
+                                  .trim()
+                                  .isNotEmpty)
+                            Text(
+                              branchData!["post_Pin"],
+                              style: TextStyle(
+                                fontSize: 12.5,
+                                height: 1.4,
+                                fontWeight: FontWeight.w500,
+                                color: Color(0xff252525),
+                              ),
                             ),
-                          ),
-
                           SizedBox(height: 3),
 
-                          Text(
-                            branchData!["District"] ?? "No District",
-                            style: TextStyle(
-                              fontSize: 12.5,
-                              height: 1.4,
-                              fontWeight: FontWeight.w500,
-                              color: Color(0xff252525),
+                          if (branchData!["District"] != null &&
+                              branchData!["District"]
+                                  .toString()
+                                  .trim()
+                                  .isNotEmpty)
+                            Text(
+                              branchData!["District"],
+                              style: TextStyle(
+                                fontSize: 12.5,
+                                height: 1.4,
+                                fontWeight: FontWeight.w500,
+                                color: Color(0xff252525),
+                              ),
                             ),
-                          ),
-
                           SizedBox(height: 3),
 
-                          Text(
-                            branchData!["State"] ?? "No State",
-
-                            style: TextStyle(
-                              fontSize: 12.5,
-                              height: 1.4,
-                              fontWeight: FontWeight.w500,
-                              color: Color(0xff252525),
+                          if (branchData!["State"] != null &&
+                              branchData!["State"].toString().trim().isNotEmpty)
+                            Text(
+                              branchData!["State"],
+                              style: TextStyle(
+                                fontSize: 12.5,
+                                height: 1.4,
+                                fontWeight: FontWeight.w500,
+                                color: Color(0xff252525),
+                              ),
                             ),
-                          ),
-
                           SizedBox(height: 3),
 
                           Text(
@@ -536,16 +552,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       icon: Icons.phone,
                       iconColor: Color(0xff3C82FF),
                       bgColor: Color(0xffEEF4FF),
-                      text: branchData?["Phone1"]?.toString() ?? "aaaaa",
+                      text: branchData?["Phone1"]?.toString() ?? "",
                     ),
-                    Divider(height: 1, indent: 55),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 35.0),
+                      child: Divider(height: 1, indent: 50),
+                    ),
                     ContactTile(
                       icon: Icons.email,
                       iconColor: Color(0xffFF8A3D),
                       bgColor: Color(0xffFFF1E8),
-                      text: branchData?["Email"]?.toString() ?? "aaaaa",
+                      text: branchData?["Email"]?.toString() ?? "",
                     ),
-                    Divider(height: 1, indent: 55),
+                    if (branchData?["Website"] != null)
+                      Divider(height: 1, indent: 55),
                     if (branchData?["Website"] != null)
                       ContactTile(
                         icon: Icons.language,

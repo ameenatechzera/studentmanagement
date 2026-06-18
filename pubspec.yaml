@@ -6,7 +6,8 @@ publish_to: 'none'
 #version: 1.0.1+2 #second update
 #version: 1.0.2+3
 #version: 1.0.3+4 #third update playstore
-version: 1.0.5+6 #third update playstore 12-05-2026
+#version: 1.0.6+7 #third update playstore 12-05-2026
+version: 1.0.7+8 #fourth update playstore 12-06-2026
 environment:
   sdk: ^3.10.4
 
@@ -53,12 +54,16 @@ dependencies:
   record: ^6.1.2
   audioplayers: ^6.5.1
   flutter_html: ^3.0.0
+  firebase_core: ^3.0.0
+  firebase_messaging: ^15.0.0
+  flutter_local_notifications: ^17.0.0
 
   
 dev_dependencies:
   flutter_test:
     sdk: flutter
   floor_generator: ^1.4.2
+  build_runner: ^2.1.2
   flutter_launcher_icons: ^0.14.4
   flutter_lints: ^6.0.0
 

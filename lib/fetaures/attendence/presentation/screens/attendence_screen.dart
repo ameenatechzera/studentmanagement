@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studentmanagement/core/appdata/appdata.dart';
 import 'package:studentmanagement/fetaures/attendence/domain/parameters/attendence_reportbymonth_parameter.dart';
@@ -124,13 +125,11 @@ class _AttendenceScreenState extends State<AttendenceScreen> {
                     final student = state.data.data?.isNotEmpty == true
                         ? state.data.data!.first
                         : null;
-
                     totalPresent =
                         int.tryParse(
                           student?.totalPresent?.toString() ?? "0",
                         ) ??
                         0;
-
                     totalAbsent =
                         int.tryParse(student?.totalAbsent?.toString() ?? "0") ??
                         0;
@@ -192,7 +191,6 @@ class _AttendenceScreenState extends State<AttendenceScreen> {
                                     ],
                                   ),
                                 ),
-
                                 Expanded(
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.start,
@@ -228,7 +226,6 @@ class _AttendenceScreenState extends State<AttendenceScreen> {
                                                     ),
                                               ),
                                             ),
-
                                             isLoading
                                                 ? const SizedBox.shrink()
                                                 : Text(
@@ -298,7 +295,6 @@ class _AttendenceScreenState extends State<AttendenceScreen> {
                                                 fontWeight: FontWeight.w900,
                                               ),
                                             ),
-
                                       isLoading
                                           ? const SizedBox(
                                               width: 18,
@@ -322,7 +318,6 @@ class _AttendenceScreenState extends State<AttendenceScreen> {
                           ],
                         ),
                       ),
-
                       Positioned(
                         right: 100,
                         top: 40,
@@ -418,7 +413,6 @@ class _AttendenceScreenState extends State<AttendenceScreen> {
               //                         ],
               //                       ),
               //                     ),
-
               //                     Expanded(
               //                       child: Column(
               //                         mainAxisAlignment: MainAxisAlignment.start,
@@ -452,7 +446,6 @@ class _AttendenceScreenState extends State<AttendenceScreen> {
               //                                         ),
               //                                   ),
               //                                 ),
-
               //                                 Text(
               //                                   "${(attendancePercentage * 100).toInt()}%",
               //                                   style: TextStyle(
@@ -469,7 +462,6 @@ class _AttendenceScreenState extends State<AttendenceScreen> {
               //                     ),
               //                   ],
               //                 ),
-
               //                 // const SizedBox(height: 20),
               //                 Container(
               //                   padding: const EdgeInsets.symmetric(
@@ -557,7 +549,6 @@ class _AttendenceScreenState extends State<AttendenceScreen> {
               //               ],
               //             ),
               //           ),
-
               //           Positioned(
               //             right: 100,
               //             top: 40,
@@ -1082,6 +1073,8 @@ class _AttendenceScreenState extends State<AttendenceScreen> {
     }
   }
 }
+
+class HEAD {}
 
 class _TrianglePainter extends CustomPainter {
   final int columnIndex;

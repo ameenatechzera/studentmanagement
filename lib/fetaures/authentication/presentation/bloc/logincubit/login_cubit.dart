@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:studentmanagement/core/appdata/appdata.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/entities/device_register_result.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/entities/getbranch_entitiy.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/entities/getschool_entity.dart';
@@ -89,11 +90,19 @@ class LoginCubit extends Cubit<LoginState> {
           emit(FetchSchoolFailure(failure.message));
         },
         (response) async {
-          print("schoolResponse $response");
-          final pref = SharedPreferenceHelper();
-          await pref.setAppStoreVersion(response.schoolDetails!.first.appStoreVersion!);
-          await pref.setPlayStoreVersion(response.schoolDetails!.first.playStoreVersion!);
-          emit(FetchSchoolSuccess(response));
+          if(response.status==200 || response.status==201) {
+            print("schoolResponse $response");
+            final pref = SharedPreferenceHelper();
+            await pref.setAppStoreVersion(
+                response.schoolDetails!.first.appStoreVersion!);
+            await pref.setPlayStoreVersion(
+                response.schoolDetails!.first.playStoreVersion!);
+            AppData.schoolName = response.schoolDetails!.first.schoolName!;
+            emit(FetchSchoolSuccess(response));
+          }
+          else{
+            emit(FetchSchoolSuccess(response));
+          }
         },
       );
     } catch (e, stacktrace) {

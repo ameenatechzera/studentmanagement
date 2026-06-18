@@ -64,6 +64,7 @@ class Datum extends Equatable {
     required this.taxAmt,
     required this.floodCess,
     required this.narration,
+    required this.dueDate
   });
 
   final String accYear;
@@ -105,6 +106,9 @@ class Datum extends Equatable {
   final String narration;
   static const String narrationKey = "Narration";
 
+  final String dueDate;
+  static const String dueDateKey = "DueDate";
+
   Datum copyWith({
     String? accYear,
     String? feeMonthId,
@@ -134,6 +138,7 @@ class Datum extends Equatable {
       taxAmt: taxAmt ?? this.taxAmt,
       floodCess: floodCess ?? this.floodCess,
       narration: narration ?? this.narration,
+      dueDate: narration ?? this.dueDate,
     );
   }
 
@@ -152,6 +157,7 @@ class Datum extends Equatable {
       taxAmt: json["TaxAmt"] ?? "",
       floodCess: json["FloodCess"] ?? "",
       narration: json["Narration"] ?? "",
+        dueDate: json["DueDate"] ?? ""
     );
   }
 
@@ -169,11 +175,12 @@ class Datum extends Equatable {
     "TaxAmt": taxAmt,
     "FloodCess": floodCess,
     "Narration": narration,
+    "DueDate": dueDate,
   };
 
   @override
   String toString() {
-    return "$accYear, $feeMonthId, $feeMonth, $ledgerId, $ledgerName, $amount, $paidAmount, $feePaymentDetailsId, $taxId, $taxName, $taxAmt, $floodCess, $narration, ";
+    return "$accYear, $feeMonthId, $feeMonth, $ledgerId, $ledgerName, $amount, $paidAmount, $feePaymentDetailsId, $taxId, $taxName, $taxAmt, $floodCess, $narration,$dueDate ";
   }
 
   @override
@@ -191,5 +198,6 @@ class Datum extends Equatable {
     taxAmt,
     floodCess,
     narration,
+    dueDate
   ];
 }

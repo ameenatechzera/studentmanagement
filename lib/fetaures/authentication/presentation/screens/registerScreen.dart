@@ -88,6 +88,12 @@ class RegisterCodePage extends StatelessWidget {
                 }
 
                 if (state is FetchSchoolSuccess) {
+                  print('SuccessResult ${state.response.message}');
+                  if(state.response.message=='School Not Found'){
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text('School Code not found..!')));
+                  }
                   Navigator.pop(context); // close loader
 
                   // final school = state.response.schoolDetails?.first;

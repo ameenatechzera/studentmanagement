@@ -1,9 +1,12 @@
 import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:media_store_plus/media_store_plus.dart';
 import 'package:studentmanagement/core/appdata/appdata.dart';
 import 'package:studentmanagement/core/navigation/app_navigator.dart';
 import 'package:studentmanagement/core/utils/widgets/app_snackbar.dart';
@@ -13,6 +16,7 @@ import 'package:studentmanagement/fetaures/authentication/presentation/bloc/logi
 import 'package:studentmanagement/fetaures/home_screen/domain/parameters/fetchfeed_parameter.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/cubit/feed_cubit.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/screens/main_screen.dart';
+import 'package:studentmanagement/services/notification_service.dart';
 import 'package:studentmanagement/services/shared_preference_helper.dart';
 
 class Login_Screen extends StatefulWidget {
@@ -86,11 +90,48 @@ class _Login_ScreenState extends State<Login_Screen> {
 
   final TextEditingController _deviceIdController = TextEditingController();
   bool _isProcessing = false;
+
+  String schoolName = '';
+
+  // ── ADDED: error state variables ──
+  String? _admNoError;
+  String? _dobError;
+  // ─────────────────────────────────
+
   @override
   void initState() {
     getDeviceId();
     super.initState();
   }
+
+  // ── ADDED: validation method ──
+  bool _validateInputs() {
+    setState(() {
+      _admNoError = null;
+      _dobError = null;
+    });
+
+    bool isValid = true;
+
+    if (admNoCtrl.text.trim().isEmpty) {
+      setState(() => _admNoError = 'Please enter admission number');
+      isValid = false;
+    }
+
+    if (dobCtrl.text.trim().isEmpty) {
+      setState(() => _dobError = 'Please enter date of birth');
+      isValid = false;
+    } else {
+      final dobPattern = RegExp(r'^\d{2}-\d{2}-\d{4}$');
+      if (!dobPattern.hasMatch(dobCtrl.text.trim())) {
+        setState(() => _dobError = 'Entered DOB not in the format DD-MM-YYYY');
+        isValid = false;
+      }
+    }
+
+    return isValid;
+  }
+  // ─────────────────────────────
 
   @override
   Widget build(BuildContext context) {
@@ -125,7 +166,7 @@ class _Login_ScreenState extends State<Login_Screen> {
                     horizontal: 24,
                     vertical: 40,
                   ),
-                  child: const Column(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
@@ -139,8 +180,8 @@ class _Login_ScreenState extends State<Login_Screen> {
                       ),
                       SizedBox(height: 8),
                       Text(
-                        "North Park Academy",
-                        style: TextStyle(
+                        AppData.schoolName ?? 'School Name',
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 22,
                           fontWeight: FontWeight.w700,
@@ -165,28 +206,87 @@ class _Login_ScreenState extends State<Login_Screen> {
               // Admission Field
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 18),
-                child: TextField(
-                  controller: admNoCtrl,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9]')),
-                    // UpperCaseTextFormatter(),
+                // ── ADDED: wrapped in Column for error text ──
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextField(
+                      textInputAction: TextInputAction.next,
+                      controller: admNoCtrl,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(
+                          RegExp(r'[a-zA-Z0-9]'),
+                        ),
+                        // UpperCaseTextFormatter(),
+                      ],
+                      textCapitalization: TextCapitalization.characters,
+                      // ── ADDED: clear error on typing ──
+                      onChanged: (_) {
+                        if (_admNoError != null) {
+                          setState(() => _admNoError = null);
+                        }
+                      },
+                      // ─────────────────────────────────
+                      decoration: InputDecoration(
+                        hintText: "Admission",
+                        hintStyle: TextStyle(
+                          color: Colors.grey.shade700,
+                          fontSize: 15,
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 15,
+                          vertical: 10,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        // ── ADDED: red border when error ──
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: _admNoError != null
+                                ? Colors.red
+                                : Colors.grey.shade400,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: _admNoError != null
+                                ? Colors.red
+                                : const Color(0xFF8B84E8),
+                            width: 1.5,
+                          ),
+                        ),
+                        // ─────────────────────────────────
+                      ),
+                    ),
+                    // ── ADDED: error message below field ──
+                    if (_admNoError != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 6, left: 4),
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.error_outline,
+                              color: Colors.red,
+                              size: 14,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              _admNoError!,
+                              style: const TextStyle(
+                                color: Colors.red,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    // ──────────────────────────────────────
                   ],
-                  textCapitalization: TextCapitalization.characters,
-                  decoration: InputDecoration(
-                    hintText: "Admission",
-                    hintStyle: TextStyle(
-                      color: Colors.grey.shade700,
-                      fontSize: 15,
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 15,
-                      vertical: 10,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
                 ),
+                // ────────────────────────────────────────────
               ),
 
               const SizedBox(height: 20),
@@ -194,26 +294,82 @@ class _Login_ScreenState extends State<Login_Screen> {
               // DOB Field
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 18),
-                child: TextField(
-                  controller: dobCtrl,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [DateInputFormatter()],
-                  decoration: InputDecoration(
-                    hintText: "DOB (DD-MM--YYYY)",
-                    hintStyle: TextStyle(
-                      color: Colors.grey.shade700,
-                      fontSize: 15,
+                // ── ADDED: wrapped in Column for error text ──
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextField(
+                      controller: dobCtrl,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [DateInputFormatter()],
+                      // ── ADDED: clear error on typing ──
+                      onChanged: (_) {
+                        if (_dobError != null) {
+                          setState(() => _dobError = null);
+                        }
+                      },
+                      // ─────────────────────────────────
+                      decoration: InputDecoration(
+                        hintText: "DOB (DD-MM--YYYY)",
+                        hintStyle: TextStyle(
+                          color: Colors.grey.shade700,
+                          fontSize: 15,
+                        ),
+                        suffixIcon: const Icon(Icons.calendar_month),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 15,
+                          vertical: 10,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        // ── ADDED: red border when error ──
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: _dobError != null
+                                ? Colors.red
+                                : Colors.grey.shade400,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: _dobError != null
+                                ? Colors.red
+                                : const Color(0xFF8B84E8),
+                            width: 1.5,
+                          ),
+                        ),
+                        // ─────────────────────────────────
+                      ),
                     ),
-                    suffixIcon: const Icon(Icons.calendar_month),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 15,
-                      vertical: 10,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
+                    // ── ADDED: error message below field ──
+                    if (_dobError != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 6, left: 4),
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.error_outline,
+                              color: Colors.red,
+                              size: 14,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              _dobError!,
+                              style: const TextStyle(
+                                color: Colors.red,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    // ──────────────────────────────────────
+                  ],
                 ),
+                // ────────────────────────────────────────────
               ),
 
               const SizedBox(height: 50),
@@ -448,6 +604,10 @@ class _Login_ScreenState extends State<Login_Screen> {
                         onPressed: isLoading
                             ? null
                             : () {
+                                // ── ADDED: validate before proceeding ──
+                                if (!_validateInputs()) return;
+                                // ───────────────────────────────────────
+
                                 // context.read<LoginCubit>().checkDeviceRegisterStatus(
                                 //   DeviceRegisterRequest(
                                 //     deviceId: _deviceIdController.text.toString(),
@@ -523,6 +683,8 @@ class _Login_ScreenState extends State<Login_Screen> {
       return iosInfo.identifierForVendor ?? 'unknown-ios-id';
     }
 
+    schoolName = (await SharedPreferenceHelper().getSchoolName())!;
+    print('schoolName $schoolName');
     return 'unsupported-platform';
   }
 }

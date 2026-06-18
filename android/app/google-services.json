@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1088999777937",
+    "project_id": "cristal-a14a1",
+    "storage_bucket": "cristal-a14a1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1088999777937:android:8a72b2ef4b0111ad2b4130",
+        "android_client_info": {
+          "package_name": "com.techzera.studentmanagement"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyALwqYl3Z9KmVBDw77Igl6-3g5kAzgJY4k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

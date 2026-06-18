@@ -75,9 +75,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final url = ApiConstants.getLoginPath(baseUrl);
       final options = await ApiHelper.getAuthOptions();
 
-      // print('🔹 Login URL: $url');
-      // print('🔹 Request Body: ${params.toJson()}');
-      // print('🔹 dbName: $dbName');
+       print('🔹 Login URL: $url');
+       print('🔹 Request Body: ${params.toJson()}');
+     //  print('🔹 dbName: $dbName');
       // print('🔹 token: $dbName');
 
       final response = await dio.post(
@@ -196,18 +196,21 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<GetBranchEntity> getBranchDetails() async {
     try {
-      // final baseUrl = await SharedPreferenceHelper().getBaseUrl();
+       final baseUrl = await SharedPreferenceHelper().getBaseUrl();
 
-      // if (baseUrl == null || baseUrl.isEmpty) {
-      //   throw Exception("Base URL not set");
-      // }
+      if (baseUrl == null || baseUrl.isEmpty) {
+        throw Exception("Base URL not set");
+      }
+      print('baseUrlBranch $baseUrl');
 
       // final dbName = await SharedPreferenceHelper().getDatabaseName();
 
       // final url = ApiConstants.getBranchDetailsPath(baseUrl);
       // final url = ApiConstants.getBranchDetailsPath(baseUrl);
-      final url =
-          "https://online.cristaledu.com/Api/public/api/app/branch-byid/1";
+      // final url =
+      //     "https://online.cristaledu.com/Api/public/api/app/branch-byid/1";
+       final url =
+           baseUrl+"app/branch-byid/1";
       final options = await ApiHelper.getAuthOptions();
 
       print('🔹 Get Branch URL: $url');

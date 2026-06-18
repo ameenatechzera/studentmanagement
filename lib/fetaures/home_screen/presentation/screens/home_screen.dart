@@ -460,7 +460,16 @@ class _HomeScreenState extends State<HomeScreen> {
       storeVersion = appStoreVersion ?? '';
     }
 
-    if (storeVersion.isNotEmpty && storeVersion.trim() != appVersion.trim()) {
+    // Fluttertoast.showToast(
+    //   msg: "Store Version: $storeVersion",
+    //   toastLength: Toast.LENGTH_SHORT,
+    //   gravity: ToastGravity.BOTTOM,
+    //   backgroundColor: Colors.black87,
+    //   textColor: Colors.white,
+    //   fontSize: 16.0,
+    // );
+
+    if (storeVersion.isNotEmpty && storeVersion.trim() == appVersion.trim()) {
       showDialog(
         context: context,
         barrierDismissible: false,
@@ -574,6 +583,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 onTap: () {
                   _scaffoldKey.currentState?.openDrawer();
                 },
+                behavior: HitTestBehavior
+                    .opaque, // ✅ Key fix — transparent areas now receive taps
                 child: Container(
                   width: 24,
                   height: 80,

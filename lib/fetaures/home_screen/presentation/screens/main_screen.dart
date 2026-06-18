@@ -1,10 +1,14 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:media_store_plus/media_store_plus.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/entities/login_entity.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/screens/home_screen.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/screens/noti.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/screens/student_screenN.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/widgets/custom_bottombar.dart';
 import 'package:studentmanagement/fetaures/settings/presentation/screens/settings_screen.dart';
+import 'package:studentmanagement/services/notification_service.dart';
 
 class MainScreen extends StatefulWidget {
   final LoginResponseResult loginResponse;
@@ -17,11 +21,6 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   // bool _isLoading = true;
   int _currentIndex = 0;
-  @override
-  void initState() {
-    super.initState();
-    // _loadInitialData();
-  }
 
   // Future<void> _loadInitialData() async {
   //   await context.read<FeedCubit>().fetchFeeds(
@@ -40,6 +39,12 @@ class _MainScreenState extends State<MainScreen> {
   //     _isLoading = false;
   //   });
   // }
+
+  @override
+  void initState() {
+    notificationsetup();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,5 +78,16 @@ class _MainScreenState extends State<MainScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> notificationsetup() async {
+    try {
+      await Firebase.initializeApp(); // ← no options needed
+      FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+      await NotificationService.init();
+      await MediaStore.ensureInitialized();
+    } catch (e, st) {
+      debugPrint('Startup error: $e\n$st');
+    }
   }
 }
