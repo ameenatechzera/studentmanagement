@@ -300,7 +300,7 @@ class _HomeScreenState extends State<StudentScreenN> {
     } else if (g == 'female') {
       return "assets/icons/1f5debb8-6e36-4d25-bde8-526f4dd89820_removalai_preview.png";
     } else {
-      return "assets/icons/c0d90970-7626-47b6-a097-ca0834c7a05f_removalai_preview.png";
+      return "assets/images/defaultstudent.png";
     }
   }
 

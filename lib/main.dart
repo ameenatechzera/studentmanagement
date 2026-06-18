@@ -56,11 +56,11 @@ void main() async {
   //   //   'https://online.cristaledu.com/Api/public/api',
   //   // );
   // }
-  FlutterError.onError = (FlutterErrorDetails details) {
-    debugPrint("🔥 FLUTTER ERROR");
-    debugPrint(details.exceptionAsString());
-    debugPrint(details.stack.toString());
-  };
+  // FlutterError.onError = (FlutterErrorDetails details) {
+  //   debugPrint("🔥 FLUTTER ERROR");
+  //   debugPrint(details.exceptionAsString());
+  //   debugPrint(details.stack.toString());
+  // };
   runApp(MyApp());
   print("🟢 STEP 4: App started");
 }

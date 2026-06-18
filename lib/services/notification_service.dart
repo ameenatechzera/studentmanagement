@@ -97,7 +97,7 @@ class NotificationService {
     try {
       final response = await http.post(
         Uri.parse(
-          baseUrl+"save-fcm-token"),
+          "https://alhidaya.cristaledu.com/Api/public/api/save-fcm-token"),
         headers: {
           "Authorization": "Bearer $loginToken",
           "Content-Type": "application/json",

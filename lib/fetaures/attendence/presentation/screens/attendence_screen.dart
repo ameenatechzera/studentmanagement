@@ -79,24 +79,24 @@ class _AttendenceScreenState extends State<AttendenceScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: Colors.white,
+    return Scaffold(
+      backgroundColor: Colors.white,
 
-        appBar: AppBar(
-          title: const Text(
-            'My Attendance',
-            style: const TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.w800,
-              fontSize: 16,
-            ),
+      appBar: AppBar(
+        title: const Text(
+          'My Attendance',
+          style: const TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.w800,
+            fontSize: 16,
           ),
-          backgroundColor: Colors.white,
-          elevation: 0,
         ),
+        backgroundColor: Colors.white,
+        elevation: 0,
+      ),
 
-        body: SingleChildScrollView(
+      body: SingleChildScrollView(
+        child: SafeArea(
           child: Column(
             children: [
               /// ✅ ALWAYS VISIBLE CALENDAR

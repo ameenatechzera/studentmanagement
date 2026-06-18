@@ -503,6 +503,9 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       );
     }
+    // else {
+    //   _fetchFeeds(page: 1);
+    // }
   }
 
   Future<void> getVersion() async {
@@ -540,8 +543,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 return ValueListenableBuilder<bool>(
                   valueListenable: isFirstLoadingNotifier,
                   builder: (context, isLoading, __) {
+                    // if (isLoading) {
+                    //   return const Center(child: CircularProgressIndicator());
+                    // }
                     if (isLoading) {
-                      return const Center(child: CircularProgressIndicator());
+                      return const PostCardSkeleton();
                     }
 
                     if (allFeeds.isEmpty) {

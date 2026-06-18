@@ -27,7 +27,6 @@ class _PostCardState extends State<PostCard> {
   late int likeCount;
   int currentPage = 0;
 
-  /// 🔥 CACHE (CRITICAL FIX)
   static final Map<String, Size> _imageSizeCache = {};
   static final Map<String, double> _aspectRatioCache = {};
 
@@ -38,13 +37,11 @@ class _PostCardState extends State<PostCard> {
     likeCount = widget.feed.likeCount ?? 0;
     debugPrint("🟢 FEED INIT → ${widget.feed.feedId}");
 
-    /// 🔥 PRELOAD IMAGE SIZE ONCE (IMPORTANT)
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _preloadImageSizes();
     });
   }
 
-  /// 🔥 CLEAN URL
   String cleanUrl(String url) {
     return url
         .replaceAll('[', '')
@@ -90,6 +87,7 @@ class _PostCardState extends State<PostCard> {
   //   return images;
   // }
   List<String> getImages() {
+    print("════════ IMAGE DEBUG START ════════");
     final images = <String>[];
     final feed = widget.feed;
 
@@ -105,6 +103,8 @@ class _PostCardState extends State<PostCard> {
         final img = feed.files![i].image?.trim();
 
         print("📂 FILE[$i] => $img");
+        print("📂 FILE[$i] RAW => $img");
+        print("📂 FILE[$i] TYPE => ${_detectType(img)}");
 
         if (img != null && img.isNotEmpty) {
           images.add(img);
@@ -135,21 +135,20 @@ class _PostCardState extends State<PostCard> {
 
     /// REMOVE DUPLICATES
     final uniqueImages = images.toSet().toList();
-
-    print("════════════ RESULT ════════════");
-    print("📦 TOTAL COLLECTED: ${images.length}");
-    print("📦 UNIQUE IMAGES: ${uniqueImages.length}");
-
     for (int i = 0; i < uniqueImages.length; i++) {
       final img = uniqueImages[i];
-      print(
-        "🖼 FINAL[$i] => ${img.substring(0, img.length > 80 ? 80 : img.length)}...",
-      );
     }
 
-    print("══════════════════════════════════\n");
-
     return uniqueImages;
+  }
+
+  String _detectType(String? value) {
+    if (value == null) return "NULL";
+
+    if (value.startsWith("http")) return "URL";
+    if (value.length > 1000) return "BASE64 (LIKELY)";
+    if (value.contains("/")) return "FILE PATH?";
+    return "UNKNOWN";
   }
 
   Future<void> _preloadImageSizes() async {
@@ -159,6 +158,9 @@ class _PostCardState extends State<PostCard> {
     print("📦 IMAGE COUNT: ${images.length}");
 
     for (final url in images) {
+      print(
+        "🚨 PRELOAD INPUT => ${url.substring(0, url.length > 80 ? 80 : url.length)}",
+      );
       if (_aspectRatioCache.containsKey(url)) {
         print("⚡ CACHE HIT: $url");
         continue;
@@ -194,9 +196,9 @@ class _PostCardState extends State<PostCard> {
 
         print("✅ SIZE SAVED: ${size.width} x ${size.height}");
 
-        if (mounted) {
-          setState(() {});
-        }
+        // if (mounted) {
+        //   setState(() {});
+        // }
       } catch (e) {
         print("❌ IMAGE SIZE ERROR");
         print("❌ URL: $url");
@@ -213,20 +215,7 @@ class _PostCardState extends State<PostCard> {
   @override
   Widget build(BuildContext context) {
     final feed = widget.feed;
-    print("LOGO => ${AppData.logo}");
-    print("════════════════════");
-    print("FEED ID => ${feed.feedId}");
-    print("IMAGE => ${feed.image}");
-    print("FILES => ${feed.files}");
-    print("════════════════════");
-    print("feedId = ${feed.feedId}");
-    print("feedText = ${feed.feedText}");
-    print("postedBy = ${feed.postedBy}");
-    print("designationName = ${feed.designationName}");
-    print("createdTime = ${feed.createdTime}");
-    print("shareCount = ${feed.shareCount}");
-    print("branchId = ${feed.branchId}");
-    print("LOGO VALUE => '${AppData.logo}'");
+
     final images = getImages();
     final logo = AppData.logo?.trim();
     return Column(
