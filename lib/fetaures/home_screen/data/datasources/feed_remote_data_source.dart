@@ -187,6 +187,18 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
         print('\n✅ SENDING TO MODEL PARSE');
 
         return FetchFeedResponseModel.fromJson(response.data);
+
+        // if (result.data != null && result.data!.isNotEmpty) {
+        //   await feedDao.clearFeeds();
+
+        //   await feedDao.insertFeeds(
+        //     result.data!.map((feed) => FeedDbMapper.toDb(feed)).toList(),
+        //   );
+
+        //   print('💾 Saved ${result.data!.length} feeds to Floor DB');
+        // }
+
+        // return result;
       } else {
         throw ServerException(
           errorMessageModel: ErrorMessageModel.fromJson(response.data),

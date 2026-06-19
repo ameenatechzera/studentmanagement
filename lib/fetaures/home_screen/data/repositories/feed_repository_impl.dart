@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dartz/dartz.dart';
 import 'package:studentmanagement/core/errors/exceptions.dart';
 import 'package:studentmanagement/core/errors/failure.dart';
@@ -11,7 +13,6 @@ import 'package:studentmanagement/fetaures/home_screen/domain/repositories/feed_
 
 class FeedRepositoryImpl implements FeedRepository {
   final FeedRemoteDataSource remoteDataSource;
-
   FeedRepositoryImpl({required this.remoteDataSource});
 
   @override
@@ -20,8 +21,17 @@ class FeedRepositoryImpl implements FeedRepository {
   ) async {
     try {
       final result = await remoteDataSource.fetchFeeds(params);
+      log("========== FEED API SUCCESS ==========");
+      log("Total feeds from API: ${result.data?.length ?? 0}");
+
+      if ((result.data?.isNotEmpty ?? false)) {
+        log("First Feed ID: ${result.data!.first.feedId}");
+        log("First Feed Text: ${result.data!.first.feedText}");
+      }
+
       return Right(result);
     } on ServerException catch (e) {
+      log("SERVER EXCEPTION: ${e.errorMessageModel.statusMessage}");
       return Left(ServerFailure(e.errorMessageModel.statusMessage));
     } catch (e) {
       return Left(ServerFailure(e.toString()));

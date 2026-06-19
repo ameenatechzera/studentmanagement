@@ -13,6 +13,8 @@ import 'package:studentmanagement/core/utils/widgets/app_snackbar.dart';
 import 'package:studentmanagement/fetaures/authentication/data/models/account_details_model.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/parameters/login_params.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/bloc/logincubit/login_cubit.dart';
+import 'package:studentmanagement/fetaures/home_screen/domain/parameters/fetchfeed_parameter.dart';
+import 'package:studentmanagement/fetaures/home_screen/presentation/cubit/feed_cubit.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/screens/main_screen.dart';
 import 'package:studentmanagement/services/notification_service.dart';
 import 'package:studentmanagement/services/shared_preference_helper.dart';
@@ -26,8 +28,10 @@ class Login_Screen extends StatefulWidget {
 
 class DateInputFormatter extends TextInputFormatter {
   @override
-  TextEditingValue formatEditUpdate(TextEditingValue oldValue,
-      TextEditingValue newValue,) {
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
     final isDeleting = newValue.text.length < oldValue.text.length;
 
     if (isDeleting) {
@@ -85,8 +89,9 @@ class _Login_ScreenState extends State<Login_Screen> {
   final TextEditingController dobCtrl = TextEditingController();
 
   final TextEditingController _deviceIdController = TextEditingController();
+  bool _isProcessing = false;
 
-  String schoolName ='';
+  String schoolName = '';
 
   // ── ADDED: error state variables ──
   String? _admNoError;
@@ -95,7 +100,6 @@ class _Login_ScreenState extends State<Login_Screen> {
 
   @override
   void initState() {
-
     getDeviceId();
     super.initState();
   }
@@ -162,7 +166,7 @@ class _Login_ScreenState extends State<Login_Screen> {
                     horizontal: 24,
                     vertical: 40,
                   ),
-                  child:  Column(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
@@ -194,10 +198,7 @@ class _Login_ScreenState extends State<Login_Screen> {
               // Title
               const Text(
                 "Sign Up",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                ),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
               ),
 
               const SizedBox(height: 35),
@@ -210,10 +211,12 @@ class _Login_ScreenState extends State<Login_Screen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     TextField(
-                      textInputAction:TextInputAction.next,
+                      textInputAction: TextInputAction.next,
                       controller: admNoCtrl,
                       inputFormatters: [
-                        FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9]')),
+                        FilteringTextInputFormatter.allow(
+                          RegExp(r'[a-zA-Z0-9]'),
+                        ),
                         // UpperCaseTextFormatter(),
                       ],
                       textCapitalization: TextCapitalization.characters,
@@ -264,13 +267,18 @@ class _Login_ScreenState extends State<Login_Screen> {
                         padding: const EdgeInsets.only(top: 6, left: 4),
                         child: Row(
                           children: [
-                            const Icon(Icons.error_outline,
-                                color: Colors.red, size: 14),
+                            const Icon(
+                              Icons.error_outline,
+                              color: Colors.red,
+                              size: 14,
+                            ),
                             const SizedBox(width: 4),
                             Text(
                               _admNoError!,
                               style: const TextStyle(
-                                  color: Colors.red, fontSize: 12),
+                                color: Colors.red,
+                                fontSize: 12,
+                              ),
                             ),
                           ],
                         ),
@@ -342,13 +350,18 @@ class _Login_ScreenState extends State<Login_Screen> {
                         padding: const EdgeInsets.only(top: 6, left: 4),
                         child: Row(
                           children: [
-                            const Icon(Icons.error_outline,
-                                color: Colors.red, size: 14),
+                            const Icon(
+                              Icons.error_outline,
+                              color: Colors.red,
+                              size: 14,
+                            ),
                             const SizedBox(width: 4),
                             Text(
                               _dobError!,
                               style: const TextStyle(
-                                  color: Colors.red, fontSize: 12),
+                                color: Colors.red,
+                                fontSize: 12,
+                              ),
                             ),
                           ],
                         ),
@@ -364,83 +377,185 @@ class _Login_ScreenState extends State<Login_Screen> {
               // Login Button
               BlocConsumer<LoginCubit, LoginState>(
                 listener: (context, state) async {
-                  if (state is LoginSuccess) {
-                    final sharedPrefHelper = SharedPreferenceHelper();
+                  // if (state is LoginSuccess) {
+                  //   final sharedPrefHelper = SharedPreferenceHelper();
 
-                    await sharedPrefHelper.setToken(
-                      state.loginResponse.token,
-                    );
-                    await sharedPrefHelper.saveLoginResponse(
-                      state.loginResponse,
-                    );
-                    AppData.admissionNo = state.loginResponse.student!.admno
-                        .toString();
-                    AppData.studentName = state.loginResponse.student!.name
-                        .toString();
-                    AppData.studentStdId = state
-                        .loginResponse
-                        .student!
-                        .currentStudentStandardId
-                        .toString();
-                    AppData.studentDivId = state
-                        .loginResponse
-                        .student!
-                        .currentStudentDivisionId
-                        .toString();
-                    AppData.accYear = state.loginResponse.student!.accYear
-                        .toString();
-                    AppData.gender = state.loginResponse.student!.gender
-                        .toString();
-                    AppData.studentClass =
-                        '${state.loginResponse.student!.studentStandard} - ${state.loginResponse.student!.studentDivision}'
-                            .toString();
-                    // print(
-                    //   'profileUrl ${state.loginResponse.student!.imageUrl.toString()}',
-                    // );
-                    // AppData.profileUrl = state
-                    //     .loginResponse
-                    //     .student!
-                    //     .imageUrl
-                    //     .toString();
-                    await SharedPreferenceHelper.saveNewAccount(
-                      AccountDetails(
-                        admissionNo: state.loginResponse.student!.admno
-                            .toString(),
-                        dob: state.loginResponse.student!.dob.toString(),
-                        stdId: state
-                            .loginResponse
-                            .student!
-                            .currentStudentStandardId
-                            .toString(),
-                        divId: state
-                            .loginResponse
-                            .student!
-                            .currentStudentDivisionId,
-                        accYear: state.loginResponse.student!.accYear
-                            .toString(),
-                        name: state.loginResponse.student!.name,
-                      ),
-                    );
-                    AppNavigator.pushAndRemoveUntilSlide(
-                      context: context,
-                      page: MainScreen(loginResponse: state.loginResponse),
-                      predicate: (route) => false,
-                    );
-                    // Navigator.of(context).pushReplacement(
-                    //   MaterialPageRoute(
-                    //     builder: (context) {
-                    //       return MainScreen(
-                    //         loginResponse: state.loginResponse,
-                    //       );
-                    //     },
-                    //   ),
-                    // );
+                  //   await sharedPrefHelper.setToken(state.loginResponse.token);
+                  //   await sharedPrefHelper.saveLoginResponse(
+                  //     state.loginResponse,
+                  //   );
+                  //   AppData.admissionNo = state.loginResponse.student!.admno
+                  //       .toString();
+                  //   AppData.studentName = state.loginResponse.student!.name
+                  //       .toString();
+                  //   AppData.studentStdId = state
+                  //       .loginResponse
+                  //       .student!
+                  //       .currentStudentStandardId
+                  //       .toString();
+                  //   AppData.studentDivId = state
+                  //       .loginResponse
+                  //       .student!
+                  //       .currentStudentDivisionId
+                  //       .toString();
+                  //   AppData.accYear = state.loginResponse.student!.accYear
+                  //       .toString();
+                  //   AppData.gender = state.loginResponse.student!.gender
+                  //       .toString();
+                  //   AppData.studentClass =
+                  //       '${state.loginResponse.student!.studentStandard} - ${state.loginResponse.student!.studentDivision}'
+                  //           .toString();
+                  //   print(
+                  //     'profileUrl ${state.loginResponse.student!.imageUrl.toString()}',
+                  //   );
+                  //   AppData.profileUrl = state.loginResponse.student!.imageUrl
+                  //       .toString();
+                  //   await SharedPreferenceHelper.saveNewAccount(
+                  //     AccountDetails(
+                  //       admissionNo: state.loginResponse.student!.admno
+                  //           .toString(),
+                  //       dob: state.loginResponse.student!.dob.toString(),
+                  //       stdId: state
+                  //           .loginResponse
+                  //           .student!
+                  //           .currentStudentStandardId
+                  //           .toString(),
+                  //       divId: state
+                  //           .loginResponse
+                  //           .student!
+                  //           .currentStudentDivisionId,
+                  //       accYear: state.loginResponse.student!.accYear
+                  //           .toString(),
+                  //       name: state.loginResponse.student!.name,
+                  //     ),
+                  //   );
+                  //   await context.read<FeedCubit>().fetchFeeds(
+                  //     FetchFeedParameter(
+                  //       standardId: AppData.studentStdId!,
+                  //       divisionId: AppData.studentDivId!,
+                  //       fromDateTime: "",
+                  //       admissionNo: AppData.admissionNo!,
+                  //       branchId: 1,
+                  //       page: 1,
+                  //       perPage: 12,
+                  //     ),
+                  //   );
+                  //   AppNavigator.pushAndRemoveUntilSlide(
+                  //     context: context,
+                  //     page: MainScreen(loginResponse: state.loginResponse),
+                  //     predicate: (route) => false,
+                  //   );
+                  //   // Navigator.of(context).pushReplacement(
+                  //   //   MaterialPageRoute(
+                  //   //     builder: (context) {
+                  //   //       return MainScreen(
+                  //   //         loginResponse: state.loginResponse,
+                  //   //       );
+                  //   //     },
+                  //   //   ),
+                  //   // );
+                  // }
+                  if (state is LoginSuccess) {
+                    setState(() {
+                      _isProcessing = true;
+                    });
+
+                    try {
+                      final sharedPrefHelper = SharedPreferenceHelper();
+
+                      await sharedPrefHelper.setToken(
+                        state.loginResponse.token,
+                      );
+                      await sharedPrefHelper.saveLoginResponse(
+                        state.loginResponse,
+                      );
+
+                      AppData.admissionNo = state.loginResponse.student!.admno
+                          .toString();
+
+                      AppData.studentName = state.loginResponse.student!.name
+                          .toString();
+
+                      AppData.studentStdId = state
+                          .loginResponse
+                          .student!
+                          .currentStudentStandardId
+                          .toString();
+
+                      AppData.studentDivId = state
+                          .loginResponse
+                          .student!
+                          .currentStudentDivisionId
+                          .toString();
+
+                      AppData.accYear = state.loginResponse.student!.accYear
+                          .toString();
+
+                      AppData.gender = state.loginResponse.student!.gender
+                          .toString();
+
+                      AppData.studentClass =
+                          '${state.loginResponse.student!.studentStandard} - ${state.loginResponse.student!.studentDivision}';
+
+                      AppData.profileUrl = state.loginResponse.student!.imageUrl
+                          .toString();
+
+                      await SharedPreferenceHelper.saveNewAccount(
+                        AccountDetails(
+                          admissionNo: state.loginResponse.student!.admno
+                              .toString(),
+                          dob: state.loginResponse.student!.dob.toString(),
+                          stdId: state
+                              .loginResponse
+                              .student!
+                              .currentStudentStandardId
+                              .toString(),
+                          divId: state
+                              .loginResponse
+                              .student!
+                              .currentStudentDivisionId,
+                          accYear: state.loginResponse.student!.accYear
+                              .toString(),
+                          name: state.loginResponse.student!.name,
+                        ),
+                      );
+
+                      print("🚀 STARTING FEED SYNC");
+
+                      await context.read<FeedCubit>().fetchFeeds(
+                        FetchFeedParameter(
+                          standardId: AppData.studentStdId!,
+                          divisionId: AppData.studentDivId!,
+                          fromDateTime: "",
+                          admissionNo: AppData.admissionNo!,
+                          branchId: 1,
+                          page: 1,
+                          perPage: 12,
+                        ),
+                      );
+
+                      print("✅ FEED SYNC COMPLETED");
+
+                      if (!mounted) return;
+
+                      AppNavigator.pushAndRemoveUntilSlide(
+                        context: context,
+                        page: MainScreen(loginResponse: state.loginResponse),
+                        predicate: (route) => false,
+                      );
+                    } catch (e) {
+                      print("❌ LOGIN FLOW ERROR: $e");
+                    } finally {
+                      if (mounted) {
+                        setState(() {
+                          _isProcessing = false;
+                        });
+                      }
+                    }
                   }
                   if (state is DeviceRegisterStatusSuccess) {
                     if (state.registerResponse.data?.result == true) {
-                      final apiDob = convertDobToApiFormat(
-                        dobCtrl.text.trim(),
-                      );
+                      final apiDob = convertDobToApiFormat(dobCtrl.text.trim());
 
                       if (apiDob.isEmpty) {
                         showAppSnackBar(context, 'Invalid DOB format');
@@ -448,10 +563,7 @@ class _Login_ScreenState extends State<Login_Screen> {
                       }
 
                       context.read<LoginCubit>().loginUser(
-                        LoginRequest(
-                          admno: admNoCtrl.text.trim(),
-                          dob: apiDob,
-                        ),
+                        LoginRequest(admno: admNoCtrl.text.trim(), dob: apiDob),
                       );
                       // context.read<LoginCubit>().loginUser(
                       //   LoginRequest(
@@ -471,7 +583,8 @@ class _Login_ScreenState extends State<Login_Screen> {
                   }
                 },
                 builder: (context, state) {
-                  final isLoading = state is LoginLoading;
+                  final isLoading = state is LoginLoading || _isProcessing;
+
                   return Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 20,
@@ -491,41 +604,58 @@ class _Login_ScreenState extends State<Login_Screen> {
                         onPressed: isLoading
                             ? null
                             : () {
-                          // ── ADDED: validate before proceeding ──
-                          if (!_validateInputs()) return;
-                          // ───────────────────────────────────────
+                                // ── ADDED: validate before proceeding ──
+                                if (!_validateInputs()) return;
+                                // ───────────────────────────────────────
 
-                          // context.read<LoginCubit>().checkDeviceRegisterStatus(
-                          //   DeviceRegisterRequest(
-                          //     deviceId: _deviceIdController.text.toString(),
-                          //   ),
-                          // );
-                          final apiDob = convertDobToApiFormat(
-                            dobCtrl.text.trim(),
-                          );
+                                // context.read<LoginCubit>().checkDeviceRegisterStatus(
+                                //   DeviceRegisterRequest(
+                                //     deviceId: _deviceIdController.text.toString(),
+                                //   ),
+                                // );
+                                final apiDob = convertDobToApiFormat(
+                                  dobCtrl.text.trim(),
+                                );
 
-                          if (apiDob.isEmpty) {
-                            showAppSnackBar(
-                              context,
-                              'Invalid DOB format',
-                            );
-                            return;
-                          }
-                          context.read<LoginCubit>().loginUser(
-                            LoginRequest(
-                              admno: admNoCtrl.text.trim(),
-                              dob: apiDob,
-                            ),
-                          );
-                        },
-                        child: const Text(
-                          "Login",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                                if (apiDob.isEmpty) {
+                                  showAppSnackBar(
+                                    context,
+                                    'Invalid DOB format',
+                                  );
+                                  return;
+                                }
+                                context.read<LoginCubit>().loginUser(
+                                  LoginRequest(
+                                    admno: admNoCtrl.text.trim(),
+                                    dob: apiDob,
+                                  ),
+                                );
+                              },
+                        child: isLoading
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : const Text(
+                                "Login",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                        // child: const Text(
+                        //   "Login",
+                        //   style: TextStyle(
+                        //     color: Colors.white,
+                        //     fontSize: 15,
+                        //     fontWeight: FontWeight.w600,
+                        //   ),
+                        // ),
                       ),
                     ),
                   );
@@ -539,8 +669,6 @@ class _Login_ScreenState extends State<Login_Screen> {
   }
 
   Future<String> getDeviceId() async {
-
-
     final deviceInfo = DeviceInfoPlugin();
 
     if (Platform.isAndroid) {
@@ -555,9 +683,7 @@ class _Login_ScreenState extends State<Login_Screen> {
       return iosInfo.identifierForVendor ?? 'unknown-ios-id';
     }
 
-
-     schoolName =
-    (await SharedPreferenceHelper().getSchoolName())!;
+    schoolName = (await SharedPreferenceHelper().getSchoolName())!;
     print('schoolName $schoolName');
     return 'unsupported-platform';
   }

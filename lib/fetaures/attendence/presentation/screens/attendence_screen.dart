@@ -83,10 +83,6 @@ class _AttendenceScreenState extends State<AttendenceScreen> {
       backgroundColor: Colors.white,
 
       appBar: AppBar(
-        systemOverlayStyle: const SystemUiOverlayStyle(
-          statusBarColor: Colors.white,
-          statusBarIconBrightness: Brightness.dark, // dark icons for white background
-        ),
         title: const Text(
           'My Attendance',
           style: const TextStyle(
@@ -104,34 +100,47 @@ class _AttendenceScreenState extends State<AttendenceScreen> {
           child: Column(
             children: [
               /// ✅ ALWAYS VISIBLE CALENDAR
-              _buildCalendarSection(),
+              GestureDetector(
+                onHorizontalDragEnd: (details) {
+                  if (details.primaryVelocity == null) return;
+
+                  if (details.primaryVelocity! < 0) {
+                    // swipe left → next month
+                    _changeMonth(1);
+                  } else if (details.primaryVelocity! > 0) {
+                    // swipe right → previous month
+                    _changeMonth(-1);
+                  }
+                },
+                child: _buildCalendarSection(),
+              ),
               BlocBuilder<AttendenceCubit, AttendenceState>(
                 builder: (context, state) {
                   bool isLoading = state is AttendenceMonthLoading;
-          
+
                   int totalPresent = 0;
                   int totalAbsent = 0;
-          
+
                   if (state is AttendenceMonthLoaded) {
                     final student = state.data.data?.isNotEmpty == true
                         ? state.data.data!.first
                         : null;
-          
                     totalPresent =
-                        int.tryParse(student?.totalPresent?.toString() ?? "0") ??
+                        int.tryParse(
+                          student?.totalPresent?.toString() ?? "0",
+                        ) ??
                         0;
-          
                     totalAbsent =
                         int.tryParse(student?.totalAbsent?.toString() ?? "0") ??
                         0;
                   }
-          
+
                   final totalWorkingDays = totalPresent + totalAbsent;
-          
+
                   final attendancePercentage = totalWorkingDays == 0
                       ? 0.0
                       : totalPresent / totalWorkingDays;
-          
+
                   return Stack(
                     children: [
                       Container(
@@ -159,9 +168,9 @@ class _AttendenceScreenState extends State<AttendenceScreen> {
                                           color: Color(0xff111827),
                                         ),
                                       ),
-          
+
                                       const SizedBox(height: 35),
-          
+
                                       isLoading
                                           ? const SizedBox(
                                               height: 34,
@@ -182,7 +191,6 @@ class _AttendenceScreenState extends State<AttendenceScreen> {
                                     ],
                                   ),
                                 ),
-          
                                 Expanded(
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.start,
@@ -195,9 +203,9 @@ class _AttendenceScreenState extends State<AttendenceScreen> {
                                           color: Color(0xff111827),
                                         ),
                                       ),
-          
+
                                       const SizedBox(height: 16),
-          
+
                                       SizedBox(
                                         width: 100,
                                         height: 100,
@@ -218,14 +226,14 @@ class _AttendenceScreenState extends State<AttendenceScreen> {
                                                     ),
                                               ),
                                             ),
-          
                                             isLoading
                                                 ? const SizedBox.shrink()
                                                 : Text(
                                                     "${(attendancePercentage * 100).toInt()}%",
                                                     style: const TextStyle(
                                                       fontSize: 17,
-                                                      fontWeight: FontWeight.w900,
+                                                      fontWeight:
+                                                          FontWeight.w900,
                                                       color: Color(0xff111827),
                                                     ),
                                                   ),
@@ -237,9 +245,9 @@ class _AttendenceScreenState extends State<AttendenceScreen> {
                                 ),
                               ],
                             ),
-          
+
                             const SizedBox(height: 25),
-          
+
                             Container(
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 22,
@@ -265,9 +273,9 @@ class _AttendenceScreenState extends State<AttendenceScreen> {
                                       ),
                                     ],
                                   ),
-          
+
                                   const SizedBox(height: 12),
-          
+
                                   Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceAround,
@@ -287,7 +295,6 @@ class _AttendenceScreenState extends State<AttendenceScreen> {
                                                 fontWeight: FontWeight.w900,
                                               ),
                                             ),
-          
                                       isLoading
                                           ? const SizedBox(
                                               width: 18,
@@ -311,7 +318,6 @@ class _AttendenceScreenState extends State<AttendenceScreen> {
                           ],
                         ),
                       ),
-          
                       Positioned(
                         right: 100,
                         top: 40,
@@ -349,20 +355,20 @@ class _AttendenceScreenState extends State<AttendenceScreen> {
               //       final student = state.data.data?.isNotEmpty == true
               //           ? state.data.data!.first
               //           : null;
-          
+
               //       final totalPresent =
               //           int.tryParse(student?.totalPresent?.toString() ?? "0") ??
               //           0;
-          
+
               //       final totalAbsent =
               //           int.tryParse(student?.totalAbsent?.toString() ?? "0") ??
               //           0;
-          
+
               //       // final totalLeave =
               //       //     int.tryParse(student?.totalAbsent.toString() ?? "0") ?? 0;
-          
+
               //       final totalWorkingDays = totalPresent + totalAbsent;
-          
+
               //       final attendancePercentage = totalWorkingDays == 0
               //           ? 0.0
               //           : totalPresent / totalWorkingDays;
@@ -393,9 +399,9 @@ class _AttendenceScreenState extends State<AttendenceScreen> {
               //                               color: Color(0xff111827),
               //                             ),
               //                           ),
-          
+
               //                           SizedBox(height: 35),
-          
+
               //                           Text(
               //                             "$totalWorkingDays",
               //                             style: TextStyle(
@@ -407,7 +413,6 @@ class _AttendenceScreenState extends State<AttendenceScreen> {
               //                         ],
               //                       ),
               //                     ),
-          
               //                     Expanded(
               //                       child: Column(
               //                         mainAxisAlignment: MainAxisAlignment.start,
@@ -420,9 +425,9 @@ class _AttendenceScreenState extends State<AttendenceScreen> {
               //                               color: Color(0xff111827),
               //                             ),
               //                           ),
-          
+
               //                           const SizedBox(height: 16),
-          
+
               //                           SizedBox(
               //                             width: 100,
               //                             height: 100,
@@ -441,7 +446,6 @@ class _AttendenceScreenState extends State<AttendenceScreen> {
               //                                         ),
               //                                   ),
               //                                 ),
-          
               //                                 Text(
               //                                   "${(attendancePercentage * 100).toInt()}%",
               //                                   style: TextStyle(
@@ -458,7 +462,6 @@ class _AttendenceScreenState extends State<AttendenceScreen> {
               //                     ),
               //                   ],
               //                 ),
-          
               //                 // const SizedBox(height: 20),
               //                 Container(
               //                   padding: const EdgeInsets.symmetric(
@@ -510,9 +513,9 @@ class _AttendenceScreenState extends State<AttendenceScreen> {
               //                           // ),
               //                         ],
               //                       ),
-          
+
               //                       const SizedBox(height: 12),
-          
+
               //                       Row(
               //                         mainAxisAlignment:
               //                             MainAxisAlignment.spaceAround,
@@ -546,7 +549,6 @@ class _AttendenceScreenState extends State<AttendenceScreen> {
               //               ],
               //             ),
               //           ),
-          
               //           Positioned(
               //             right: 100,
               //             top: 40,
@@ -1071,6 +1073,8 @@ class _AttendenceScreenState extends State<AttendenceScreen> {
     }
   }
 }
+
+class HEAD {}
 
 class _TrianglePainter extends CustomPainter {
   final int columnIndex;

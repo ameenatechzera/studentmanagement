@@ -10,8 +10,10 @@ import 'package:studentmanagement/fetaures/attendence/presentation/cubit/attende
 import 'package:studentmanagement/fetaures/attendence/presentation/screens/attendence_screen.dart';
 import 'package:studentmanagement/fetaures/authentication/data/models/account_details_model.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/entities/login_entity.dart';
+import 'package:studentmanagement/fetaures/authentication/presentation/widget/switch_account.dart';
 import 'package:studentmanagement/fetaures/classdiary/presentation/screens/alldiary_screen.dart';
 import 'package:studentmanagement/fetaures/fees/presentation/screens/fees_screen.dart';
+import 'package:studentmanagement/fetaures/home_screen/presentation/screens/student_screen.dart';
 import 'package:studentmanagement/fetaures/marklist/presentation/screens/marklistscreenN.dart';
 import 'package:studentmanagement/fetaures/materials/presentation/screens/subjectlist_screen.dart';
 import 'package:studentmanagement/fetaures/timetable/presentation/screens/timetable_screen.dart';
@@ -130,25 +132,41 @@ class _HomeScreenState extends State<StudentScreenN> {
               // Avatar + Name + Phone
               Row(
                 children: [
-                  CircleAvatar(
-                    radius: 25,
-                    backgroundImage:
-                        (AppData.profileUrl != null &&
-                            AppData.profileUrl!.isNotEmpty)
-                        ? NetworkImage(AppData.profileUrl!)
-                        : null,
-                    child:
-                        (AppData.profileUrl == null ||
-                            AppData.profileUrl!.isEmpty)
-                        ? ClipOval(
-                            child: Image.asset(
-                              getGenderImage(),
-                              fit: BoxFit.cover,
-                              width: 50,
-                              height: 50,
-                            ),
-                          )
-                        : null,
+                  GestureDetector(
+                    onTap: () {
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true, // important for full height
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(20),
+                          ),
+                        ),
+                        builder: (context) {
+                          return AddAccount();
+                        },
+                      );
+                    },
+                    child: CircleAvatar(
+                      radius: 25,
+                      backgroundImage:
+                          (AppData.profileUrl != null &&
+                              AppData.profileUrl!.isNotEmpty)
+                          ? NetworkImage(AppData.profileUrl!)
+                          : null,
+                      child:
+                          (AppData.profileUrl == null ||
+                              AppData.profileUrl!.isEmpty)
+                          ? ClipOval(
+                              child: Image.asset(
+                                getGenderImage(),
+                                fit: BoxFit.cover,
+                                width: 50,
+                                height: 50,
+                              ),
+                            )
+                          : null,
+                    ),
                   ),
                   const SizedBox(width: 14),
                   Column(
@@ -196,11 +214,82 @@ class _HomeScreenState extends State<StudentScreenN> {
                   ],
                 ),
               ),
+              Padding(
+                padding: const EdgeInsets.only(left: 45.0, top: 10),
+                child: BlocBuilder<AttendenceCubit, AttendenceState>(
+                  builder: (context, state) {
+                    if (state is AttendenceLoading) {
+                      return const Padding(
+                        padding: EdgeInsets.only(top: 8),
+                        child: SizedBox(
+                          height: 16,
+                          width: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        ),
+                      );
+                    } else if (state is AttendenceLoaded) {
+                      final list = state.response.data ?? [];
+
+                      if (list.isEmpty) {
+                        return const Text(
+                          'No Attendance Data',
+                          style: TextStyle(color: Colors.white),
+                        );
+                      }
+
+                      final attendance = list.first;
+
+                      return Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          attendance.status ?? '',
+                          style: TextStyle(
+                            color: _getStatusColor(attendance.status),
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      );
+                    } else if (state is AttendenceError) {
+                      return Text(
+                        state.message,
+                        style: const TextStyle(color: Colors.red, fontSize: 12),
+                      );
+                    }
+                    return SizedBox();
+                  },
+                ),
+              ),
             ],
           ),
         ],
       ),
     );
+  }
+
+  Color _getStatusColor(String? status) {
+    switch (status) {
+      case "Present":
+        return const Color(0xff22c55e); // green
+      case "Absent":
+        return const Color(0xffef4444); // red
+      case "Upcoming":
+        return Colors.blueGrey;
+      case "Not Marked":
+        return Colors.orange;
+      default:
+        return Colors.grey;
+    }
   }
 
   String getGenderImage() {
@@ -211,7 +300,7 @@ class _HomeScreenState extends State<StudentScreenN> {
     } else if (g == 'female') {
       return "assets/icons/1f5debb8-6e36-4d25-bde8-526f4dd89820_removalai_preview.png";
     } else {
-      return "assets/icons/c0d90970-7626-47b6-a097-ca0834c7a05f_removalai_preview.png";
+      return "assets/images/defaultstudent.png";
     }
   }
 

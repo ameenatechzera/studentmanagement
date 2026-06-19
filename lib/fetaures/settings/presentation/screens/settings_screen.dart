@@ -40,7 +40,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final data = await SharedPreferenceHelper().getBranchData();
     print('BranchDetails $data');
 
-
     setState(() {
       branchData = data;
     });
@@ -179,7 +178,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                               padding: EdgeInsets.only(top: 12),
 
                                               child: Text(
-                                                "Ctistaledu.com",
+                                                branchData?["Email"]
+                                                        .toString() ??
+                                                    "Null",
 
                                                 style: TextStyle(
                                                   fontSize: 15,
@@ -229,7 +230,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                                 },
 
                                                 child: Text(
-                                                 "Support@cristaledu.com",
+                                                  branchData?["Website"]
+                                                          .toString() ??
+                                                      "Null",
                                                   style: TextStyle(
                                                     fontSize: 15,
                                                     fontWeight: FontWeight.w500,
@@ -247,84 +250,84 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                       const SizedBox(height: 10),
 
                                       /// LOCATION
-                                      // Row(
-                                      //   crossAxisAlignment:
-                                      //       CrossAxisAlignment.start,
-                                      //   children: [
-                                      //     Container(
-                                      //       height: 54,
-                                      //       width: 54,
-                                      //
-                                      //       decoration: BoxDecoration(
-                                      //         color: const Color(0xffEAF8EF),
-                                      //         shape: BoxShape.circle,
-                                      //       ),
-                                      //
-                                      //       child: const Icon(
-                                      //         Icons.location_on_rounded,
-                                      //         color: Color(0xff29A35A),
-                                      //         size: 28,
-                                      //       ),
-                                      //     ),
-                                      //
-                                      //     const SizedBox(width: 18),
-                                      //
-                                      //     // Column(
-                                      //     //   crossAxisAlignment:
-                                      //     //       CrossAxisAlignment.start,
-                                      //     //   children: [
-                                      //     //     Text(
-                                      //     //       branchData!["post_Pin"] ??
-                                      //     //           "",
-                                      //     //       style: TextStyle(
-                                      //     //         fontSize: 12.5,
-                                      //     //         height: 1.4,
-                                      //     //         fontWeight: FontWeight.w500,
-                                      //     //         color: Color(0xff252525),
-                                      //     //       ),
-                                      //     //     ),
-                                      //     //
-                                      //     //     SizedBox(height: 3),
-                                      //     //     Text(
-                                      //     //       branchData!["District"] ??
-                                      //     //           "",
-                                      //     //       style: TextStyle(
-                                      //     //         fontSize: 12.5,
-                                      //     //         height: 1.4,
-                                      //     //         fontWeight: FontWeight.w500,
-                                      //     //         color: Color(0xff252525),
-                                      //     //       ),
-                                      //     //     ),
-                                      //     //
-                                      //     //     SizedBox(height: 3),
-                                      //     //
-                                      //     //     Text(
-                                      //     //       branchData!["State"] ??
-                                      //     //           "",
-                                      //     //
-                                      //     //       style: TextStyle(
-                                      //     //         fontSize: 12.5,
-                                      //     //         height: 1.4,
-                                      //     //         fontWeight: FontWeight.w500,
-                                      //     //         color: Color(0xff252525),
-                                      //     //       ),
-                                      //     //     ),
-                                      //     //
-                                      //     //     SizedBox(height: 3),
-                                      //     //
-                                      //     //     Text(
-                                      //     //       AppData.place!,
-                                      //     //       style: TextStyle(
-                                      //     //         fontSize: 12.5,
-                                      //     //         height: 1.4,
-                                      //     //         fontWeight: FontWeight.w500,
-                                      //     //         color: Color(0xff252525),
-                                      //     //       ),
-                                      //     //     ),
-                                      //     //   ],
-                                      //     // ),
-                                      //   ],
-                                      // ),
+                                      Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            height: 54,
+                                            width: 54,
+
+                                            decoration: BoxDecoration(
+                                              color: const Color(0xffEAF8EF),
+                                              shape: BoxShape.circle,
+                                            ),
+
+                                            child: const Icon(
+                                              Icons.location_on_rounded,
+                                              color: Color(0xff29A35A),
+                                              size: 28,
+                                            ),
+                                          ),
+
+                                          const SizedBox(width: 18),
+
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                branchData!["post_Pin"] ??
+                                                    "Null",
+                                                style: TextStyle(
+                                                  fontSize: 12.5,
+                                                  height: 1.4,
+                                                  fontWeight: FontWeight.w500,
+                                                  color: Color(0xff252525),
+                                                ),
+                                              ),
+
+                                              SizedBox(height: 3),
+
+                                              Text(
+                                                branchData!["District"] ??
+                                                    "Null",
+                                                style: TextStyle(
+                                                  fontSize: 12.5,
+                                                  height: 1.4,
+                                                  fontWeight: FontWeight.w500,
+                                                  color: Color(0xff252525),
+                                                ),
+                                              ),
+
+                                              SizedBox(height: 3),
+
+                                              Text(
+                                                branchData!["State"] ?? "Null",
+
+                                                style: TextStyle(
+                                                  fontSize: 12.5,
+                                                  height: 1.4,
+                                                  fontWeight: FontWeight.w500,
+                                                  color: Color(0xff252525),
+                                                ),
+                                              ),
+
+                                              SizedBox(height: 3),
+
+                                              Text(
+                                                AppData.place!,
+                                                style: TextStyle(
+                                                  fontSize: 12.5,
+                                                  height: 1.4,
+                                                  fontWeight: FontWeight.w500,
+                                                  color: Color(0xff252525),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
                                     ],
                                   ),
 
@@ -467,8 +470,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-
-                          if (branchData!["post_Pin"] != null && branchData!["post_Pin"].toString().trim().isNotEmpty)
+                          if (branchData!["post_Pin"] != null &&
+                              branchData!["post_Pin"]
+                                  .toString()
+                                  .trim()
+                                  .isNotEmpty)
                             Text(
                               branchData!["post_Pin"],
                               style: TextStyle(
@@ -480,7 +486,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             ),
                           SizedBox(height: 3),
 
-                          if (branchData!["District"] != null && branchData!["District"].toString().trim().isNotEmpty)
+                          if (branchData!["District"] != null &&
+                              branchData!["District"]
+                                  .toString()
+                                  .trim()
+                                  .isNotEmpty)
                             Text(
                               branchData!["District"],
                               style: TextStyle(
@@ -492,7 +502,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             ),
                           SizedBox(height: 3),
 
-                          if (branchData!["State"] != null && branchData!["State"].toString().trim().isNotEmpty)
+                          if (branchData!["State"] != null &&
+                              branchData!["State"].toString().trim().isNotEmpty)
                             Text(
                               branchData!["State"],
                               style: TextStyle(
@@ -505,7 +516,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           SizedBox(height: 3),
 
                           Text(
-                            AppData.place!,
+                            AppData.place ?? '',
                             style: TextStyle(
                               fontSize: 12.5,
                               height: 1.4,

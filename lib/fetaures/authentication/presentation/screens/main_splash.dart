@@ -166,7 +166,7 @@ class _MainSplashScreenState extends State<MainSplashScreen> {
   Widget buildLogo(double height) {
     return logo != null && logo!.isNotEmpty
         ? Image.network(
-            logo!,
+            logo ?? '',
             height: height,
             fit: BoxFit.contain,
             errorBuilder: (_, __, ___) => Image.asset(

@@ -1,4 +1,6 @@
 import 'package:get_it/get_it.dart';
+import 'package:studentmanagement/core/database/app_database.dart';
+import 'package:studentmanagement/core/database/database_init.dart';
 import 'package:studentmanagement/fetaures/attendence/data/datasources/attendencereport_remote_data_source.dart';
 import 'package:studentmanagement/fetaures/attendence/data/repositories/attendence_repository_impl.dart';
 import 'package:studentmanagement/fetaures/attendence/domain/repositories/attendence_repository.dart';
@@ -26,6 +28,8 @@ import 'package:studentmanagement/fetaures/fees/domain/usecases/fetchUnpaidFeeDe
 import 'package:studentmanagement/fetaures/fees/presentation/bloc/fees_cubit.dart';
 import 'package:studentmanagement/fetaures/fees/presentation/unPaidFee/un_paid_fee_cubit.dart';
 import 'package:studentmanagement/fetaures/home_screen/data/datasources/feed_remote_data_source.dart';
+import 'package:studentmanagement/fetaures/home_screen/data/local/dao/feed_dao.dart';
+import 'package:studentmanagement/fetaures/home_screen/data/repositories/feed_local_repository.dart';
 import 'package:studentmanagement/fetaures/home_screen/data/repositories/feed_repository_impl.dart';
 import 'package:studentmanagement/fetaures/home_screen/domain/repositories/feed_repository.dart';
 import 'package:studentmanagement/fetaures/home_screen/domain/usecases/feedaction_usecase.dart';
@@ -42,7 +46,6 @@ import 'package:studentmanagement/fetaures/materials/data/repositories/material_
 import 'package:studentmanagement/fetaures/materials/domain/repositories/material_repository.dart';
 import 'package:studentmanagement/fetaures/materials/domain/usecases/fetchMaterialsby_subject_usecase.dart';
 
-
 import 'package:studentmanagement/fetaures/materials/domain/usecases/fetch_materials_usecase.dart';
 import 'package:studentmanagement/fetaures/materials/domain/usecases/fetch_subjects_usecase.dart';
 import 'package:studentmanagement/fetaures/materials/presentation/cubit/material_cubit.dart';
@@ -51,12 +54,26 @@ import 'package:studentmanagement/fetaures/timetable/data/repositories/timetable
 import 'package:studentmanagement/fetaures/timetable/domain/repositories/timettable_repository.dart';
 import 'package:studentmanagement/fetaures/timetable/domain/usecases/fetch_timetable_usecase.dart';
 import 'package:studentmanagement/fetaures/timetable/presentation/cubit/timetable_cubit.dart';
+import 'package:studentmanagement/main.dart';
 
 final sl = GetIt.instance;
 
 class ServiceLocator {
   static Future<void> init() async {
     // ------------------- AUTH -------------------
+    // sl.registerLazySingleton(() => db.feedDao);
+    final db = DatabaseInit.instance;
+
+    print("🧠 SERVICE LOCATOR DB HASH: ${db.hashCode}");
+
+    sl.registerLazySingleton<AppDatabase>(() => db);
+
+    sl.registerLazySingleton<FeedDao>(() {
+      final dao = db.feedDao;
+      print("🧠 DAO CREATED WITH HASH: ${dao.hashCode}");
+      return dao;
+    });
+
     //  Cubit
     sl.registerFactory(
       () => LoginCubit(
@@ -138,7 +155,12 @@ class ServiceLocator {
     // ------------------- FEED -------------------
 
     sl.registerFactory(
-      () => FeedCubit(fetchFeedUseCase: sl(), feedActionUseCase: sl(), fetchSchoolUseCase: sl()),
+      () => FeedCubit(
+        fetchFeedUseCase: sl(),
+        feedActionUseCase: sl(),
+        fetchSchoolUseCase: sl(),
+        feedLocalRepository: sl(),
+      ),
     );
 
     sl.registerLazySingleton(() => FetchFeedUseCase(sl()));
@@ -147,10 +169,13 @@ class ServiceLocator {
     sl.registerLazySingleton<FeedRemoteDataSource>(
       () => FeedRemoteDataSourceImpl(),
     );
-
     sl.registerLazySingleton<FeedRepository>(
       () => FeedRepositoryImpl(remoteDataSource: sl()),
-    ); // ------------------- MARKLIST -------------------
+    ); // LOCAL REPOSITORY  ✅ THIS WAS MISSING
+    sl.registerLazySingleton<FeedLocalRepository>(
+      () => FeedLocalRepository(sl()),
+    ); // DAO
+    // ------------------- MARKLIST -------------------
 
     sl.registerFactory(
       () => MarklistCubit(
@@ -172,7 +197,13 @@ class ServiceLocator {
 
     /// ------------------- MATERIALS -------------------
 
-    sl.registerFactory(() => MaterialCubit(fetchMaterialUseCase: sl(), fetchSubjectsUseCase: sl(), fetchMaterialBySubjectUseCase: sl()));
+    sl.registerFactory(
+      () => MaterialCubit(
+        fetchMaterialUseCase: sl(),
+        fetchSubjectsUseCase: sl(),
+        fetchMaterialBySubjectUseCase: sl(),
+      ),
+    );
 
     sl.registerLazySingleton(() => FetchMaterialUseCase(sl()));
     sl.registerLazySingleton(() => FetchMaterialBySubjectUseCase(sl()));

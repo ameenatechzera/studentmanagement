@@ -500,7 +500,7 @@ class _TimeTableScreenState extends State<TimeTableScreen> {
   final DateTime _today = DateTime.now();
   final ValueNotifier<DateTime> _focusedDay = ValueNotifier(DateTime.now());
   final ValueNotifier<DateTime?> _selectedDay = ValueNotifier(DateTime.now());
-  List<FetchTimeTableDetails>? loadedList;
+  List<FetchTimeTableDetails> loadedList = [];
   @override
   void initState() {
     super.initState();
@@ -614,7 +614,6 @@ class _TimeTableScreenState extends State<TimeTableScreen> {
 
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
-
       systemOverlayStyle: const SystemUiOverlayStyle(
         statusBarColor: Colors.white,
         statusBarIconBrightness: Brightness.dark,
@@ -704,7 +703,8 @@ class _TimeTableScreenState extends State<TimeTableScreen> {
                 onDaySelected: (day, focused) {
                   _selectedDay.value = day;
                   _focusedDay.value = focused;
-                  _fetchTimetable();
+                  setState(() {});
+                  //_fetchTimetable();
                 },
                 onPageChanged: (focusedDay) {
                   _focusedDay.value = focusedDay;
@@ -744,62 +744,93 @@ class _TimeTableScreenState extends State<TimeTableScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-
       child: Scaffold(
-      backgroundColor: Colors.white,
-      appBar: _buildAppBar(),
-      body: SafeArea(
-        child: BlocBuilder<TimetableCubit, TimetableState>(
-          builder: (context, state) {
-            return CustomScrollView(
-              slivers: [
-                SliverToBoxAdapter(child: _buildCalendar()),
+        backgroundColor: Colors.white,
+        appBar: _buildAppBar(),
+        body: SafeArea(
+          child: GestureDetector(
+            onHorizontalDragEnd: (details) {
+              if (details.primaryVelocity == null) return;
 
-                const SliverToBoxAdapter(child: SizedBox(height: 18)),
+              if (details.primaryVelocity! < 0) {
+                // swipe left → next day
+                _changeDay(1);
+              } else if (details.primaryVelocity! > 0) {
+                // swipe right → previous day
+                _changeDay(-1);
+              }
+            },
+            child: BlocBuilder<TimetableCubit, TimetableState>(
+              builder: (context, state) {
+                if (state is TimetableLoaded) {
+                  loadedList = state.response.data ?? [];
+                }
+                return CustomScrollView(
+                  slivers: [
+                    SliverToBoxAdapter(child: _buildCalendar()),
 
-                if (state is TimetableLoading)
-                  SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(12, 0, 12, 20),
-                    sliver: SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (context, index) => const Padding(
-                          padding: EdgeInsets.only(bottom: 12),
-                          child: PendingFeeShimmer(),
+                    const SliverToBoxAdapter(child: SizedBox(height: 18)),
+
+                    if (state is TimetableLoading)
+                      SliverPadding(
+                        padding: const EdgeInsets.fromLTRB(12, 0, 12, 20),
+                        sliver: SliverList(
+                          delegate: SliverChildBuilderDelegate(
+                            (context, index) => const Padding(
+                              padding: EdgeInsets.only(bottom: 12),
+                              child: PendingFeeShimmer(),
+                            ),
+                            childCount: 6,
+                          ),
                         ),
-                        childCount: 6,
                       ),
-                    ),
-                  ),
 
-                if (state is TimetableError)
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Center(child: Text(state.message)),
-                    ),
-                  ),
-
-                if (state is TimetableLoaded) _buildTimetableList(state),
-                if (state is DaySelectionChanged)
-                  _buildTimetableDaySelectedList(state),
-              ],
-            );
-          },
+                    if (state is TimetableError)
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Center(child: Text(state.message)),
+                        ),
+                      ),
+                    if (state is TimetableLoaded || loadedList.isNotEmpty)
+                      _buildTimetableList(),
+                    // if (state is TimetableLoaded) _buildTimetableList(state),
+                    // if (state is DaySelectionChanged)
+                    //   _buildTimetableDaySelectedList(state),
+                  ],
+                );
+              },
+            ),
+          ),
         ),
-      ),
       ),
     );
   }
 
-  Widget _buildTimetableList(TimetableLoaded state) {
+  void _changeDay(int offset) {
+    final current = _selectedDay.value ?? _focusedDay.value;
+
+    final changedDay = current.add(Duration(days: offset));
+
+    _selectedDay.value = changedDay;
+    _focusedDay.value = changedDay;
+
+    // _fetchTimetable();
+    setState(() {});
+  }
+
+  Widget _buildTimetableList() {
     final dayForFilter = _selectedDay.value ?? _focusedDay.value;
     final selectedDayName = _getWeekDayName(dayForFilter);
 
-    final filteredList = state.response.data!
+    // final filteredList = state.response.data!
+    //     .where((item) => item.dayName == selectedDayName)
+    //     .toList();
+    // loadedList?.clear();
+    // loadedList = state.response.data!;
+    final filteredList = loadedList
         .where((item) => item.dayName == selectedDayName)
         .toList();
-    loadedList?.clear();
-    loadedList = state.response.data!;
 
     if (filteredList.isEmpty) {
       return const SliverToBoxAdapter(
@@ -831,44 +862,45 @@ class _TimeTableScreenState extends State<TimeTableScreen> {
     );
   }
 
-  Widget _buildTimetableDaySelectedList(DaySelectionChanged state) {
-    final dayForFilter = _selectedDay.value ?? _focusedDay.value;
-    final selectedDayName = _getWeekDayName(dayForFilter);
-    print('loadedList ${loadedList}');
+  //   Widget _buildTimetableDaySelectedList(DaySelectionChanged state) {
+  //     final dayForFilter = _selectedDay.value ?? _focusedDay.value;
+  //     final selectedDayName = _getWeekDayName(dayForFilter);
+  //     print('loadedList ${loadedList}');
 
-    final filteredList = loadedList!
-        .where((item) => item.dayName == selectedDayName)
-        .toList();
+  //     final filteredList = loadedList!
+  //         .where((item) => item.dayName == selectedDayName)
+  //         .toList();
 
-    if (filteredList.isEmpty) {
-      return const SliverToBoxAdapter(
-        child: Padding(
-          padding: EdgeInsets.all(20),
-          child: Center(child: Text("No Timetable Available")),
-        ),
-      );
-    }
+  //     if (filteredList.isEmpty) {
+  //       return const SliverToBoxAdapter(
+  //         child: Padding(
+  //           padding: EdgeInsets.all(20),
+  //           child: Center(child: Text("No Timetable Available")),
+  //         ),
+  //       );
+  //     }
 
-    return SliverPadding(
-      padding: const EdgeInsets.fromLTRB(12, 0, 12, 20),
-      sliver: SliverList(
-        delegate: SliverChildBuilderDelegate((context, index) {
-          final item = filteredList[index];
+  //     return SliverPadding(
+  //       padding: const EdgeInsets.fromLTRB(12, 0, 12, 20),
+  //       sliver: SliverList(
+  //         delegate: SliverChildBuilderDelegate((context, index) {
+  //           final item = filteredList[index];
 
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 12, top: 12),
-            child: _PeriodRow(
-              item: _PeriodItem(
-                item.periodNo ?? '',
-                item.subjectName ?? "No Subject",
-                _getLineColor(index),
-              ),
-            ),
-          );
-        }, childCount: filteredList.length),
-      ),
-    );
-  }
+  //           return Padding(
+  //             padding: const EdgeInsets.only(bottom: 12, top: 12),
+  //             child: _PeriodRow(
+  //               item: _PeriodItem(
+  //                 item.periodNo ?? '',
+  //                 item.subjectName ?? "No Subject",
+  //                 _getLineColor(index),
+  //               ),
+  //             ),
+  //           );
+  //         }, childCount: filteredList.length),
+  //       ),
+  //     );
+  //   }
+  // }
 }
 
 class _PeriodRowSkeleton extends StatelessWidget {

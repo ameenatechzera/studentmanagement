@@ -11,7 +11,6 @@ import 'package:studentmanagement/fetaures/authentication/domain/entities/login_
 import 'package:studentmanagement/fetaures/authentication/presentation/widget/switch_account.dart';
 import 'package:studentmanagement/fetaures/classdiary/presentation/screens/alldiary_screen.dart';
 import 'package:studentmanagement/fetaures/fees/presentation/screens/fees_screen.dart';
-import 'package:studentmanagement/fetaures/marklist/presentation/screens/marklist_screen.dart';
 import 'package:studentmanagement/fetaures/marklist/presentation/screens/marklistscreenN.dart';
 import 'package:studentmanagement/fetaures/timetable/presentation/screens/timetable_screen.dart';
 import 'package:studentmanagement/fetaures/materials/presentation/screens/materials_screen.dart';
