@@ -4,6 +4,7 @@ import 'package:studentmanagement/core/errors/exceptions.dart';
 import 'package:studentmanagement/core/errors/failure.dart';
 import 'package:studentmanagement/core/utils/typedef.dart';
 import 'package:studentmanagement/fetaures/fees/data/datasources/fees_remote_data_sources.dart';
+import 'package:studentmanagement/fetaures/fees/domain/entities/accyearResult.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/paid_fee_result.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/unpaid%20fee_result.dart';
 import 'package:studentmanagement/fetaures/fees/domain/parameters/paidFees_request.dart';
@@ -31,6 +32,19 @@ class FeesRepositoryImpl implements FeesRepository {
   ResultFuture<UnpaidFeeResult> fetchUnPaidFees(PaidFeesRequest request) async {
     try {
       final result = await remoteDataSource.fetchUnPaidFees(request);
+
+      return Right(result);
+    } on ServerException catch (failure) {
+      return Left(ServerFailure(failure.errorMessageModel.statusMessage));
+    } on DioException catch (failure) {
+      return Left(ServerFailure(failure.message.toString()));
+    }
+  }
+
+  @override
+  ResultFuture<AccYearResult> fetchAccYearsList() async {
+    try {
+      final result = await remoteDataSource.fetchAccYearsList();
 
       return Right(result);
     } on ServerException catch (failure) {
