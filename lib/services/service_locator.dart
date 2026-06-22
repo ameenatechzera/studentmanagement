@@ -20,6 +20,12 @@ import 'package:studentmanagement/fetaures/classdiary/data/repositories/diary_re
 import 'package:studentmanagement/fetaures/classdiary/domain/repositories/diary_repository.dart';
 import 'package:studentmanagement/fetaures/classdiary/domain/usecases/fetch_diary_usecase.dart';
 import 'package:studentmanagement/fetaures/classdiary/presentation/cubit/diary_cubit.dart';
+import 'package:studentmanagement/fetaures/earlygo/data/datasources/earlygo_remote_data_source.dart';
+import 'package:studentmanagement/fetaures/earlygo/data/repositories/earlygo_repository_impl.dart';
+import 'package:studentmanagement/fetaures/earlygo/domain/repositories/earlygo_repository.dart';
+import 'package:studentmanagement/fetaures/earlygo/domain/usecases/fetch_earlygorequest_usecase.dart';
+import 'package:studentmanagement/fetaures/earlygo/domain/usecases/save_earlygo_usecase.dart';
+import 'package:studentmanagement/fetaures/earlygo/presentation/cubit/earlygo_cubit.dart';
 import 'package:studentmanagement/fetaures/fees/data/datasources/fees_remote_data_sources.dart';
 import 'package:studentmanagement/fetaures/fees/data/repositories/fees_repository_impl.dart';
 import 'package:studentmanagement/fetaures/fees/domain/repositories/fees_repository.dart';
@@ -54,7 +60,6 @@ import 'package:studentmanagement/fetaures/timetable/data/repositories/timetable
 import 'package:studentmanagement/fetaures/timetable/domain/repositories/timettable_repository.dart';
 import 'package:studentmanagement/fetaures/timetable/domain/usecases/fetch_timetable_usecase.dart';
 import 'package:studentmanagement/fetaures/timetable/presentation/cubit/timetable_cubit.dart';
-import 'package:studentmanagement/main.dart';
 
 final sl = GetIt.instance;
 
@@ -236,6 +241,29 @@ class ServiceLocator {
 
     sl.registerLazySingleton<AttendanceRepository>(
       () => AttendanceRepositoryImpl(remoteDataSource: sl()),
+    );
+
+    /// ------------------- EARLY GO -------------------
+
+    // Cubit
+    sl.registerFactory(
+      () => EarlygoCubit(
+        fetchEarlyLeaveUseCase: sl(),
+        saveEarlyLeaveUseCase: sl(),
+      ),
+    );
+
+    // UseCase
+    sl.registerLazySingleton(() => FetchEarlyLeaveUseCase(sl()));
+    sl.registerLazySingleton(() => SaveEarlyLeaveUseCase(sl()));
+    // DataSource
+    sl.registerLazySingleton<EarlyLeaveRemoteDataSource>(
+      () => EarlyLeaveRemoteDataSourceImpl(),
+    );
+
+    // Repository
+    sl.registerLazySingleton<EarlyLeaveRepository>(
+      () => EarlyLeaveRepositoryImpl(sl()),
     );
   }
 }

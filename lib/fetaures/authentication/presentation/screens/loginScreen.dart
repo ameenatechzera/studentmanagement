@@ -1,12 +1,8 @@
 import 'dart:io';
-
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:media_store_plus/media_store_plus.dart';
 import 'package:studentmanagement/core/appdata/appdata.dart';
 import 'package:studentmanagement/core/navigation/app_navigator.dart';
 import 'package:studentmanagement/core/utils/widgets/app_snackbar.dart';
@@ -16,7 +12,6 @@ import 'package:studentmanagement/fetaures/authentication/presentation/bloc/logi
 import 'package:studentmanagement/fetaures/home_screen/domain/parameters/fetchfeed_parameter.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/cubit/feed_cubit.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/screens/main_screen.dart';
-import 'package:studentmanagement/services/notification_service.dart';
 import 'package:studentmanagement/services/shared_preference_helper.dart';
 
 class Login_Screen extends StatefulWidget {
@@ -377,182 +372,182 @@ class _Login_ScreenState extends State<Login_Screen> {
               // Login Button
               BlocConsumer<LoginCubit, LoginState>(
                 listener: (context, state) async {
-                  // if (state is LoginSuccess) {
-                  //   final sharedPrefHelper = SharedPreferenceHelper();
-
-                  //   await sharedPrefHelper.setToken(state.loginResponse.token);
-                  //   await sharedPrefHelper.saveLoginResponse(
-                  //     state.loginResponse,
-                  //   );
-                  //   AppData.admissionNo = state.loginResponse.student!.admno
-                  //       .toString();
-                  //   AppData.studentName = state.loginResponse.student!.name
-                  //       .toString();
-                  //   AppData.studentStdId = state
-                  //       .loginResponse
-                  //       .student!
-                  //       .currentStudentStandardId
-                  //       .toString();
-                  //   AppData.studentDivId = state
-                  //       .loginResponse
-                  //       .student!
-                  //       .currentStudentDivisionId
-                  //       .toString();
-                  //   AppData.accYear = state.loginResponse.student!.accYear
-                  //       .toString();
-                  //   AppData.gender = state.loginResponse.student!.gender
-                  //       .toString();
-                  //   AppData.studentClass =
-                  //       '${state.loginResponse.student!.studentStandard} - ${state.loginResponse.student!.studentDivision}'
-                  //           .toString();
-                  //   print(
-                  //     'profileUrl ${state.loginResponse.student!.imageUrl.toString()}',
-                  //   );
-                  //   AppData.profileUrl = state.loginResponse.student!.imageUrl
-                  //       .toString();
-                  //   await SharedPreferenceHelper.saveNewAccount(
-                  //     AccountDetails(
-                  //       admissionNo: state.loginResponse.student!.admno
-                  //           .toString(),
-                  //       dob: state.loginResponse.student!.dob.toString(),
-                  //       stdId: state
-                  //           .loginResponse
-                  //           .student!
-                  //           .currentStudentStandardId
-                  //           .toString(),
-                  //       divId: state
-                  //           .loginResponse
-                  //           .student!
-                  //           .currentStudentDivisionId,
-                  //       accYear: state.loginResponse.student!.accYear
-                  //           .toString(),
-                  //       name: state.loginResponse.student!.name,
-                  //     ),
-                  //   );
-                  //   await context.read<FeedCubit>().fetchFeeds(
-                  //     FetchFeedParameter(
-                  //       standardId: AppData.studentStdId!,
-                  //       divisionId: AppData.studentDivId!,
-                  //       fromDateTime: "",
-                  //       admissionNo: AppData.admissionNo!,
-                  //       branchId: 1,
-                  //       page: 1,
-                  //       perPage: 12,
-                  //     ),
-                  //   );
-                  //   AppNavigator.pushAndRemoveUntilSlide(
-                  //     context: context,
-                  //     page: MainScreen(loginResponse: state.loginResponse),
-                  //     predicate: (route) => false,
-                  //   );
-                  //   // Navigator.of(context).pushReplacement(
-                  //   //   MaterialPageRoute(
-                  //   //     builder: (context) {
-                  //   //       return MainScreen(
-                  //   //         loginResponse: state.loginResponse,
-                  //   //       );
-                  //   //     },
-                  //   //   ),
-                  //   // );
-                  // }
                   if (state is LoginSuccess) {
-                    setState(() {
-                      _isProcessing = true;
-                    });
+                    final sharedPrefHelper = SharedPreferenceHelper();
 
-                    try {
-                      final sharedPrefHelper = SharedPreferenceHelper();
-
-                      await sharedPrefHelper.setToken(
-                        state.loginResponse.token,
-                      );
-                      await sharedPrefHelper.saveLoginResponse(
-                        state.loginResponse,
-                      );
-
-                      AppData.admissionNo = state.loginResponse.student!.admno
-                          .toString();
-
-                      AppData.studentName = state.loginResponse.student!.name
-                          .toString();
-
-                      AppData.studentStdId = state
-                          .loginResponse
-                          .student!
-                          .currentStudentStandardId
-                          .toString();
-
-                      AppData.studentDivId = state
-                          .loginResponse
-                          .student!
-                          .currentStudentDivisionId
-                          .toString();
-
-                      AppData.accYear = state.loginResponse.student!.accYear
-                          .toString();
-
-                      AppData.gender = state.loginResponse.student!.gender
-                          .toString();
-
-                      AppData.studentClass =
-                          '${state.loginResponse.student!.studentStandard} - ${state.loginResponse.student!.studentDivision}';
-
-                      AppData.profileUrl = state.loginResponse.student!.imageUrl
-                          .toString();
-
-                      await SharedPreferenceHelper.saveNewAccount(
-                        AccountDetails(
-                          admissionNo: state.loginResponse.student!.admno
-                              .toString(),
-                          dob: state.loginResponse.student!.dob.toString(),
-                          stdId: state
-                              .loginResponse
-                              .student!
-                              .currentStudentStandardId
-                              .toString(),
-                          divId: state
-                              .loginResponse
-                              .student!
-                              .currentStudentDivisionId,
-                          accYear: state.loginResponse.student!.accYear
-                              .toString(),
-                          name: state.loginResponse.student!.name,
-                        ),
-                      );
-
-                      print("🚀 STARTING FEED SYNC");
-
-                      await context.read<FeedCubit>().fetchFeeds(
-                        FetchFeedParameter(
-                          standardId: AppData.studentStdId!,
-                          divisionId: AppData.studentDivId!,
-                          fromDateTime: "",
-                          admissionNo: AppData.admissionNo!,
-                          branchId: 1,
-                          page: 1,
-                          perPage: 12,
-                        ),
-                      );
-
-                      print("✅ FEED SYNC COMPLETED");
-
-                      if (!mounted) return;
-
-                      AppNavigator.pushAndRemoveUntilSlide(
-                        context: context,
-                        page: MainScreen(loginResponse: state.loginResponse),
-                        predicate: (route) => false,
-                      );
-                    } catch (e) {
-                      print("❌ LOGIN FLOW ERROR: $e");
-                    } finally {
-                      if (mounted) {
-                        setState(() {
-                          _isProcessing = false;
-                        });
-                      }
-                    }
+                    await sharedPrefHelper.setToken(state.loginResponse.token);
+                    await sharedPrefHelper.saveLoginResponse(
+                      state.loginResponse,
+                    );
+                    AppData.admissionNo = state.loginResponse.student!.admno
+                        .toString();
+                    AppData.studentName = state.loginResponse.student!.name
+                        .toString();
+                    AppData.studentStdId = state
+                        .loginResponse
+                        .student!
+                        .currentStudentStandardId
+                        .toString();
+                    AppData.studentDivId = state
+                        .loginResponse
+                        .student!
+                        .currentStudentDivisionId
+                        .toString();
+                    AppData.accYear = state.loginResponse.student!.accYear
+                        .toString();
+                    AppData.gender = state.loginResponse.student!.gender
+                        .toString();
+                    AppData.studentClass =
+                        '${state.loginResponse.student!.studentStandard} - ${state.loginResponse.student!.studentDivision}'
+                            .toString();
+                    print(
+                      'profileUrl ${state.loginResponse.student!.imageUrl.toString()}',
+                    );
+                    AppData.profileUrl = state.loginResponse.student!.imageUrl
+                        .toString();
+                    await SharedPreferenceHelper.saveNewAccount(
+                      AccountDetails(
+                        admissionNo: state.loginResponse.student!.admno
+                            .toString(),
+                        dob: state.loginResponse.student!.dob.toString(),
+                        stdId: state
+                            .loginResponse
+                            .student!
+                            .currentStudentStandardId
+                            .toString(),
+                        divId: state
+                            .loginResponse
+                            .student!
+                            .currentStudentDivisionId,
+                        accYear: state.loginResponse.student!.accYear
+                            .toString(),
+                        name: state.loginResponse.student!.name,
+                      ),
+                    );
+                    await context.read<FeedCubit>().fetchFeeds(
+                      FetchFeedParameter(
+                        standardId: AppData.studentStdId!,
+                        divisionId: AppData.studentDivId!,
+                        fromDateTime: "",
+                        admissionNo: AppData.admissionNo!,
+                        branchId: 1,
+                        page: 1,
+                        perPage: 12,
+                      ),
+                    );
+                    AppNavigator.pushAndRemoveUntilSlide(
+                      context: context,
+                      page: MainScreen(loginResponse: state.loginResponse),
+                      predicate: (route) => false,
+                    );
+                    // Navigator.of(context).pushReplacement(
+                    //   MaterialPageRoute(
+                    //     builder: (context) {
+                    //       return MainScreen(
+                    //         loginResponse: state.loginResponse,
+                    //       );
+                    //     },
+                    //   ),
+                    // );
                   }
+                  // if (state is LoginSuccess) {
+                  //   setState(() {
+                  //     _isProcessing = true;
+                  //   });
+
+                  //   try {
+                  //     final sharedPrefHelper = SharedPreferenceHelper();
+
+                  //     await sharedPrefHelper.setToken(
+                  //       state.loginResponse.token,
+                  //     );
+                  //     await sharedPrefHelper.saveLoginResponse(
+                  //       state.loginResponse,
+                  //     );
+
+                  //     AppData.admissionNo = state.loginResponse.student!.admno
+                  //         .toString();
+
+                  //     AppData.studentName = state.loginResponse.student!.name
+                  //         .toString();
+
+                  //     AppData.studentStdId = state
+                  //         .loginResponse
+                  //         .student!
+                  //         .currentStudentStandardId
+                  //         .toString();
+
+                  //     AppData.studentDivId = state
+                  //         .loginResponse
+                  //         .student!
+                  //         .currentStudentDivisionId
+                  //         .toString();
+
+                  //     AppData.accYear = state.loginResponse.student!.accYear
+                  //         .toString();
+
+                  //     AppData.gender = state.loginResponse.student!.gender
+                  //         .toString();
+
+                  //     AppData.studentClass =
+                  //         '${state.loginResponse.student!.studentStandard} - ${state.loginResponse.student!.studentDivision}';
+
+                  //     AppData.profileUrl = state.loginResponse.student!.imageUrl
+                  //         .toString();
+
+                  //     await SharedPreferenceHelper.saveNewAccount(
+                  //       AccountDetails(
+                  //         admissionNo: state.loginResponse.student!.admno
+                  //             .toString(),
+                  //         dob: state.loginResponse.student!.dob.toString(),
+                  //         stdId: state
+                  //             .loginResponse
+                  //             .student!
+                  //             .currentStudentStandardId
+                  //             .toString(),
+                  //         divId: state
+                  //             .loginResponse
+                  //             .student!
+                  //             .currentStudentDivisionId,
+                  //         accYear: state.loginResponse.student!.accYear
+                  //             .toString(),
+                  //         name: state.loginResponse.student!.name,
+                  //       ),
+                  //     );
+
+                  //     print("🚀 STARTING FEED SYNC");
+
+                  //     await context.read<FeedCubit>().fetchFeeds(
+                  //       FetchFeedParameter(
+                  //         standardId: AppData.studentStdId!,
+                  //         divisionId: AppData.studentDivId!,
+                  //         fromDateTime: "",
+                  //         admissionNo: AppData.admissionNo!,
+                  //         branchId: 1,
+                  //         page: 1,
+                  //         perPage: 12,
+                  //       ),
+                  //     );
+
+                  //     print("✅ FEED SYNC COMPLETED");
+
+                  //     if (!mounted) return;
+
+                  //     AppNavigator.pushAndRemoveUntilSlide(
+                  //       context: context,
+                  //       page: MainScreen(loginResponse: state.loginResponse),
+                  //       predicate: (route) => false,
+                  //     );
+                  //   } catch (e) {
+                  //     print("❌ LOGIN FLOW ERROR: $e");
+                  //   } finally {
+                  //     if (mounted) {
+                  //       setState(() {
+                  //         _isProcessing = false;
+                  //       });
+                  //     }
+                  //   }
+                  // }
                   if (state is DeviceRegisterStatusSuccess) {
                     if (state.registerResponse.data?.result == true) {
                       final apiDob = convertDobToApiFormat(dobCtrl.text.trim());

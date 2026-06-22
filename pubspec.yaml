@@ -119,6 +119,8 @@ flutter:
     - assets/images/profile_photo_sample_3.webp
     - assets/images/ChatGPT Image May 19, 2026, 04_41_29 PM 1 (1).png
     - assets/images/defaultstudent.png
+    - assets/icons/Group (3).svg
+    - assets/icons/Group (4).svg
 
   fonts:
     - family: TitilliumWeb
