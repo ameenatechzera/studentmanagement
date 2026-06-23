@@ -29,6 +29,7 @@ import 'package:studentmanagement/fetaures/earlygo/presentation/cubit/earlygo_cu
 import 'package:studentmanagement/fetaures/fees/data/datasources/fees_remote_data_sources.dart';
 import 'package:studentmanagement/fetaures/fees/data/repositories/fees_repository_impl.dart';
 import 'package:studentmanagement/fetaures/fees/domain/repositories/fees_repository.dart';
+import 'package:studentmanagement/fetaures/fees/domain/usecases/fetchAccYearUseCase.dart';
 import 'package:studentmanagement/fetaures/fees/domain/usecases/fetchPaidFeesDetailsUseCase.dart';
 import 'package:studentmanagement/fetaures/fees/domain/usecases/fetchUnpaidFeeDetailsUseCase.dart';
 import 'package:studentmanagement/fetaures/fees/presentation/bloc/fees_cubit.dart';
@@ -137,7 +138,8 @@ class ServiceLocator {
     );
 
     /// Cubit
-    sl.registerFactory(() => FeesCubit(fetchPaidFeesDetailsUseCase: sl()));
+    sl.registerFactory(() => FeesCubit(fetchPaidFeesDetailsUseCase: sl(),
+        fetchAccYearListUseCase: sl(), fetchUnPaidFeesDetailsUseCase: sl()));
 
     /// Cubit
     sl.registerFactory(
@@ -191,6 +193,7 @@ class ServiceLocator {
 
     sl.registerLazySingleton(() => FetchExamTermsUseCase(sl()));
     sl.registerLazySingleton(() => FetchMarkListUseCase(sl()));
+    sl.registerLazySingleton(() => FetchAccYearListUseCase(sl()));
 
     sl.registerLazySingleton<MarkListRemoteDataSource>(
       () => MarkListRemoteDataSourceImpl(),

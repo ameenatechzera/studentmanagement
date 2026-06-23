@@ -178,9 +178,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                               padding: EdgeInsets.only(top: 12),
 
                                               child: Text(
-                                                branchData?["Email"]
-                                                        .toString() ??
-                                                    "Null",
+                                                "Support@cristaledu.com",
 
                                                 style: TextStyle(
                                                   fontSize: 15,
@@ -230,9 +228,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                                 },
 
                                                 child: Text(
-                                                  branchData?["Website"]
-                                                          .toString() ??
-                                                      "Null",
+                                                 "Ctistaledu.com",
                                                   style: TextStyle(
                                                     fontSize: 15,
                                                     fontWeight: FontWeight.w500,
@@ -250,84 +246,83 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                       const SizedBox(height: 10),
 
                                       /// LOCATION
-                                      Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Container(
-                                            height: 54,
-                                            width: 54,
-
-                                            decoration: BoxDecoration(
-                                              color: const Color(0xffEAF8EF),
-                                              shape: BoxShape.circle,
-                                            ),
-
-                                            child: const Icon(
-                                              Icons.location_on_rounded,
-                                              color: Color(0xff29A35A),
-                                              size: 28,
-                                            ),
-                                          ),
-
-                                          const SizedBox(width: 18),
-
-                                          Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                branchData!["post_Pin"] ??
-                                                    "Null",
-                                                style: TextStyle(
-                                                  fontSize: 12.5,
-                                                  height: 1.4,
-                                                  fontWeight: FontWeight.w500,
-                                                  color: Color(0xff252525),
-                                                ),
-                                              ),
-
-                                              SizedBox(height: 3),
-
-                                              Text(
-                                                branchData!["District"] ??
-                                                    "Null",
-                                                style: TextStyle(
-                                                  fontSize: 12.5,
-                                                  height: 1.4,
-                                                  fontWeight: FontWeight.w500,
-                                                  color: Color(0xff252525),
-                                                ),
-                                              ),
-
-                                              SizedBox(height: 3),
-
-                                              Text(
-                                                branchData!["State"] ?? "Null",
-
-                                                style: TextStyle(
-                                                  fontSize: 12.5,
-                                                  height: 1.4,
-                                                  fontWeight: FontWeight.w500,
-                                                  color: Color(0xff252525),
-                                                ),
-                                              ),
-
-                                              SizedBox(height: 3),
-
-                                              Text(
-                                                AppData.place!,
-                                                style: TextStyle(
-                                                  fontSize: 12.5,
-                                                  height: 1.4,
-                                                  fontWeight: FontWeight.w500,
-                                                  color: Color(0xff252525),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
+                                      // Row(
+                                      //   crossAxisAlignment:
+                                      //       CrossAxisAlignment.start,
+                                      //   children: [
+                                      //     Container(
+                                      //       height: 54,
+                                      //       width: 54,
+                                      //
+                                      //       decoration: BoxDecoration(
+                                      //         color: const Color(0xffEAF8EF),
+                                      //         shape: BoxShape.circle,
+                                      //       ),
+                                      //
+                                      //       child: const Icon(
+                                      //         Icons.location_on_rounded,
+                                      //         color: Color(0xff29A35A),
+                                      //         size: 28,
+                                      //       ),
+                                      //     ),
+                                      //
+                                      //     const SizedBox(width: 18),
+                                      //
+                                      //     Column(
+                                      //       crossAxisAlignment:
+                                      //           CrossAxisAlignment.start,
+                                      //       children: [
+                                      //         Text(
+                                      //           branchData!["post_Pin"] ??
+                                      //               "Null",
+                                      //           style: TextStyle(
+                                      //             fontSize: 12.5,
+                                      //             height: 1.4,
+                                      //             fontWeight: FontWeight.w500,
+                                      //             color: Color(0xff252525),
+                                      //           ),
+                                      //         ),
+                                      //
+                                      //         SizedBox(height: 3),
+                                      //
+                                      //         Text(
+                                      //           branchData!["District"] ??
+                                      //               "Null",
+                                      //           style: TextStyle(
+                                      //             fontSize: 12.5,
+                                      //             height: 1.4,
+                                      //             fontWeight: FontWeight.w500,
+                                      //             color: Color(0xff252525),
+                                      //           ),
+                                      //         ),
+                                      //
+                                      //         SizedBox(height: 3),
+                                      //
+                                      //         Text(
+                                      //           branchData!["State"] ?? "Null",
+                                      //
+                                      //           style: TextStyle(
+                                      //             fontSize: 12.5,
+                                      //             height: 1.4,
+                                      //             fontWeight: FontWeight.w500,
+                                      //             color: Color(0xff252525),
+                                      //           ),
+                                      //         ),
+                                      //
+                                      //         SizedBox(height: 3),
+                                      //         Text(
+                                      //           AppData.place ?? "No place available",
+                                      //           style: TextStyle(
+                                      //             fontSize: 12.5,
+                                      //             height: 1.4,
+                                      //             fontWeight: FontWeight.w500,
+                                      //             color: Color(0xff252525),
+                                      //           ),
+                                      //         ),
+                                      //       ],
+                                      //     ),
+                                      //   ],
+                                      // ),
                                     ],
                                   ),
 
