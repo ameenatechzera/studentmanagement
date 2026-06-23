@@ -42,7 +42,7 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   void initState() {
-    notificationsetup();
+    //notificationsetup();
     super.initState();
   }
 
