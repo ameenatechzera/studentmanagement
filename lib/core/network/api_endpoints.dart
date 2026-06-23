@@ -101,4 +101,13 @@ class ApiConstants {
   // static String getBranchDetailsPath(String baseUrl) {
   //   return '${baseUrl}app/branch-byid/1';
   // }
+
+  /// Returns the full URL forfeedACTION
+  static String getEarlyLeavePath(String baseUrl) {
+    return '${baseUrl}get-all-earlygoingrequest/1';
+  }
+
+  static String saveEarlyLeavePath(String baseUrl) {
+    return '${baseUrl}save-earlygoingrequest';
+  }
 }

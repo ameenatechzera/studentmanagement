@@ -8,12 +8,12 @@ import 'package:studentmanagement/core/navigation/app_navigator.dart';
 import 'package:studentmanagement/fetaures/attendence/domain/parameters/attendence_reportbydate_parameter.dart';
 import 'package:studentmanagement/fetaures/attendence/presentation/cubit/attendence_cubit.dart';
 import 'package:studentmanagement/fetaures/attendence/presentation/screens/attendence_screen.dart';
+import 'package:studentmanagement/fetaures/earlygo/presentation/screens/earlygo_listingscreen.dart';
 import 'package:studentmanagement/fetaures/authentication/data/models/account_details_model.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/entities/login_entity.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/widget/switch_account.dart';
 import 'package:studentmanagement/fetaures/classdiary/presentation/screens/alldiary_screen.dart';
 import 'package:studentmanagement/fetaures/fees/presentation/screens/fees_screen.dart';
-import 'package:studentmanagement/fetaures/home_screen/presentation/screens/student_screen.dart';
 import 'package:studentmanagement/fetaures/marklist/presentation/screens/marklistscreenN.dart';
 import 'package:studentmanagement/fetaures/materials/presentation/screens/subjectlist_screen.dart';
 import 'package:studentmanagement/fetaures/timetable/presentation/screens/timetable_screen.dart';
@@ -29,6 +29,11 @@ const _quickAccessItems = [
     'icon': Icons.event_available,
     'label': 'Attendance',
     'color': Color(0xFFFFF5AD),
+  },
+  {
+    'icon': Icons.logout_rounded,
+    'label': 'Early Go',
+    'color': const Color(0xFF7C7CF6),
   },
 ];
 
@@ -471,6 +476,13 @@ class _HomeScreenState extends State<StudentScreenN> {
             ),
           ],
         ),
+        const SizedBox(height: 12),
+
+        _buildQuickAccessTile(
+          icon: _quickAccessItems[6]['icon'] as IconData,
+          label: _quickAccessItems[6]['label'] as String,
+          color: _quickAccessItems[6]['color'] as Color,
+        ),
       ],
     );
   }
@@ -500,6 +512,9 @@ class _HomeScreenState extends State<StudentScreenN> {
         }
         if (label == "Attendance") {
           AppNavigator.pushSlide(context: context, page: AttendenceScreen());
+        }
+        if (label == "Early Go") {
+          AppNavigator.pushSlide(context: context, page: EarlyGoScreen());
         }
       },
       child: Container(

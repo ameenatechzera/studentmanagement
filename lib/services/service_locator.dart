@@ -20,15 +20,22 @@ import 'package:studentmanagement/fetaures/classdiary/data/repositories/diary_re
 import 'package:studentmanagement/fetaures/classdiary/domain/repositories/diary_repository.dart';
 import 'package:studentmanagement/fetaures/classdiary/domain/usecases/fetch_diary_usecase.dart';
 import 'package:studentmanagement/fetaures/classdiary/presentation/cubit/diary_cubit.dart';
+import 'package:studentmanagement/fetaures/earlygo/data/datasources/earlygo_remote_data_source.dart';
+import 'package:studentmanagement/fetaures/earlygo/data/repositories/earlygo_repository_impl.dart';
+import 'package:studentmanagement/fetaures/earlygo/domain/repositories/earlygo_repository.dart';
+import 'package:studentmanagement/fetaures/earlygo/domain/usecases/fetch_earlygorequest_usecase.dart';
+import 'package:studentmanagement/fetaures/earlygo/domain/usecases/save_earlygo_usecase.dart';
+import 'package:studentmanagement/fetaures/earlygo/presentation/cubit/earlygo_cubit.dart';
 import 'package:studentmanagement/fetaures/fees/data/datasources/fees_remote_data_sources.dart';
 import 'package:studentmanagement/fetaures/fees/data/repositories/fees_repository_impl.dart';
 import 'package:studentmanagement/fetaures/fees/domain/repositories/fees_repository.dart';
-import 'package:studentmanagement/fetaures/fees/domain/usecases/fetchAccYearUseCase.dart';
 import 'package:studentmanagement/fetaures/fees/domain/usecases/fetchPaidFeesDetailsUseCase.dart';
 import 'package:studentmanagement/fetaures/fees/domain/usecases/fetchUnpaidFeeDetailsUseCase.dart';
 import 'package:studentmanagement/fetaures/fees/presentation/bloc/fees_cubit.dart';
 import 'package:studentmanagement/fetaures/fees/presentation/unPaidFee/un_paid_fee_cubit.dart';
 import 'package:studentmanagement/fetaures/home_screen/data/datasources/feed_remote_data_source.dart';
+import 'package:studentmanagement/fetaures/home_screen/data/local/dao/feed_dao.dart';
+import 'package:studentmanagement/fetaures/home_screen/data/repositories/feed_local_repository.dart';
 import 'package:studentmanagement/fetaures/home_screen/data/repositories/feed_repository_impl.dart';
 import 'package:studentmanagement/fetaures/home_screen/domain/repositories/feed_repository.dart';
 import 'package:studentmanagement/fetaures/home_screen/domain/usecases/feedaction_usecase.dart';
@@ -45,7 +52,6 @@ import 'package:studentmanagement/fetaures/materials/data/repositories/material_
 import 'package:studentmanagement/fetaures/materials/domain/repositories/material_repository.dart';
 import 'package:studentmanagement/fetaures/materials/domain/usecases/fetchMaterialsby_subject_usecase.dart';
 
-
 import 'package:studentmanagement/fetaures/materials/domain/usecases/fetch_materials_usecase.dart';
 import 'package:studentmanagement/fetaures/materials/domain/usecases/fetch_subjects_usecase.dart';
 import 'package:studentmanagement/fetaures/materials/presentation/cubit/material_cubit.dart';
@@ -55,13 +61,11 @@ import 'package:studentmanagement/fetaures/timetable/domain/repositories/timetta
 import 'package:studentmanagement/fetaures/timetable/domain/usecases/fetch_timetable_usecase.dart';
 import 'package:studentmanagement/fetaures/timetable/presentation/cubit/timetable_cubit.dart';
 
-import '../fetaures/home_screen/data/local/dao/feed_dao.dart' show FeedDao;
-import '../fetaures/home_screen/data/repositories/feed_local_repository.dart';
-
 final sl = GetIt.instance;
 
 class ServiceLocator {
   static Future<void> init() async {
+    // ------------------- AUTH -------------------
     // sl.registerLazySingleton(() => db.feedDao);
     final db = DatabaseInit.instance;
 
@@ -74,10 +78,10 @@ class ServiceLocator {
       print("🧠 DAO CREATED WITH HASH: ${dao.hashCode}");
       return dao;
     });
-    // ------------------- AUTH -------------------
+
     //  Cubit
     sl.registerFactory(
-          () => LoginCubit(
+      () => LoginCubit(
         loginServerUseCase: sl(),
         checkDeviceRegisterStatusUseCase: sl(),
         fetchSchoolUseCase: sl(),
@@ -93,12 +97,12 @@ class ServiceLocator {
 
     // Data Source
     sl.registerLazySingleton<AuthRemoteDataSource>(
-          () => AuthRemoteDataSourceImpl(),
+      () => AuthRemoteDataSourceImpl(),
     );
 
     // repository
     sl.registerLazySingleton<AuthRepository>(
-          () => AuthRepositoryImpl(remoteDataSource: sl()),
+      () => AuthRepositoryImpl(remoteDataSource: sl()),
     );
 
     // ------------------- TIMETABLE -------------------
@@ -108,11 +112,11 @@ class ServiceLocator {
     sl.registerLazySingleton(() => FetchTimeTableUseCase(sl()));
 
     sl.registerLazySingleton<TimeTableRemoteDataSource>(
-          () => TimeTableRemoteDataSourceImpl(),
+      () => TimeTableRemoteDataSourceImpl(),
     );
 
     sl.registerLazySingleton<TimeTableRepository>(
-          () => TimeTableRepositoryImpl(remoteDataSource: sl()),
+      () => TimeTableRepositoryImpl(remoteDataSource: sl()),
     );
     // ------------------- DIARY -------------------
 
@@ -124,61 +128,62 @@ class ServiceLocator {
 
     /// Remote Data Source
     sl.registerLazySingleton<DiaryRemoteDataSource>(
-          () => DiaryRemoteDataSourceImpl(),
+      () => DiaryRemoteDataSourceImpl(),
     );
 
     /// Repository
     sl.registerLazySingleton<DiaryRepository>(
-          () => DiaryRepositoryImpl(remoteDataSource: sl()),
+      () => DiaryRepositoryImpl(remoteDataSource: sl()),
     );
 
     /// Cubit
-    sl.registerFactory(() => FeesCubit(fetchPaidFeesDetailsUseCase: sl(), fetchAccYearListUseCase: sl(), fetchUnPaidFeesDetailsUseCase: sl()));
+    sl.registerFactory(() => FeesCubit(fetchPaidFeesDetailsUseCase: sl()));
 
     /// Cubit
     sl.registerFactory(
-          () => UnPaidFeeCubit(fetchUnPaidFeesDetailsUseCase: sl()),
+      () => UnPaidFeeCubit(fetchUnPaidFeesDetailsUseCase: sl()),
     );
 
     /// UseCase
     sl.registerLazySingleton(() => FetchPaidFeesDetailsUseCase(sl()));
     sl.registerLazySingleton(() => FetchUnPaidFeesDetailsUseCase(sl()));
-    sl.registerLazySingleton(() => FetchAccYearListUseCase(sl()));
-
 
     /// Remote Data Source
     sl.registerLazySingleton<FeesRemoteDataSource>(
-          () => FeesRemoteDataSourceImpl(),
+      () => FeesRemoteDataSourceImpl(),
     );
 
     /// Repository
     sl.registerLazySingleton<FeesRepository>(
-          () => FeesRepositoryImpl(remoteDataSource: sl()),
+      () => FeesRepositoryImpl(remoteDataSource: sl()),
     );
     // ------------------- FEED -------------------
 
     sl.registerFactory(
-          () => FeedCubit(fetchFeedUseCase: sl(), feedActionUseCase: sl(), fetchSchoolUseCase: sl(),
-            feedLocalRepository: sl(),),
+      () => FeedCubit(
+        fetchFeedUseCase: sl(),
+        feedActionUseCase: sl(),
+        fetchSchoolUseCase: sl(),
+        feedLocalRepository: sl(),
+      ),
     );
 
     sl.registerLazySingleton(() => FetchFeedUseCase(sl()));
     sl.registerLazySingleton(() => FeedActionUseCase(sl()));
 
     sl.registerLazySingleton<FeedRemoteDataSource>(
-          () => FeedRemoteDataSourceImpl(),
+      () => FeedRemoteDataSourceImpl(),
     );
-
     sl.registerLazySingleton<FeedRepository>(
-          () => FeedRepositoryImpl(remoteDataSource: sl()),
-    );
+      () => FeedRepositoryImpl(remoteDataSource: sl()),
+    ); // LOCAL REPOSITORY  ✅ THIS WAS MISSING
     sl.registerLazySingleton<FeedLocalRepository>(
-          () => FeedLocalRepository(sl()),
+      () => FeedLocalRepository(sl()),
     ); // DAO
     // ------------------- MARKLIST -------------------
 
     sl.registerFactory(
-          () => MarklistCubit(
+      () => MarklistCubit(
         fetchExamTermsUseCase: sl(),
         fetchMarkListUseCase: sl(),
       ),
@@ -188,32 +193,38 @@ class ServiceLocator {
     sl.registerLazySingleton(() => FetchMarkListUseCase(sl()));
 
     sl.registerLazySingleton<MarkListRemoteDataSource>(
-          () => MarkListRemoteDataSourceImpl(),
+      () => MarkListRemoteDataSourceImpl(),
     );
 
     sl.registerLazySingleton<MarkListRepository>(
-          () => MarkListRepositoryImpl(sl()),
+      () => MarkListRepositoryImpl(sl()),
     );
 
     /// ------------------- MATERIALS -------------------
 
-    sl.registerFactory(() => MaterialCubit(fetchMaterialUseCase: sl(), fetchSubjectsUseCase: sl(), fetchMaterialBySubjectUseCase: sl()));
+    sl.registerFactory(
+      () => MaterialCubit(
+        fetchMaterialUseCase: sl(),
+        fetchSubjectsUseCase: sl(),
+        fetchMaterialBySubjectUseCase: sl(),
+      ),
+    );
 
     sl.registerLazySingleton(() => FetchMaterialUseCase(sl()));
     sl.registerLazySingleton(() => FetchMaterialBySubjectUseCase(sl()));
 
     sl.registerLazySingleton<MaterialRemoteDataSource>(
-          () => MaterialRemoteDataSourceImpl(),
+      () => MaterialRemoteDataSourceImpl(),
     );
 
     sl.registerLazySingleton<MaterialRepository>(
-          () => MaterialRepositoryImpl(sl()),
+      () => MaterialRepositoryImpl(sl()),
     );
 
     /// ------------------- ATTENDECE BY DATE -------------------
     // ✅ Cubit
     sl.registerFactory(
-          () => AttendenceCubit(
+      () => AttendenceCubit(
         dateUseCase: sl(),
         monthUseCase: sl(), // AttendanceReportByDateUseCase
         // AttendanceReportByMonthUseCase
@@ -225,11 +236,34 @@ class ServiceLocator {
     sl.registerLazySingleton(() => FetchSubjectsUseCase(sl()));
 
     sl.registerLazySingleton<AttendanceRemoteDataSource>(
-          () => AttendanceRemoteDataSourceImpl(),
+      () => AttendanceRemoteDataSourceImpl(),
     );
 
     sl.registerLazySingleton<AttendanceRepository>(
-          () => AttendanceRepositoryImpl(remoteDataSource: sl()),
+      () => AttendanceRepositoryImpl(remoteDataSource: sl()),
+    );
+
+    /// ------------------- EARLY GO -------------------
+
+    // Cubit
+    sl.registerFactory(
+      () => EarlygoCubit(
+        fetchEarlyLeaveUseCase: sl(),
+        saveEarlyLeaveUseCase: sl(),
+      ),
+    );
+
+    // UseCase
+    sl.registerLazySingleton(() => FetchEarlyLeaveUseCase(sl()));
+    sl.registerLazySingleton(() => SaveEarlyLeaveUseCase(sl()));
+    // DataSource
+    sl.registerLazySingleton<EarlyLeaveRemoteDataSource>(
+      () => EarlyLeaveRemoteDataSourceImpl(),
+    );
+
+    // Repository
+    sl.registerLazySingleton<EarlyLeaveRepository>(
+      () => EarlyLeaveRepositoryImpl(sl()),
     );
   }
 }
