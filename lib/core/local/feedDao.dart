@@ -3,8 +3,6 @@ import 'package:studentmanagement/fetaures/home_screen/domain/entities/fetchfeed
 
 @dao
 abstract class FeedDao {
-
-
   @Insert()
   Future<void> insertfeeds(List<FeedDetails> article);
 

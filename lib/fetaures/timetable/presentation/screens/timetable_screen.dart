@@ -1,483 +1,4 @@
-// import 'package:flutter/material.dart';
-// import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:shimmer/shimmer.dart';
-// import 'package:studentmanagement/core/appdata/appdata.dart';
-// import 'package:studentmanagement/fetaures/fees/presentation/widgets/pendingfee_skeleton.dart';
-// import 'package:studentmanagement/fetaures/timetable/domain/parameters/fetch_timetable_parameter.dart';
-// import 'package:studentmanagement/fetaures/timetable/presentation/cubit/timetable_cubit.dart';
-// import 'package:table_calendar/table_calendar.dart';
 
-// class TimeTableScreen extends StatefulWidget {
-//   const TimeTableScreen({super.key});
-
-//   @override
-//   State<TimeTableScreen> createState() => _TimeTableScreenState();
-// }
-
-// class _TimeTableScreenState extends State<TimeTableScreen> {
-//   final DateTime _today = DateTime.now();
-//   final ValueNotifier<DateTime> _focusedDay = ValueNotifier(DateTime.now());
-//   final ValueNotifier<DateTime?> _selectedDay = ValueNotifier(DateTime.now());
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     Future.microtask(() {
-//       context.read<TimetableCubit>().fetchTimeTable(
-//         FetchTimeTableParameter(
-//           accYear: AppData.accYear!,
-//           standardId: AppData.studentStdId!,
-//           divisionId: AppData.studentDivId!,
-//           branchId: 1,
-//         ),
-//       );
-//     });
-//   }
-
-//   @override
-//   void dispose() {
-//     _focusedDay.dispose();
-//     _selectedDay.dispose();
-//     super.dispose();
-//   }
-
-//   String _getWeekDayName(DateTime date) {
-//     const days = [
-//       "Monday",
-//       "Tuesday",
-//       "Wednesday",
-//       "Thursday",
-//       "Friday",
-//       "Saturday",
-//       "Sunday",
-//     ];
-//     return days[date.weekday - 1];
-//   }
-
-//   String _getMonthName(int month) {
-//     const months = [
-//       "January",
-//       "February",
-//       "March",
-//       "April",
-//       "May",
-//       "June",
-//       "July",
-//       "August",
-//       "September",
-//       "October",
-//       "November",
-//       "December",
-//     ];
-//     return months[month - 1];
-//   }
-
-//   void _changeMonth(int offset) {
-//     final focusedDay = _focusedDay.value;
-//     final changedMonth = DateTime(
-//       focusedDay.year,
-//       focusedDay.month + offset,
-//       1,
-//     );
-
-//     _focusedDay.value = changedMonth;
-
-//     final isCurrentMonth =
-//         changedMonth.year == _today.year && changedMonth.month == _today.month;
-
-//     _selectedDay.value = isCurrentMonth ? _today : null;
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       backgroundColor: Colors.white,
-
-//       appBar: AppBar(
-//         backgroundColor: Colors.white,
-//         elevation: 0,
-//         title: const Text(
-//           'Time Table',
-//           style: TextStyle(color: Colors.black, fontWeight: FontWeight.w800),
-//         ),
-//         actions: [
-//           ValueListenableBuilder<DateTime>(
-//             valueListenable: _focusedDay,
-//             builder: (context, focusedDay, _) {
-//               return Row(
-//                 children: [
-//                   IconButton(
-//                     icon: const Icon(Icons.chevron_left),
-//                     onPressed: () => _changeMonth(-1),
-//                   ),
-//                   Text(
-//                     "${_getMonthName(focusedDay.month)} ${focusedDay.year}",
-//                     style: const TextStyle(fontWeight: FontWeight.w800),
-//                   ),
-//                   IconButton(
-//                     icon: const Icon(Icons.chevron_right),
-//                     onPressed: () => _changeMonth(1),
-//                   ),
-//                   const SizedBox(width: 12),
-//                 ],
-//               );
-//             },
-//           ),
-//         ],
-//       ),
-
-//       body: SafeArea(
-//         child: BlocBuilder<TimetableCubit, TimetableState>(
-//           builder: (context, state) {
-//             return CustomScrollView(
-//               slivers: [
-//                 /// ✅ ALWAYS SHOW CALENDAR
-//                 SliverToBoxAdapter(
-//                   child: ValueListenableBuilder<DateTime?>(
-//                     valueListenable: _selectedDay,
-//                     builder: (_, selectedDay, __) {
-//                       return ValueListenableBuilder<DateTime>(
-//                         valueListenable: _focusedDay,
-//                         builder: (_, focusedDay, __) {
-//                           return Container(
-//                             decoration: BoxDecoration(
-//                               color: Color(0xFFeeedff), // 👈 background color
-//                               borderRadius: BorderRadius.circular(12),
-//                             ),
-//                             child: TableCalendar(
-//                               firstDay: DateTime.utc(2020, 1, 1),
-//                               lastDay: DateTime.utc(2035, 12, 31),
-//                               focusedDay: focusedDay,
-//                               calendarFormat: CalendarFormat.week,
-//                               headerVisible: false,
-//                               daysOfWeekHeight: 24,
-//                               rowHeight: 64,
-//                               selectedDayPredicate: (day) =>
-//                                   selectedDay != null &&
-//                                   isSameDay(selectedDay, day),
-//                               onDaySelected: (day, focused) {
-//                                 _selectedDay.value = day;
-//                                 _focusedDay.value = focused;
-
-//                                 context.read<TimetableCubit>().fetchTimeTable(
-//                                   FetchTimeTableParameter(
-//                                     accYear: AppData.accYear!,
-//                                     standardId: AppData.studentStdId!,
-//                                     divisionId: AppData.studentDivId!,
-//                                     branchId: 1,
-//                                   ),
-//                                 );
-//                               },
-//                               calendarStyle: CalendarStyle(
-//                                 selectedDecoration: BoxDecoration(
-//                                   color: Color(
-//                                     0xFF807FD8,
-//                                   ), // 👈 your custom color
-//                                   shape: BoxShape.circle,
-//                                 ),
-//                                 // selectedTextStyle: const TextStyle(
-//                                 //   color: Colors
-//                                 //       .white, // optional: text color inside circle
-//                                 // ),
-//                               ),
-//                               onPageChanged: (focusedDay) {
-//                                 _focusedDay.value = focusedDay;
-//                               },
-//                             ),
-//                           );
-//                         },
-//                       );
-//                     },
-//                   ),
-//                 ),
-
-//                 /// 🔥 LOADING → ONLY LIST SKELETON
-//                 if (state is TimetableLoading)
-//                   SliverPadding(
-//                     padding: EdgeInsets.fromLTRB(12, 0, 12, 20),
-//                     sliver: SliverList(
-//                       delegate: SliverChildBuilderDelegate(
-//                         (context, index) => Padding(
-//                           padding: EdgeInsets.only(bottom: 12),
-//                           child: PendingFeeShimmer(),
-//                         ),
-//                         childCount: 6,
-//                       ),
-//                     ),
-//                   ),
-
-//                 /// ❌ ERROR
-//                 if (state is TimetableError)
-//                   SliverToBoxAdapter(
-//                     child: Padding(
-//                       padding: const EdgeInsets.all(20),
-//                       child: Center(child: Text(state.message)),
-//                     ),
-//                   ),
-
-//                 /// ✅ DATA
-//                 if (state is TimetableLoaded) _buildTimetableList(state),
-//               ],
-//             );
-//           },
-//         ),
-//       ),
-//     );
-//   }
-
-//   Widget _buildTimetableList(TimetableLoaded state) {
-//     final dayForFilter = _selectedDay.value ?? _focusedDay.value;
-//     final selectedDayName = _getWeekDayName(dayForFilter);
-
-//     final filteredList = state.response.data!
-//         .where((item) => item.dayName == selectedDayName)
-//         .toList();
-
-//     if (filteredList.isEmpty) {
-//       return const SliverToBoxAdapter(
-//         child: Padding(
-//           padding: EdgeInsets.all(20),
-//           child: Center(child: Text("No Timetable Available")),
-//         ),
-//       );
-//     }
-
-//     return SliverPadding(
-//       padding: const EdgeInsets.fromLTRB(12, 0, 12, 20),
-//       sliver: SliverList(
-//         delegate: SliverChildBuilderDelegate((context, index) {
-//           final item = filteredList[index];
-
-//           return Padding(
-//             padding: const EdgeInsets.only(bottom: 12, top: 12),
-//             child: _PeriodRow(
-//               item: _PeriodItem(
-//                 item.periodNo ?? '',
-//                 item.subjectName ?? "No Subject",
-//                 _getLineColor(index),
-//               ),
-//             ),
-//           );
-//         }, childCount: filteredList.length),
-//       ),
-//     );
-//   }
-// }
-
-// /// 🔥 SKELETON ROW
-
-// class _PeriodRowSkeleton extends StatelessWidget {
-//   const _PeriodRowSkeleton();
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Shimmer.fromColors(
-//       baseColor: Colors.grey.shade300,
-//       highlightColor: Colors.grey.shade100,
-//       child: Row(
-//         children: [
-//           SizedBox(
-//             width: 52,
-//             child: Column(
-//               crossAxisAlignment: CrossAxisAlignment.start,
-//               children: [
-//                 Container(height: 20, width: 30, color: Colors.white),
-//                 const SizedBox(height: 6),
-//                 Container(height: 12, width: 40, color: Colors.white),
-//               ],
-//             ),
-//           ),
-//           const SizedBox(width: 10),
-//           Expanded(
-//             child: Container(
-//               height: 90,
-//               padding: const EdgeInsets.symmetric(horizontal: 14),
-//               decoration: BoxDecoration(
-//                 color: Colors.white,
-//                 borderRadius: BorderRadius.circular(14),
-//               ),
-//               child: Row(
-//                 children: [
-//                   Container(width: 4, height: 50, color: Colors.white),
-//                   const SizedBox(width: 12),
-//                   Expanded(child: Container(height: 14, color: Colors.white)),
-//                 ],
-//               ),
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
-
-// /// 🎯 REAL ROW
-
-// // class _PeriodRow extends StatelessWidget {
-// //   final _PeriodItem item;
-
-// //   const _PeriodRow({required this.item});
-
-// //   @override
-// //   Widget build(BuildContext context) {
-// //     return Row(
-// //       children: [
-// //         Expanded(
-// //           child: Container(
-// //             height: 90,
-// //             padding: const EdgeInsets.symmetric(horizontal: 14),
-// //             decoration: BoxDecoration(
-// //               color: Colors.white,
-// //               borderRadius: BorderRadius.circular(14),
-// //               boxShadow: [
-// //                 BoxShadow(
-// //                   color: Colors.black.withOpacity(0.08),
-// //                   blurRadius: 16,
-// //                   offset: const Offset(0, 10),
-// //                 ),
-// //               ],
-// //             ),
-// //             child: Row(
-// //               children: [
-// //                 Container(
-// //                   width: 4,
-// //                   height: 50,
-// //                   decoration: BoxDecoration(
-// //                     color: item.lineColor,
-// //                     borderRadius: BorderRadius.circular(10),
-// //                   ),
-// //                 ),
-// //                 const SizedBox(width: 12),
-// //                 Expanded(
-// //                   child: Text(
-// //                     item.subject,
-// //                     style: const TextStyle(
-// //                       fontSize: 14,
-// //                       fontWeight: FontWeight.w800,
-// //                     ),
-// //                   ),
-// //                 ),
-// //               ],
-// //             ),
-// //           ),
-// //         ),
-// //       ],
-// //     );
-// //   }
-// // }
-// class _PeriodRow extends StatelessWidget {
-//   final _PeriodItem item;
-
-//   const _PeriodRow({required this.item});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Row(
-//       children: [
-//         Expanded(
-//           child: Container(
-//             height: 90,
-//             //margin: const EdgeInsets.only(bottom: 12),
-//             decoration: BoxDecoration(
-//               color: Colors.white,
-//               borderRadius: BorderRadius.circular(14),
-//               boxShadow: [
-//                 BoxShadow(
-//                   color: Colors.black.withOpacity(0.08),
-//                   blurRadius: 16,
-//                   offset: const Offset(0, 10),
-//                 ),
-//               ],
-//             ),
-
-//             child: Stack(
-//               children: [
-//                 /// ✅ PERFECT CURVED LEFT LINE
-//                 Positioned(
-//                   left: 0,
-//                   top: 0,
-//                   bottom: 0,
-//                   child: Container(
-//                     width: 4,
-//                     decoration: BoxDecoration(
-//                       color: item.lineColor,
-//                       borderRadius: const BorderRadius.only(
-//                         topLeft: Radius.circular(14),
-//                         bottomLeft: Radius.circular(14),
-//                       ),
-//                     ),
-//                   ),
-//                 ),
-
-//                 /// CONTENT
-//                 Padding(
-//                   padding: const EdgeInsets.symmetric(
-//                     horizontal: 14,
-//                   ).copyWith(left: 18),
-//                   child: Row(
-//                     children: [
-//                       Container(
-//                         height: 50,
-//                         width: 50,
-//                         decoration: BoxDecoration(
-//                           color: item.lineColor.withOpacity(0.2),
-//                           borderRadius: BorderRadius.circular(10),
-//                         ),
-//                         child: Column(children: [Text('Per'), Text('1')]),
-//                       ),
-//                       SizedBox(width: 20),
-//                       Column(
-//                         crossAxisAlignment: CrossAxisAlignment.start,
-//                         mainAxisAlignment: MainAxisAlignment.center,
-//                         children: [
-//                           Text(
-//                             item.subject,
-//                             style: const TextStyle(
-//                               fontSize: 14,
-//                               fontWeight: FontWeight.w800,
-//                             ),
-//                           ),
-//                           Row(
-//                             children: [
-//                               Icon(Icons.access_time, color: Colors.grey),
-//                               Text(
-//                                 '09.00am to 05.00pm',
-//                                 style: TextStyle(color: Colors.grey),
-//                               ),
-//                             ],
-//                           ),
-//                         ],
-//                       ),
-//                     ],
-//                   ),
-//                 ),
-//               ],
-//             ),
-//           ),
-//         ),
-//       ],
-//     );
-//   }
-// }
-
-// class _PeriodItem {
-//   final String no;
-//   final String subject;
-//   final Color lineColor;
-
-//   const _PeriodItem(this.no, this.subject, this.lineColor);
-// }
-
-// Color _getLineColor(int index) {
-//   final colors = [
-//     Color(0xFF8e8ffa),
-//     Color(0xFF67c47d),
-//     Color(0xFF4b6ae8),
-//     Color(0xFFffa94e),
-//     Color(0xFFffa94e),
-//   ];
-//   return colors[index % colors.length];
-// }
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -743,64 +264,62 @@ class _TimeTableScreenState extends State<TimeTableScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: _buildAppBar(),
-        body: SafeArea(
-          child: GestureDetector(
-            onHorizontalDragEnd: (details) {
-              if (details.primaryVelocity == null) return;
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: _buildAppBar(),
+      body: SafeArea(
+        child: GestureDetector(
+          onHorizontalDragEnd: (details) {
+            if (details.primaryVelocity == null) return;
 
-              if (details.primaryVelocity! < 0) {
-                // swipe left → next day
-                _changeDay(1);
-              } else if (details.primaryVelocity! > 0) {
-                // swipe right → previous day
-                _changeDay(-1);
+            if (details.primaryVelocity! < 0) {
+              // swipe left → next day
+              _changeDay(1);
+            } else if (details.primaryVelocity! > 0) {
+              // swipe right → previous day
+              _changeDay(-1);
+            }
+          },
+          child: BlocBuilder<TimetableCubit, TimetableState>(
+            builder: (context, state) {
+              if (state is TimetableLoaded) {
+                loadedList = state.response.data ?? [];
               }
-            },
-            child: BlocBuilder<TimetableCubit, TimetableState>(
-              builder: (context, state) {
-                if (state is TimetableLoaded) {
-                  loadedList = state.response.data ?? [];
-                }
-                return CustomScrollView(
-                  slivers: [
-                    SliverToBoxAdapter(child: _buildCalendar()),
+              return CustomScrollView(
+                slivers: [
+                  SliverToBoxAdapter(child: _buildCalendar()),
 
-                    const SliverToBoxAdapter(child: SizedBox(height: 18)),
+                  const SliverToBoxAdapter(child: SizedBox(height: 18)),
 
-                    if (state is TimetableLoading)
-                      SliverPadding(
-                        padding: const EdgeInsets.fromLTRB(12, 0, 12, 20),
-                        sliver: SliverList(
-                          delegate: SliverChildBuilderDelegate(
-                            (context, index) => const Padding(
-                              padding: EdgeInsets.only(bottom: 12),
-                              child: PendingFeeShimmer(),
-                            ),
-                            childCount: 6,
+                  if (state is TimetableLoading)
+                    SliverPadding(
+                      padding: const EdgeInsets.fromLTRB(12, 0, 12, 20),
+                      sliver: SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) => const Padding(
+                            padding: EdgeInsets.only(bottom: 12),
+                            child: PendingFeeShimmer(),
                           ),
+                          childCount: 6,
                         ),
                       ),
+                    ),
 
-                    if (state is TimetableError)
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: const EdgeInsets.all(20),
-                          child: Center(child: Text(state.message)),
-                        ),
+                  if (state is TimetableError)
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Center(child: Text(state.message)),
                       ),
-                    if (state is TimetableLoaded || loadedList.isNotEmpty)
-                      _buildTimetableList(),
-                    // if (state is TimetableLoaded) _buildTimetableList(state),
-                    // if (state is DaySelectionChanged)
-                    //   _buildTimetableDaySelectedList(state),
-                  ],
-                );
-              },
-            ),
+                    ),
+                  if (state is TimetableLoaded || loadedList.isNotEmpty)
+                    _buildTimetableList(),
+                  // if (state is TimetableLoaded) _buildTimetableList(state),
+                  // if (state is DaySelectionChanged)
+                  //   _buildTimetableDaySelectedList(state),
+                ],
+              );
+            },
           ),
         ),
       ),
