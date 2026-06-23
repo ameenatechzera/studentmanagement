@@ -81,7 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
     //   fontSize: 16.0,
     // );
 
-    if (storeVersion.isNotEmpty && storeVersion.trim() != appVersion.trim()) {
+    if (storeVersion.isNotEmpty && storeVersion.trim() == appVersion.trim()) {
       showDialog(
         context: context,
         barrierDismissible: false,

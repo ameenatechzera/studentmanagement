@@ -9,6 +9,7 @@ import 'package:number_to_words/number_to_words.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:studentmanagement/core/appdata/appdata.dart';
+import 'package:studentmanagement/fetaures/fees/domain/entities/paid_fee_result.dart';
 import 'package:studentmanagement/fetaures/fees/presentation/bloc/fees_cubit.dart';
 import 'package:studentmanagement/fetaures/fees/presentation/widgets/amount_column.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -17,7 +18,8 @@ import 'package:studentmanagement/fetaures/fees/presentation/widgets/pendingfee_
 import 'package:studentmanagement/services/shared_preference_helper.dart';
 
 class PaidFee extends StatefulWidget {
-  const PaidFee({super.key});
+  PaidFeeResult feePaidResult;
+   PaidFee({super.key, required this.feePaidResult});
 
   @override
   State<PaidFee> createState() => _PaidFeeState();
@@ -28,363 +30,346 @@ int? expandedIndex;
 class _PaidFeeState extends State<PaidFee> {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<FeesCubit, FeesState>(
-      builder: (context, state) {
-        if (state is FeesInitial) {
-          return const PendingFeeShimmer();
-        }
 
-        if (state is FeesPaidSuccess) {
-          final feesList = state.feePaidResult.data; // your API list
-          if(feesList.length>0){
-            return ListView.builder(
-              itemCount: feesList.length,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index) {
-                final fee = feesList[index];
+    if(widget.feePaidResult.data.length>0){
+      return ListView.builder(
+        itemCount: widget.feePaidResult.data.length,
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemBuilder: (context, index) {
+          final fee = widget.feePaidResult.data[index];
 
-                String formatedDate = fee.date!;
-                try {
-                  formatedDate = formatDate(fee.date!);
-                } catch (_) {}
-                final isExpanded = expandedIndex == index;
+          String formatedDate = fee.date!;
+          try {
+            formatedDate = formatDate(fee.date!);
+          } catch (_) {}
+          final isExpanded = expandedIndex == index;
 
-                return GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: () {
-                    setState(() {
-                      expandedIndex = isExpanded ? null : index;
-                    });
-                  },
-                  child: Container(
-                    //margin: const EdgeInsets.only(bottom: 12),
-                    child: Stack(
+          return GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () {
+              setState(() {
+                expandedIndex = isExpanded ? null : index;
+              });
+            },
+            child: Container(
+              //margin: const EdgeInsets.only(bottom: 12),
+              child: Stack(
+                children: [
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(14),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                          margin: const EdgeInsets.only(bottom: 12),
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(14),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
-                                blurRadius: 8,
-                                offset: const Offset(0, 4),
+                        /// 🔹 HEADER
+                        Row(
+                          children: [
+                            // 🔵 LEFT - Circle Avatar
+                            Container(
+                              height: 44,
+                              width: 44,
+                              decoration: const BoxDecoration(
+                                color: Color(0xFF807FD8),
+                                shape: BoxShape.circle,
                               ),
-                            ],
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              /// 🔹 HEADER
-                              Row(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: SvgPicture.asset(
+                                  'assets/icons/Group (1).svg',
+                                ),
+                              ),
+                            ),
+
+                            const SizedBox(width: 8),
+
+                            // 🧾 CENTER - Receipt + Tick
+                            Expanded(
+                              child: Row(
                                 children: [
-                                  // 🔵 LEFT - Circle Avatar
-                                  Container(
-                                    height: 44,
-                                    width: 44,
-                                    decoration: const BoxDecoration(
-                                      color: Color(0xFF807FD8),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: SvgPicture.asset(
-                                        'assets/icons/Group (1).svg',
-                                      ),
-                                    ),
-                                  ),
-
-                                  const SizedBox(width: 8),
-
-                                  // 🧾 CENTER - Receipt + Tick
-                                  Expanded(
-                                    child: Row(
-                                      children: [
-                                        const Text(
-                                          'Receipt No : ',
-                                          style: TextStyle(
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                        Text(
-                                          fee.receiptNo,
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                        const SizedBox(width: 6),
-                                        const Icon(
-                                          Icons.check_circle,
-                                          color: Colors.green,
-                                          size: 18,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-
-                                  // 📅 RIGHT - Date
-                                  Text(
-                                    formatedDate,
-                                    style: const TextStyle(
+                                  const Text(
+                                    'Receipt No : ',
+                                    style: TextStyle(
                                       fontSize: 13,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
-                                  IconButton(
-                                    onPressed: () async {
-                                      await generateAndDownloadPdf(fee, context);
-                                    },
-                                    icon: Icon(Icons.download),
+                                  Text(
+                                    fee.receiptNo,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 6),
+                                  const Icon(
+                                    Icons.check_circle,
+                                    color: Colors.green,
+                                    size: 18,
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            // 📅 RIGHT - Date
+                            Text(
+                              formatedDate,
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: () async {
+                                await generateAndDownloadPdf(fee, context);
+                              },
+                              icon: Icon(Icons.download),
+                            ),
+                          ],
+                        ),
+
+                        /// PAYMENT MODE
+                        Row(
+                          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const SizedBox(width: 52),
+
+                            Row(
+                              children: [
+                                const Text("Payment Mode : "),
+                                Text(
+                                  fee.paymentMode,
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Expanded(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                      right: 10.0,
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        // Icon(Icons.money),
+                                        Text(
+                                          fee.totalPaidAmount,
+                                          style: const TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 5),
+                                      ],
+                                    ),
+                                  ),
+                                  // Padding(
+                                  //   padding: const EdgeInsets.only(right: 10.0),
+                                  //   child: Icon(
+                                  //     isExpanded
+                                  //         ? Icons.keyboard_arrow_up
+                                  //         : Icons.keyboard_arrow_down,
+                                  //   ),
+                                  // ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        // Text(
+                        //   fee.totalPaidAmount,
+                        //   style: const TextStyle(
+                        //     fontSize: 18,
+                        //     fontWeight: FontWeight.bold,
+                        //   ),
+                        // ),
+                        //   ],
+                        // ),
+                        if (isExpanded) ...[
+                          const SizedBox(height: 1),
+                          const Divider(),
+                          const SizedBox(height: 12),
+
+                          Table(
+                            border: TableBorder(
+                              verticalInside: BorderSide(
+                                color: Colors.grey.shade300,
+                                width: 1,
+                              ),
+                            ),
+                            columnWidths: const {
+                              0: FlexColumnWidth(),
+                              1: FlexColumnWidth(),
+                              2: FlexColumnWidth(),
+                            },
+                            children: [
+                              /// HEADER
+                              const TableRow(
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      vertical: 8,
+                                    ),
+                                    child: Text(
+                                      'Month',
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      vertical: 8,
+                                    ),
+                                    child: Text(
+                                      'Ledger',
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      vertical: 8,
+                                    ),
+                                    child: Text(
+                                      'Paid Amt',
+                                      textAlign: TextAlign.center,
+                                    ),
                                   ),
                                 ],
                               ),
 
-                              /// PAYMENT MODE
-                              Row(
-                                // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  const SizedBox(width: 52),
-
-                                  Row(
-                                    children: [
-                                      const Text("Payment Mode : "),
-                                      Text(
-                                        fee.paymentMode,
+                              /// DATA (ONLY LOOP HERE)
+                              ...fee.details.map((dtls) {
+                                return TableRow(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 10,
+                                      ),
+                                      child: Text(
+                                        dtls.feeMonth,
+                                        textAlign: TextAlign.center,
                                         style: const TextStyle(
-                                          fontSize: 15,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
-                                    ],
-                                  ),
-                                  Expanded(
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                            right: 10.0,
-                                          ),
-                                          child: Row(
-                                            children: [
-                                              // Icon(Icons.money),
-                                              Text(
-                                                fee.totalPaidAmount,
-                                                style: const TextStyle(
-                                                  fontSize: 18,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                              const SizedBox(width: 5),
-                                            ],
-                                          ),
-                                        ),
-                                        // Padding(
-                                        //   padding: const EdgeInsets.only(right: 10.0),
-                                        //   child: Icon(
-                                        //     isExpanded
-                                        //         ? Icons.keyboard_arrow_up
-                                        //         : Icons.keyboard_arrow_down,
-                                        //   ),
-                                        // ),
-                                      ],
                                     ),
-                                  ),
-                                ],
-                              ),
-
-                              // Text(
-                              //   fee.totalPaidAmount,
-                              //   style: const TextStyle(
-                              //     fontSize: 18,
-                              //     fontWeight: FontWeight.bold,
-                              //   ),
-                              // ),
-                              //   ],
-                              // ),
-                              if (isExpanded) ...[
-                                const SizedBox(height: 1),
-                                const Divider(),
-                                const SizedBox(height: 12),
-
-                                Table(
-                                  border: TableBorder(
-                                    verticalInside: BorderSide(
-                                      color: Colors.grey.shade300,
-                                      width: 1,
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 10,
+                                      ),
+                                      child: Text(
+                                        dtls.ledgerName,
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                  columnWidths: const {
-                                    0: FlexColumnWidth(),
-                                    1: FlexColumnWidth(),
-                                    2: FlexColumnWidth(),
-                                  },
-                                  children: [
-                                    /// HEADER
-                                    const TableRow(
-                                      children: [
-                                        Padding(
-                                          padding: EdgeInsets.symmetric(
-                                            vertical: 8,
-                                          ),
-                                          child: Text(
-                                            'Month',
-                                            textAlign: TextAlign.center,
-                                          ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 10,
+                                      ),
+                                      child: Text(
+                                        dtls.paidAmount.toString(),
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(
+                                          color: Colors.red,
+                                          fontWeight: FontWeight.bold,
                                         ),
-                                        Padding(
-                                          padding: EdgeInsets.symmetric(
-                                            vertical: 8,
-                                          ),
-                                          child: Text(
-                                            'Ledger',
-                                            textAlign: TextAlign.center,
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding: EdgeInsets.symmetric(
-                                            vertical: 8,
-                                          ),
-                                          child: Text(
-                                            'Paid Amt',
-                                            textAlign: TextAlign.center,
-                                          ),
-                                        ),
-                                      ],
+                                      ),
                                     ),
-
-                                    /// DATA (ONLY LOOP HERE)
-                                    ...fee.details.map((dtls) {
-                                      return TableRow(
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                              vertical: 10,
-                                            ),
-                                            child: Text(
-                                              dtls.feeMonth,
-                                              textAlign: TextAlign.center,
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                              vertical: 10,
-                                            ),
-                                            child: Text(
-                                              dtls.ledgerName,
-                                              textAlign: TextAlign.center,
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                              vertical: 10,
-                                            ),
-                                            child: Text(
-                                              dtls.paidAmount.toString(),
-                                              textAlign: TextAlign.center,
-                                              style: const TextStyle(
-                                                color: Colors.red,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      );
-                                    }).toList(),
                                   ],
-                                ),
-                              ],
+                                );
+                              }).toList(),
                             ],
                           ),
-                        ),
-                        Positioned(
-                          left: 0,
-                          top: 0,
-                          bottom: 0,
-                          child: SizedBox(
-                            width: 4,
-                            child: Align(
-                              alignment: isExpanded
-                                  ? Alignment.center
-                                  : Alignment.topCenter,
-                              child: Padding(
-                                padding: EdgeInsets.only(
-                                  top: isExpanded ? 0 : 16,
-                                ),
-                                child: Container(
-                                  height: 70,
-                                  width: 4,
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFF807FD8),
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        // Positioned(
-                        //   left: 0,
-                        //   top: isExpanded ? null : 16,
-                        //   bottom: isExpanded ? null : null,
-                        //   child: isExpanded
-                        //       ? Center(
-                        //           child: Padding(
-                        //             padding: const EdgeInsets.symmetric(
-                        //               vertical: 50,
-                        //             ),
-                        //             child: Container(
-                        //               height: 70,
-                        //               width: 4,
-                        //               decoration: BoxDecoration(
-                        //                 color: const Color(0xFF807FD8),
-                        //                 borderRadius: BorderRadius.circular(10),
-                        //               ),
-                        //             ),
-                        //           ),
-                        //         )
-                        //       : Container(
-                        //           height: 70,
-                        //           width: 4,
-                        //           decoration: BoxDecoration(
-                        //             color: const Color(0xFF807FD8),
-                        //             borderRadius: BorderRadius.circular(10),
-                        //           ),
-                        //         ),
-                        // ),
+                        ],
                       ],
                     ),
                   ),
-                );
-              },
-            );
-          }
-          else{
-            return Container(
-              child: Text('No Paid List'),
-            );
-          }
-
-        }
-
-        if (state is FeesPaidFailure) {
-          return Center(child: Text(state.error));
-        }
-
-        return const SizedBox();
-      },
-    );
+                  Positioned(
+                    left: 0,
+                    top: 0,
+                    bottom: 0,
+                    child: SizedBox(
+                      width: 4,
+                      child: Align(
+                        alignment: isExpanded
+                            ? Alignment.center
+                            : Alignment.topCenter,
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                            top: isExpanded ? 0 : 16,
+                          ),
+                          child: Container(
+                            height: 70,
+                            width: 4,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF807FD8),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  // Positioned(
+                  //   left: 0,
+                  //   top: isExpanded ? null : 16,
+                  //   bottom: isExpanded ? null : null,
+                  //   child: isExpanded
+                  //       ? Center(
+                  //           child: Padding(
+                  //             padding: const EdgeInsets.symmetric(
+                  //               vertical: 50,
+                  //             ),
+                  //             child: Container(
+                  //               height: 70,
+                  //               width: 4,
+                  //               decoration: BoxDecoration(
+                  //                 color: const Color(0xFF807FD8),
+                  //                 borderRadius: BorderRadius.circular(10),
+                  //               ),
+                  //             ),
+                  //           ),
+                  //         )
+                  //       : Container(
+                  //           height: 70,
+                  //           width: 4,
+                  //           decoration: BoxDecoration(
+                  //             color: const Color(0xFF807FD8),
+                  //             borderRadius: BorderRadius.circular(10),
+                  //           ),
+                  //         ),
+                  // ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    }
+    else{
+      return Container(
+        child: Text('No Paid List'),
+      );
+    }
   }
 
   Future<void> generateAndDownloadPdf(fee, BuildContext context) async {

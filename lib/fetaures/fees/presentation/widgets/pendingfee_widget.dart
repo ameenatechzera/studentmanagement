@@ -2,75 +2,72 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
-import 'package:studentmanagement/fetaures/fees/presentation/unPaidFee/un_paid_fee_cubit.dart';
-import 'package:studentmanagement/fetaures/fees/presentation/widgets/pendingfee_skeleton.dart';
+
 
 import '../../domain/entities/unpaid fee_result.dart';
 
 class PendingFee extends StatelessWidget {
-  const PendingFee({super.key});
+  UnpaidFeeResult feesUnpaidList;
+   PendingFee({super.key,required this.feesUnpaidList});
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<UnPaidFeeCubit, UnPaidFeeState>(
-      builder: (context, state) {
-        if (state is FeeUnpaidInitial || state is FeeUnpaidLoading) {
-          return const PendingFeeShimmer();
-        }
 
-        if (state is FeesUnPaidSuccess) {
-          final feesUnpaidList = state.feeUnPaidResult.data;
-          if(feesUnpaidList.length>0){
-            return ListView.builder(
-              itemCount: feesUnpaidList.length,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index) {
-                final fee = feesUnpaidList[index];
-                String formatedDate = fee.dueDate ?? '';
-                try {
-                  formatedDate = DateFormat('dd-MM-yyyy')
-                      .format(DateTime.parse(fee.dueDate ?? ''));
-                } catch (_) {}
+    if(feesUnpaidList.data.length>0){
+      return ListView.builder(
+        itemCount: feesUnpaidList.data.length,
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemBuilder: (context, index) {
+          final fee = feesUnpaidList.data[index];
+          String formatedDate = fee.dueDate ?? '';
+          try {
+            formatedDate = DateFormat('dd-MM-yyyy')
+                .format(DateTime.parse(fee.dueDate ?? ''));
+          } catch (_) {}
 
-                return _ExpandableFeeCard(
-                  fee: fee,
-                  formatedDate: formatedDate,
-                );
-              },
-            );
+          final DateTime dueDate = DateFormat('dd-MM-yyyy').parse(formatedDate);
+          final DateTime todayOnly = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+
+          if (dueDate.isBefore(todayOnly)) {
+            dueDateStatus = true;
+            print('dueDateStatus $dueDateStatus');
           }
           else{
-            return Container(
-              child: Text('No Pending List'),
-            );
+            dueDateStatus = false;
           }
-
-        }
-
-        if (state is FeeUnPaidFailure) {
-          return Center(child: Text(state.error));
-        }
-
-        return const SizedBox();
-      },
-    );
+          print('dueDateStatusElse $dueDateStatus');
+          return _ExpandableFeeCard(
+            fee: fee,
+            formatedDate: formatedDate, dueDateStatus: dueDateStatus,
+          );
+        },
+      );
+    }
+    else{
+      return Container(
+        child: Text('No Pending List'),
+      );
+    }
   }
 }
 class _ExpandableFeeCard extends StatefulWidget {
   final Datum fee;
   final String formatedDate;
+  final bool dueDateStatus;
 
   const _ExpandableFeeCard({
     required this.fee,
     required this.formatedDate,
+    required this.dueDateStatus
   });
 
   @override
   State<_ExpandableFeeCard> createState() => _ExpandableFeeCardState();
 }
-
+bool dueDateStatus = false;
 class _ExpandableFeeCardState extends State<_ExpandableFeeCard> {
+
   bool _isExpanded = false;
 
   @override
@@ -151,6 +148,7 @@ class _ExpandableFeeCardState extends State<_ExpandableFeeCard> {
                               const SizedBox(height: 4),
 
                               /// DUE DATE
+                              if (dueDateStatus)
                               Text(
                                 widget.formatedDate,
                                 style: const TextStyle(
@@ -228,7 +226,7 @@ class _ExpandableFeeCardState extends State<_ExpandableFeeCard> {
                                 style: const TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w600,
-                                  color: Color(0xFF807FD8),
+                                  color: Colors.red,
                                 ),
                               ),
                             ],

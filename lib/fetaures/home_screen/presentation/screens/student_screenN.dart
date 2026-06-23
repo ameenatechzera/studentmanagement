@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:studentmanagement/core/appdata/appdata.dart';
 import 'package:studentmanagement/core/navigation/app_navigator.dart';
@@ -30,11 +31,11 @@ const _quickAccessItems = [
     'label': 'Attendance',
     'color': Color(0xFFFFF5AD),
   },
-  {
-    'icon': Icons.logout_rounded,
-    'label': 'Early Go',
-    'color': const Color(0xFF7C7CF6),
-  },
+  // {
+  //   'icon': Icons.logout_rounded,
+  //   'label': 'Early Go',
+  //   'color': const Color(0xFF7C7CF6),
+  // },
 ];
 
 final ValueNotifier<bool> showAllNotifications = ValueNotifier<bool>(false);
@@ -56,12 +57,13 @@ class _HomeScreenState extends State<StudentScreenN> {
     // TODO: implement initState
     super.initState();
     loadAccounts();
+    String currentDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
     context.read<AttendenceCubit>().getAttendanceReportByDate(
       AttendanceReportByDateParameter(
-        admno: "PKG7",
-        date: "2026-04-04",
-        accYear: "2026-2027",
-        branchId: 1,
+        admno: AppData.admissionNo,
+        date: currentDate,
+        accYear: AppData.accYear,
+        branchId: AppData.branchId,
       ),
     );
   }
@@ -247,6 +249,7 @@ class _HomeScreenState extends State<StudentScreenN> {
 
                       final attendance = list.first;
 
+
                       return Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 10,
@@ -256,13 +259,13 @@ class _HomeScreenState extends State<StudentScreenN> {
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        child: Text(
-                          attendance.status ?? '',
-                          style: TextStyle(
-                            color: _getStatusColor(attendance.status),
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        child:
+                        Text(
+                          attendance.status == "1"
+                              ? "Present"
+                              : attendance.status == 0
+                              ? "Absent"
+                              : "No Attendance Data",
                         ),
                       );
                     } else if (state is AttendenceError) {
@@ -478,11 +481,11 @@ class _HomeScreenState extends State<StudentScreenN> {
         ),
         const SizedBox(height: 12),
 
-        _buildQuickAccessTile(
-          icon: _quickAccessItems[6]['icon'] as IconData,
-          label: _quickAccessItems[6]['label'] as String,
-          color: _quickAccessItems[6]['color'] as Color,
-        ),
+        // _buildQuickAccessTile(
+        //   icon: _quickAccessItems[6]['icon'] as IconData,
+        //   label: _quickAccessItems[6]['label'] as String,
+        //   color: _quickAccessItems[6]['color'] as Color,
+        // ),
       ],
     );
   }
@@ -513,9 +516,9 @@ class _HomeScreenState extends State<StudentScreenN> {
         if (label == "Attendance") {
           AppNavigator.pushSlide(context: context, page: AttendenceScreen());
         }
-        if (label == "Early Go") {
-          AppNavigator.pushSlide(context: context, page: EarlyGoScreen());
-        }
+        // if (label == "Early Go") {
+        //   AppNavigator.pushSlide(context: context, page: EarlyGoScreen());
+        // }
       },
       child: Container(
         height: 90,
