@@ -246,14 +246,32 @@ class _PostCardState extends State<PostCard> {
               // ),
               CircleAvatar(
                 radius: 20,
-                backgroundImage:
-                    (AppData.logo != null && AppData.logo!.trim().isNotEmpty)
-                    ? NetworkImage(AppData.logo ?? '')
-                    : null,
-                child: (AppData.logo == null || AppData.logo!.trim().isEmpty)
-                    ? const Icon(Icons.school)
-                    : null,
+                backgroundColor: Colors.grey.shade200,
+                child: ClipOval(
+                  child:
+                      (AppData.logo != null && AppData.logo!.trim().isNotEmpty)
+                      ? Image.network(
+                          AppData.logo!,
+                          width: 40,
+                          height: 40,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) {
+                            return const Icon(Icons.school, size: 24);
+                          },
+                        )
+                      : const Icon(Icons.school, size: 24),
+                ),
               ),
+              // CircleAvatar(
+              //   radius: 20,
+              //   backgroundImage:
+              //       (AppData.logo != null && AppData.logo!.trim().isNotEmpty)
+              //       ? NetworkImage(AppData.logo ?? '')
+              //       : null,
+              //   child: (AppData.logo == null || AppData.logo!.trim().isEmpty)
+              //       ? const Icon(Icons.school)
+              //       : null,
+              // ),
               // CircleAvatar(
               //   radius: 20,
               //   backgroundImage: NetworkImage(AppData.logo!),
