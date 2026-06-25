@@ -50,22 +50,90 @@ class StudentScreenN extends StatefulWidget {
   State<StudentScreenN> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<StudentScreenN> {
+class _HomeScreenState extends State<StudentScreenN>
+    with WidgetsBindingObserver {
+  // Future<void> checkAndFetchAttendance() async {
+  //   String currentDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+
+  //   final prefs = await SharedPreferences.getInstance();
+
+  //   final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+
+  //   final lastFetchDate = prefs.getString('attendance_fetch_date');
+
+  //   if (lastFetchDate != today) {
+  //     // Fetch fresh attendance
+  //     context.read<AttendenceCubit>().getAttendanceReportByDate(
+  //       AttendanceReportByDateParameter(
+  //         admno: AppData.admissionNo,
+  //         date: currentDate,
+  //         accYear: AppData.accYear,
+  //         branchId: AppData.branchId,
+  //       ),
+  //     );
+
+  //     await prefs.setString('attendance_fetch_date', today);
+  //   }
+  // }
+  Future<void> checkAndFetchAttendance() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+
+    final lastFetchDate = prefs.getString('attendance_fetch_date');
+
+    debugPrint("TODAY: $today");
+    debugPrint("LAST FETCH DATE: $lastFetchDate");
+
+    if (lastFetchDate != today) {
+      debugPrint("✅ FETCHING ATTENDANCE");
+
+      context.read<AttendenceCubit>().getAttendanceReportByDate(
+        AttendanceReportByDateParameter(
+          admno: AppData.admissionNo,
+          date: today,
+          accYear: AppData.accYear,
+          branchId: AppData.branchId,
+        ),
+      );
+
+      await prefs.setString('attendance_fetch_date', today);
+      debugPrint("SAVED DATE: ${prefs.getString('attendance_fetch_date')}");
+    } else {
+      debugPrint("❌ SKIPPING ATTENDANCE FETCH");
+    }
+  }
+
   int _selectedIndex = 1;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     loadAccounts();
-    String currentDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
-    context.read<AttendenceCubit>().getAttendanceReportByDate(
-      AttendanceReportByDateParameter(
-        admno: AppData.admissionNo,
-        date: currentDate,
-        accYear: AppData.accYear,
-        branchId: AppData.branchId,
-      ),
-    );
+    WidgetsBinding.instance.addObserver(this);
+    checkAndFetchAttendance();
+    // String currentDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    // context.read<AttendenceCubit>().getAttendanceReportByDate(
+    //   AttendanceReportByDateParameter(
+    //     admno: AppData.admissionNo,
+    //     date: currentDate,
+    //     accYear: AppData.accYear,
+    //     branchId: AppData.branchId,
+    //   ),
+    // );
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      checkAndFetchAttendance();
+    }
   }
 
   @override
@@ -249,7 +317,6 @@ class _HomeScreenState extends State<StudentScreenN> {
 
                       final attendance = list.first;
 
-
                       return Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 10,
@@ -259,8 +326,7 @@ class _HomeScreenState extends State<StudentScreenN> {
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        child:
-                        Text(
+                        child: Text(
                           attendance.status == "1"
                               ? "Present"
                               : attendance.status == 0

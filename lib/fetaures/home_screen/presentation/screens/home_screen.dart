@@ -10,6 +10,7 @@ import 'package:studentmanagement/fetaures/authentication/presentation/bloc/logi
 import 'package:studentmanagement/fetaures/home_screen/domain/entities/fetchfeed_entity.dart';
 import 'package:studentmanagement/fetaures/home_screen/domain/parameters/fetchfeed_parameter.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/cubit/feed_cubit.dart';
+import 'package:studentmanagement/fetaures/home_screen/presentation/screens/main_screen.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/widgets/post_card_cristal.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/widgets/sidenavigation.dart';
 import 'package:studentmanagement/services/shared_preference_helper.dart';
@@ -192,6 +193,9 @@ class _HomeScreenState extends State<HomeScreen> {
       key: _scaffoldKey,
       backgroundColor: Colors.white,
       drawer: SideNavigationBar(),
+      onDrawerChanged: (isOpened) {
+        drawerOpenedNotifier.value = isOpened;
+      },
       body: SafeArea(
         child: Stack(
           children: [

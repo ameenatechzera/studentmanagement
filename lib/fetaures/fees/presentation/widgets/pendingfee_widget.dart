@@ -3,17 +3,22 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 
-
 import '../../domain/entities/unpaid fee_result.dart';
 
 class PendingFee extends StatelessWidget {
   UnpaidFeeResult feesUnpaidList;
-   PendingFee({super.key,required this.feesUnpaidList});
+  final Set<int> selectedIndexes;
+  final void Function(int index, Datum fee, bool isSelected) onSelectionChanged;
+  PendingFee({
+    super.key,
+    required this.feesUnpaidList,
+    required this.selectedIndexes,
+    required this.onSelectionChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
-
-    if(feesUnpaidList.data.length>0){
+    if (feesUnpaidList.data.length > 0) {
       return ListView.builder(
         itemCount: feesUnpaidList.data.length,
         shrinkWrap: true,
@@ -22,53 +27,67 @@ class PendingFee extends StatelessWidget {
           final fee = feesUnpaidList.data[index];
           String formatedDate = fee.dueDate ?? '';
           try {
-            formatedDate = DateFormat('dd-MM-yyyy')
-                .format(DateTime.parse(fee.dueDate ?? ''));
+            formatedDate = DateFormat(
+              'dd-MM-yyyy',
+            ).format(DateTime.parse(fee.dueDate ?? ''));
           } catch (_) {}
 
           final DateTime dueDate = DateFormat('dd-MM-yyyy').parse(formatedDate);
-          final DateTime todayOnly = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+          final DateTime todayOnly = DateTime(
+            DateTime.now().year,
+            DateTime.now().month,
+            DateTime.now().day,
+          );
 
           if (dueDate.isBefore(todayOnly)) {
             dueDateStatus = true;
             print('dueDateStatus $dueDateStatus');
-          }
-          else{
+          } else {
             dueDateStatus = false;
           }
           print('dueDateStatusElse $dueDateStatus');
           return _ExpandableFeeCard(
+            index: index,
             fee: fee,
-            formatedDate: formatedDate, dueDateStatus: dueDateStatus,
+            formatedDate: formatedDate,
+            dueDateStatus: dueDateStatus,
+            isSelected: selectedIndexes.contains(index),
+            onSelectionChanged: onSelectionChanged,
           );
         },
       );
-    }
-    else{
-      return Container(
-        child: Text('No Pending List'),
-      );
+    } else {
+      return Container(child: Text('No Pending List'));
     }
   }
 }
+
 class _ExpandableFeeCard extends StatefulWidget {
+  final int index;
   final Datum fee;
   final String formatedDate;
   final bool dueDateStatus;
+  final bool isSelected;
+  final void Function(int index, Datum fee, bool isSelected) onSelectionChanged;
 
   const _ExpandableFeeCard({
+    required this.index,
     required this.fee,
     required this.formatedDate,
-    required this.dueDateStatus
+    required this.dueDateStatus,
+    required this.isSelected,
+    required this.onSelectionChanged,
   });
 
   @override
   State<_ExpandableFeeCard> createState() => _ExpandableFeeCardState();
 }
-bool dueDateStatus = false;
-class _ExpandableFeeCardState extends State<_ExpandableFeeCard> {
 
+bool dueDateStatus = false;
+
+class _ExpandableFeeCardState extends State<_ExpandableFeeCard> {
   bool _isExpanded = false;
+  //bool _isSelected = false;
 
   @override
   Widget build(BuildContext context) {
@@ -76,8 +95,11 @@ class _ExpandableFeeCardState extends State<_ExpandableFeeCard> {
       padding: const EdgeInsets.only(top: 8),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: widget.isSelected ? const Color(0xFFF3F2FF) : Colors.white,
           borderRadius: BorderRadius.circular(12),
+          border: widget.isSelected
+              ? Border.all(color: const Color(0xFF807FD8), width: 1)
+              : null,
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.05),
@@ -113,6 +135,18 @@ class _ExpandableFeeCardState extends State<_ExpandableFeeCard> {
                     padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
                     child: Row(
                       children: [
+                        Checkbox(
+                          value: widget.isSelected,
+                          activeColor: const Color(0xFF807FD8),
+                          onChanged: (value) {
+                            widget.onSelectionChanged(
+                              widget.index,
+                              widget.fee,
+                              value ?? false,
+                            );
+                          },
+                        ),
+
                         /// ICON
                         Container(
                           height: 44,
@@ -149,14 +183,14 @@ class _ExpandableFeeCardState extends State<_ExpandableFeeCard> {
 
                               /// DUE DATE
                               if (dueDateStatus)
-                              Text(
-                                widget.formatedDate,
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  color: Colors.red,
-                                  fontWeight: FontWeight.w600,
+                                Text(
+                                  widget.formatedDate,
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
-                              ),
                             ],
                           ),
                         ),

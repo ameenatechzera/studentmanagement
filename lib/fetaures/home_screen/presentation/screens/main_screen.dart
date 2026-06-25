@@ -10,6 +10,8 @@ import 'package:studentmanagement/fetaures/home_screen/presentation/widgets/cust
 import 'package:studentmanagement/fetaures/settings/presentation/screens/settings_screen.dart';
 import 'package:studentmanagement/services/notification_service.dart';
 
+ValueNotifier<bool> drawerOpenedNotifier = ValueNotifier(false);
+
 class MainScreen extends StatefulWidget {
   final LoginResponseResult loginResponse;
   const MainScreen({super.key, required this.loginResponse});
@@ -64,17 +66,37 @@ class _MainScreenState extends State<MainScreen> {
       body: Stack(
         children: [
           IndexedStack(index: _currentIndex, children: screens),
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: CustomBottomBar(
-              selectedIndex: _currentIndex,
-              onItemSelected: (index) {
-                setState(() => _currentIndex = index);
-              },
-            ),
+          ValueListenableBuilder<bool>(
+            valueListenable: drawerOpenedNotifier,
+            builder: (context, isDrawerOpen, child) {
+              if (isDrawerOpen) {
+                return const SizedBox.shrink();
+              }
+
+              return Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: CustomBottomBar(
+                  selectedIndex: _currentIndex,
+                  onItemSelected: (index) {
+                    setState(() => _currentIndex = index);
+                  },
+                ),
+              );
+            },
           ),
+          // Positioned(
+          //   left: 0,
+          //   right: 0,
+          //   bottom: 0,
+          //   child: CustomBottomBar(
+          //     selectedIndex: _currentIndex,
+          //     onItemSelected: (index) {
+          //       setState(() => _currentIndex = index);
+          //     },
+          //   ),
+          // ),
         ],
       ),
     );

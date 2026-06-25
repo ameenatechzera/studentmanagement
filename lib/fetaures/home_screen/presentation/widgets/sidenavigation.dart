@@ -98,6 +98,7 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                     (route) => false,
                   );
                 }),
+
                 // _menuItem(Icons.logout, "Logout", () {
                 //   Navigator.of(context).pushReplacement(
                 //     MaterialPageRoute(
@@ -107,6 +108,7 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                 //     ),
                 //   );
                 // }),
+                // SizedBox(height: MediaQuery.of(context).padding.bottom + 20),
                 const SizedBox(height: 10),
               ],
             ),
