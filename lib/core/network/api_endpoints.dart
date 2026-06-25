@@ -110,4 +110,9 @@ class ApiConstants {
   static String saveEarlyLeavePath(String baseUrl) {
     return '${baseUrl}save-earlygoingrequest';
   }
+
+  /// Returns the full URL for Fees / Save Fees
+  static String getFeesSaveServerPath(String baseUrl) {
+    return '${baseUrl}save-paymentmaster';
+  }
 }

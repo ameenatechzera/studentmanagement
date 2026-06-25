@@ -5,9 +5,11 @@ import 'package:studentmanagement/core/errors/failure.dart';
 import 'package:studentmanagement/core/utils/typedef.dart';
 import 'package:studentmanagement/fetaures/fees/data/datasources/fees_remote_data_sources.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/accyearResult.dart';
+import 'package:studentmanagement/fetaures/fees/domain/entities/feeSaveResult.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/paid_fee_result.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/unpaid%20fee_result.dart';
 import 'package:studentmanagement/fetaures/fees/domain/parameters/paidFees_request.dart';
+import 'package:studentmanagement/fetaures/fees/domain/parameters/paymentSaveRequest.dart';
 import 'package:studentmanagement/fetaures/fees/domain/repositories/fees_repository.dart';
 
 class FeesRepositoryImpl implements FeesRepository {
@@ -45,6 +47,19 @@ class FeesRepositoryImpl implements FeesRepository {
   ResultFuture<AccYearResult> fetchAccYearsList() async {
     try {
       final result = await remoteDataSource.fetchAccYearsList();
+
+      return Right(result);
+    } on ServerException catch (failure) {
+      return Left(ServerFailure(failure.errorMessageModel.statusMessage));
+    } on DioException catch (failure) {
+      return Left(ServerFailure(failure.message.toString()));
+    }
+  }
+
+  @override
+  ResultFuture<FeeSaveResult> saveFeesDetails(FeeSaveRequest request) async {
+    try {
+      final result = await remoteDataSource.saveFeeDetails(request);
 
       return Right(result);
     } on ServerException catch (failure) {

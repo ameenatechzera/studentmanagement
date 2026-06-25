@@ -30,14 +30,25 @@ final class AccYearSuccess extends FeesState {
 
 final class FeeUnpaid_Loading extends FeesState {}
 
+final class FeeSave_Loading extends FeesState {}
+
 final class FeeUnPaid_Failure extends FeesState {
   final String error;
 
   FeeUnPaid_Failure(this.error);
 }
+final class SaveFees_Failure extends FeesState {
+  final String error;
 
+  SaveFees_Failure(this.error);
+}
 final class FeesUnPaid_Success extends FeesState {
   final UnpaidFeeResult feeUnPaidResult;
 
   FeesUnPaid_Success(this.feeUnPaidResult);
+}
+final class FeeSave_Success extends FeesState {
+  final FeeSaveResult feeSaveResult;
+
+  FeeSave_Success(this.feeSaveResult);
 }

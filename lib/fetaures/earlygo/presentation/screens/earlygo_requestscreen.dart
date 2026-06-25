@@ -260,6 +260,7 @@ class _EarlyGoRequestScreenState extends State<EarlyGoRequestScreen> {
     return BlocConsumer<EarlygoCubit, EarlygoState>(
       listener: (context, state) {
         if (state is SaveEarlyLeaveSuccess) {
+          context.read<EarlygoCubit>().fetchEarlyLeave();
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
