@@ -19,6 +19,7 @@ class AttendenceCubit extends Cubit<AttendenceState> {
   Future<void> getAttendanceReportByDate(
     AttendanceReportByDateParameter params,
   ) async {
+    print('AttendanceReportByDateParameter ${params.toJson()}');
     emit(AttendenceLoading());
 
     final result = await dateUseCase(params);

@@ -31,12 +31,13 @@ const _quickAccessItems = [
     'label': 'Attendance',
     'color': Color(0xFFFFF5AD),
   },
-  // {
-  //   'icon': Icons.logout_rounded,
-  //   'label': 'Early Go',
-  //   'color': const Color(0xFF7C7CF6),
-  // },
+  {
+    'icon': Icons.logout_rounded,
+    'label': 'Early Go',
+    'color': const Color(0xFF7C7CF6),
+  },
 ];
+
 
 final ValueNotifier<bool> showAllNotifications = ValueNotifier<bool>(false);
 List<AccountDetails> accounts = [];
@@ -547,11 +548,11 @@ class _HomeScreenState extends State<StudentScreenN>
         ),
         const SizedBox(height: 12),
 
-        // _buildQuickAccessTile(
-        //   icon: _quickAccessItems[6]['icon'] as IconData,
-        //   label: _quickAccessItems[6]['label'] as String,
-        //   color: _quickAccessItems[6]['color'] as Color,
-        // ),
+        _buildQuickAccessTile(
+          icon: _quickAccessItems[6]['icon'] as IconData,
+          label: _quickAccessItems[6]['label'] as String,
+          color: _quickAccessItems[6]['color'] as Color,
+        ),
       ],
     );
   }
@@ -582,9 +583,9 @@ class _HomeScreenState extends State<StudentScreenN>
         if (label == "Attendance") {
           AppNavigator.pushSlide(context: context, page: AttendenceScreen());
         }
-        // if (label == "Early Go") {
-        //   AppNavigator.pushSlide(context: context, page: EarlyGoScreen());
-        // }
+        if (label == "Early Go") {
+          AppNavigator.pushSlide(context: context, page: EarlyGoScreen());
+        }
       },
       child: Container(
         height: 90,
