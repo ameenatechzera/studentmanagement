@@ -48,6 +48,7 @@ class EarlygoCubit extends Cubit<EarlygoState> {
   // }
   Future<void> saveEarlyLeave(SaveEarlyLeaveParameter params) async {
     print("saveEarlyLeaveUseCase => $saveEarlyLeaveUseCase");
+    print('SaveEarlyLeaveParameter ${params.toJson()}');
 
     emit(SaveEarlyLeaveLoading());
 

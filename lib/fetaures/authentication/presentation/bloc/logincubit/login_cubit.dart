@@ -33,6 +33,7 @@ class LoginCubit extends Cubit<LoginState> {
        super(LoginInitial());
 
   Future<void> loginUser(LoginRequest loginRequest) async {
+    print('loginRequest ${loginRequest.toJson()}');
     emit(LoginLoading());
     try {
       final result = await _loginUseCase(loginRequest);

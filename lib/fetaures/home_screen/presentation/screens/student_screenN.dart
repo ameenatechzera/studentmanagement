@@ -9,6 +9,7 @@ import 'package:studentmanagement/core/navigation/app_navigator.dart';
 import 'package:studentmanagement/fetaures/attendence/domain/parameters/attendence_reportbydate_parameter.dart';
 import 'package:studentmanagement/fetaures/attendence/presentation/cubit/attendence_cubit.dart';
 import 'package:studentmanagement/fetaures/attendence/presentation/screens/attendence_screen.dart';
+import 'package:studentmanagement/fetaures/authentication/presentation/widget/switch_bottombar.dart';
 import 'package:studentmanagement/fetaures/earlygo/presentation/screens/earlygo_listingscreen.dart';
 import 'package:studentmanagement/fetaures/authentication/data/models/account_details_model.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/entities/login_entity.dart';
@@ -219,7 +220,13 @@ class _HomeScreenState extends State<StudentScreenN>
                           ),
                         ),
                         builder: (context) {
-                          return AddAccount();
+                          return Padding(
+                            padding: EdgeInsets.only(
+                              bottom: MediaQuery.of(context).viewInsets.bottom, // ✅ keyboard pushes sheet up
+                            ),
+                            child: const SwitchAccountBottomSheet(),
+                          );
+
                         },
                       );
                     },

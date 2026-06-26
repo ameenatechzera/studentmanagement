@@ -8,6 +8,7 @@ import 'package:studentmanagement/fetaures/authentication/domain/parameters/logi
 import 'package:studentmanagement/fetaures/authentication/presentation/bloc/logincubit/login_cubit.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/screens/loginScreen.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/widget/switch_account.dart';
+import 'package:studentmanagement/fetaures/authentication/presentation/widget/switch_bottombar.dart';
 import 'package:studentmanagement/fetaures/chat/presentation/screens/chat_screen.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/screens/main_screen.dart';
 import 'package:studentmanagement/fetaures/notification/presentation/notification_screen.dart';
@@ -388,7 +389,7 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
             borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
           ),
           builder: (context) {
-            return AddAccount();
+            return SwitchAccountBottomSheet();
           },
         );
       },
