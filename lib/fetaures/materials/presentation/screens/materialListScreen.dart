@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:studentmanagement/fetaures/materials/domain/entities/materialsBySubject_entity.dart';
 import 'package:studentmanagement/fetaures/materials/domain/parameters/fetch_materialsbysubjectId.dart';
 import 'package:studentmanagement/fetaures/materials/presentation/widgets/materialNotes.dart';
@@ -285,7 +286,8 @@ class _MaterialListPageState extends State<MaterialListPage>
             } else if (tab == "Notes") {
               // _openUrl(item.notes);
               Navigator.push(context, MaterialPageRoute(
-                builder: (_) => MaterialNotesScreen(noteData: item.notes,
+                builder: (_) => MaterialNotesScreen(noteData:
+                item.notes,
 
                 ),
               ));
@@ -361,16 +363,31 @@ class _MaterialCard extends StatelessWidget {
 
             // Title
             Expanded(
-              child: Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF1E1E2E),
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
+              child:
+              Html(
+                data: title.isEmpty
+                    ? 'No Description'
+                    : title,
+                style: {
+                  "body": Style(
+                    margin: Margins.zero,
+                    padding: HtmlPaddings.zero,
+                    fontSize: FontSize(12),
+                    lineHeight: const LineHeight(1.7),
+                    color: Colors.black
+                  ),
+                },
+              )
+              // Text(
+              //   title,
+              //   style: const TextStyle(
+              //     fontSize: 15,
+              //     fontWeight: FontWeight.w600,
+              //     color: Color(0xFF1E1E2E),
+              //   ),
+              //   maxLines: 2,
+              //   overflow: TextOverflow.ellipsis,
+              // ),
             ),
 
             // Bookmark

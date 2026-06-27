@@ -112,4 +112,9 @@ class ApiConstants {
   static String getAcademicCalendarPath(String baseUrl) {
     return '${baseUrl}schoolcalendar/1';
   }
+
+  /// Returns the full URL for Fees / Save Fees
+  static String getFeesSaveServerPath(String baseUrl) {
+    return '${baseUrl}save-paymentmaster';
+  }
 }

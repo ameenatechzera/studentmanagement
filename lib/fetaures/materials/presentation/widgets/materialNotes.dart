@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 
 class MaterialNotesScreen extends StatefulWidget {
   final String noteData;
@@ -36,7 +37,21 @@ class _MaterialNotesScreenState extends State<MaterialNotesScreen> {
         children: [
           Padding(
             padding: const EdgeInsets.only(left: 28.0),
-            child: Text(widget.noteData),
+            child:  Html(
+              data:widget.noteData.isEmpty
+                  ? 'No Description'
+                  : widget.noteData,
+              style: {
+                "body": Style(
+                  margin: Margins.zero,
+                  padding: HtmlPaddings.zero,
+                  fontSize: FontSize(12),
+                  lineHeight: const LineHeight(1.7),
+                  color: Colors.black,
+                ),
+              },
+            )
+            //Text(widget.noteData),
           )
         ],
       )

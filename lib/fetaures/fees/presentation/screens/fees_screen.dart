@@ -337,10 +337,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studentmanagement/core/appdata/appdata.dart';
 
 import 'package:studentmanagement/fetaures/fees/domain/parameters/paidFees_request.dart';
+import 'package:studentmanagement/fetaures/fees/domain/parameters/paymentSaveRequest.dart';
 import 'package:studentmanagement/fetaures/fees/presentation/bloc/fees_cubit.dart';
 import 'package:studentmanagement/fetaures/fees/presentation/unPaidFee/un_paid_fee_cubit.dart';
 import 'package:studentmanagement/fetaures/fees/presentation/widgets/paidfee_widget.dart';
 import 'package:studentmanagement/fetaures/fees/presentation/widgets/pendingfee_widget.dart';
+import 'package:studentmanagement/fetaures/home_screen/presentation/cubit/feed_cubit.dart';
 
 import '../../domain/entities/accyearResult.dart';
 import '../../domain/entities/unpaid fee_result.dart' as unpaid;
@@ -410,9 +412,59 @@ class _FeesScreenState extends State<FeesScreen> {
 
   void _onPayPressed() {
     final selectedFeeList = _selectedFees.values.toList();
+    List<saveFeeDetails> saveDetails =
+        selectedFeeList
+            ?.expand(
+              (datum) => datum.details.map(
+                (detail) => saveFeeDetails(
+                  feeMonthId: datum.feeMonth,
+                  ledgerId: "12",
+                  dueAmount: int.tryParse(datum.totalBalance) ?? 0,
+                  paidAmount: int.tryParse(detail.amount) ?? 0,
+                  paidStatus: false,
+                  chequeNo: null,
+                  chequeDate: datum.dueDate,
+                  userId: "",
+                  feeAmount: int.tryParse(detail.amount) ?? 0,
+                  taxId: "",
+                  taxType: "",
+                  taxAmount: 0,
+                  floodCess: 0,
+                ),
+              ),
+            )
+            .toList() ??
+        [];
+    print('saveDetails ${saveDetails.toString()}');
 
     debugPrint('Selected fees count: ${selectedFeeList.length}');
     debugPrint('Selected total: $_selectedTotal');
+    context.read<FeesCubit>().saveFeeDetails(
+      FeeSaveRequest(
+        voucherNo: 0,
+        invoiceNo: 0,
+        suffixPrefixId: '',
+        date: '',
+        admno: AppData.admissionNo!,
+        accYear: AppData.accYear!,
+        ledgerId: 0,
+        totalAmount: _selectedTotal,
+        paidAmount: _selectedTotal,
+        balance: 0,
+        discount: 0,
+        totalTax: 0,
+        totalFloodCess: 0,
+        status: true,
+        narration: '',
+        financialYearId: '',
+        canceled: false,
+        branchId: AppData.branchId!,
+        voucherType: "Fee Collection",
+        yearId: '',
+        createdUser: '',
+        details: saveDetails,
+      ),
+    );
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

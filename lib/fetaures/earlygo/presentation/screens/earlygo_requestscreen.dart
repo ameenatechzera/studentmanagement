@@ -260,6 +260,7 @@ class _EarlyGoRequestScreenState extends State<EarlyGoRequestScreen> {
     return BlocConsumer<EarlygoCubit, EarlygoState>(
       listener: (context, state) {
         if (state is SaveEarlyLeaveSuccess) {
+          context.read<EarlygoCubit>().fetchEarlyLeave();
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
@@ -306,13 +307,43 @@ class _EarlyGoRequestScreenState extends State<EarlyGoRequestScreen> {
 
                 const SizedBox(height: 20),
 
+                // _buildLabel("Leave Time"),
+                // const SizedBox(height: 8),
+                // _buildTextField(
+                //   controller: timeController,
+                //   hintText: "1:00:PM",
+                // ),
                 _buildLabel("Leave Time"),
                 const SizedBox(height: 8),
-                _buildTextField(
-                  controller: timeController,
-                  hintText: "14:00:00",
+                GestureDetector(
+                  onTap: () async {
+                    final TimeOfDay? picked = await showTimePicker(
+                      context: context,
+                      initialTime: TimeOfDay.now(),
+                    );
+                    if (picked != null) {
+                      final hour = picked.hourOfPeriod == 0 ? 12 : picked.hourOfPeriod;
+                      final minute = picked.minute.toString().padLeft(2, '0');
+                      final period = picked.period == DayPeriod.am ? 'AM' : 'PM';
+                      timeController.text = '$hour:$minute $period';
+                    }
+                  },
+                  child: AbsorbPointer(
+                    child: TextField(
+                      controller: timeController,
+                      decoration: InputDecoration(
+                        hintText: "--:-- --",
+                        filled: true,
+                        fillColor: const Color(0xffF1F4FC),
+                        suffixIcon: const Icon(Icons.access_time, size: 20),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
-
                 const SizedBox(height: 20),
 
                 _buildLabel("Reason for Leaving"),

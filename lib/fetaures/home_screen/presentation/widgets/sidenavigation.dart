@@ -9,6 +9,7 @@ import 'package:studentmanagement/fetaures/authentication/domain/parameters/logi
 import 'package:studentmanagement/fetaures/authentication/presentation/bloc/logincubit/login_cubit.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/screens/loginScreen.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/widget/switch_account.dart';
+import 'package:studentmanagement/fetaures/authentication/presentation/widget/switch_bottombar.dart';
 import 'package:studentmanagement/fetaures/chat/presentation/screens/chat_screen.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/screens/main_screen.dart';
 import 'package:studentmanagement/fetaures/notification/presentation/notification_screen.dart';
@@ -37,89 +38,96 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
     return Drawer(
       width: MediaQuery.of(context).size.width * 0.80,
       child: SafeArea(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            minHeight: MediaQuery.of(context).size.height,
-          ),
-          child: IntrinsicHeight(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _headerSection(),
-                const SizedBox(height: 10),
-                _accountSwitchSectionO(context),
-                const Divider(height: 30),
-                _menuItem(Icons.home_rounded, "Home", () {}),
-                _menuItem(Icons.person_outline, "Profile", () {}),
-                _menuItem(Icons.notifications_none, "Notifications", () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => NotificationsScreen()),
-                  );
-                }),
-                _menuItem(Icons.settings_outlined, "Settings", () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => SettingsScreen()),
-                  );
-                }),
-                _menuItem(Icons.message, "Chat", () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => ChatScreen()),
-                  );
-                }),
-                _menuItem(Icons.calendar_month, "Academic Calender", () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => AcademicCalendarScreen()),
-                  );
-                }),
-                const Spacer(),
-                const Divider(),
-                _menuItem(Icons.logout, "Logout", () async {
-                  final helper = SharedPreferenceHelper();
-
-                  /// 🔥 CLEAR SESSION
-                  await helper.clearLoginData();
-                  final prefs = await SharedPreferences.getInstance();
-
-                  await SharedPreferenceHelper.clearAccounts();
-
-                  /// ❗ DO NOT clear accounts (for switch account feature)
-                  /// await SharedPreferenceHelper.clearAccounts(); ❌ optional
-
-                  /// 🔥 Clear AppData (VERY IMPORTANT)
-                  AppData.admissionNo = null;
-                  AppData.studentName = null;
-                  AppData.studentStdId = null;
-                  AppData.studentDivId = null;
-                  AppData.accYear = null;
-                  AppData.dob = null;
-                  AppData.profileUrl = null;
-                  // AppData.gender = null;
-
-                  /// 🔥 Navigate and remove all routes
-                  Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (_) => const Login_Screen()),
-                    (route) => false,
-                  );
-                }),
-
-                // _menuItem(Icons.logout, "Logout", () {
-                //   Navigator.of(context).pushReplacement(
-                //     MaterialPageRoute(
-                //       builder: (context) {
-                //         return LoginScreen();
-                //       },
-                //     ),
-                //   );
-                // }),
-                // SizedBox(height: MediaQuery.of(context).padding.bottom + 20),
-                const SizedBox(height: 10),
-              ],
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.zero,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _headerSection(),
+                    const SizedBox(height: 10),
+                    _accountSwitchSectionO(context),
+                    const Divider(height: 30),
+                    _menuItem(Icons.home_rounded, "Home", () {}),
+                    _menuItem(Icons.person_outline, "Profile", () {}),
+                    _menuItem(Icons.notifications_none, "Notifications", () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => NotificationsScreen(),
+                        ),
+                      );
+                    }),
+                    _menuItem(Icons.settings_outlined, "Settings", () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => SettingsScreen()),
+                      );
+                    }),
+                    _menuItem(Icons.message, "Chat", () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => ChatScreen()),
+                      );
+                    }),
+                    _menuItem(Icons.calendar_month, "Academic Calender", () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => AcademicCalendarScreen(),
+                        ),
+                      );
+                    }),
+                    const SizedBox(height: 12),
+                  ],
+                ),
+              ),
             ),
-          ),
+
+            const Divider(),
+            _menuItem(Icons.logout, "Logout", () async {
+              final helper = SharedPreferenceHelper();
+
+              /// 🔥 CLEAR SESSION
+              await helper.clearLoginData();
+              final prefs = await SharedPreferences.getInstance();
+
+              await SharedPreferenceHelper.clearAccounts();
+
+              /// ❗ DO NOT clear accounts (for switch account feature)
+              /// await SharedPreferenceHelper.clearAccounts(); ❌ optional
+
+              /// 🔥 Clear AppData (VERY IMPORTANT)
+              AppData.admissionNo = null;
+              AppData.studentName = null;
+              AppData.studentStdId = null;
+              AppData.studentDivId = null;
+              AppData.accYear = null;
+              AppData.dob = null;
+              AppData.profileUrl = null;
+              // AppData.gender = null;
+
+              /// 🔥 Navigate and remove all routes
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (_) => const Login_Screen()),
+                (route) => false,
+              );
+            }),
+
+            // _menuItem(Icons.logout, "Logout", () {
+            //   Navigator.of(context).pushReplacement(
+            //     MaterialPageRoute(
+            //       builder: (context) {
+            //         return LoginScreen();
+            //       },
+            //     ),
+            //   );
+            // }),
+            // SizedBox(height: MediaQuery.of(context).padding.bottom + 20),
+            const SizedBox(height: 10),
+          ],
         ),
       ),
     );
@@ -317,6 +325,11 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
       child: BlocConsumer<LoginCubit, LoginState>(
         listener: (context, state) {
           if (state is LoginSuccess) {
+            Future.delayed(const Duration(milliseconds: 300), () {
+              drawerOpenedNotifier.value = false;
+            });
+            // Navigator.pop(context);
+            // drawerOpenedNotifier.value = false;
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) {
@@ -395,7 +408,7 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
             borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
           ),
           builder: (context) {
-            return AddAccount();
+            return SwitchAccountBottomSheet();
           },
         );
       },
