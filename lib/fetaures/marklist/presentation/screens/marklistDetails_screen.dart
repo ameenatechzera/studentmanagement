@@ -176,7 +176,7 @@ class _ExamMarkDetailsPageState extends State<ExamMarkDetailsPage> {
                                   children: [
                                     InfoItem(
                                       title: "Class",
-                                      value: AppData.studentStdId!,
+                                      value: (AppData.studentClass ?? "No Class")
                                     ),
                                     InfoItem(
                                       title: "Admission No",

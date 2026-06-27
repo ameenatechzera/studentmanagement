@@ -86,7 +86,7 @@ class MaterialList extends Equatable {
   final String employeeName;
   static const String employeeNameKey = "employeeName";
 
-  final int accYear;
+  final String accYear;
   static const String accYearKey = "AccYear";
 
   final int standardId;
@@ -142,7 +142,7 @@ class MaterialList extends Equatable {
     int? materialId,
     int? staffId,
     String? employeeName,
-    int? accYear,
+    String? accYear,
     int? standardId,
     String? standard,
     int? divisionId,
@@ -189,7 +189,7 @@ class MaterialList extends Equatable {
       materialId: json["materialId"] ?? 0,
       staffId: json["StaffId"] ?? 0,
       employeeName: json["employeeName"] ?? "",
-      accYear: json["AccYear"] ?? 0,
+      accYear: json["AccYear"] ?? "",
       standardId: json["StandardId"] ?? 0,
       standard: json["Standard"] ?? "",
       divisionId: json["DivisionId"] ?? 0,

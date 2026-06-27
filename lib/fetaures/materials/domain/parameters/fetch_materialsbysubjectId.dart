@@ -18,7 +18,7 @@ class FetchMaterialBySubjectIdParameter {
       "branchId": branchId,
       "userId": userId,
       "subjectId": subjectId,
-      "subjectId": subjectId,
+      "standardId": standardId,
       "divisionId": divisionId,
     };
   }
