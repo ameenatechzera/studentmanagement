@@ -1,6 +1,11 @@
 import 'package:get_it/get_it.dart';
 import 'package:studentmanagement/core/database/app_database.dart';
 import 'package:studentmanagement/core/database/database_init.dart';
+import 'package:studentmanagement/fetaures/academiccalender/data/datasources/academiccalender_remote_data_source.dart';
+import 'package:studentmanagement/fetaures/academiccalender/data/repositories/academiccalender_repository_impl.dart';
+import 'package:studentmanagement/fetaures/academiccalender/domain/repository/academiccalender_repository.dart';
+import 'package:studentmanagement/fetaures/academiccalender/domain/usecases/fetchcalenderevents_usecase.dart';
+import 'package:studentmanagement/fetaures/academiccalender/presentation/cubit/academiccalender_cubit.dart';
 import 'package:studentmanagement/fetaures/attendence/data/datasources/attendencereport_remote_data_source.dart';
 import 'package:studentmanagement/fetaures/attendence/data/repositories/attendence_repository_impl.dart';
 import 'package:studentmanagement/fetaures/attendence/domain/repositories/attendence_repository.dart';
@@ -138,8 +143,13 @@ class ServiceLocator {
     );
 
     /// Cubit
-    sl.registerFactory(() => FeesCubit(fetchPaidFeesDetailsUseCase: sl(),
-        fetchAccYearListUseCase: sl(), fetchUnPaidFeesDetailsUseCase: sl()));
+    sl.registerFactory(
+      () => FeesCubit(
+        fetchPaidFeesDetailsUseCase: sl(),
+        fetchAccYearListUseCase: sl(),
+        fetchUnPaidFeesDetailsUseCase: sl(),
+      ),
+    );
 
     /// Cubit
     sl.registerFactory(
@@ -267,6 +277,26 @@ class ServiceLocator {
     // Repository
     sl.registerLazySingleton<EarlyLeaveRepository>(
       () => EarlyLeaveRepositoryImpl(sl()),
+    );
+
+    /// ------------------- ACADEMIC CALENDAR -------------------
+
+    // Cubit
+    sl.registerFactory(
+      () => AcademiccalenderCubit(fetchAcademicCalendarUseCase: sl()),
+    );
+
+    // UseCase
+    sl.registerLazySingleton(() => FetchAcademicCalendarUseCase(sl()));
+
+    // DataSource
+    sl.registerLazySingleton<AcademicCalendarRemoteDataSource>(
+      () => AcademicCalendarRemoteDataSourceImpl(),
+    );
+
+    // Repository
+    sl.registerLazySingleton<AcademicCalendarRepository>(
+      () => AcademicCalendarRepositoryImpl(remoteDataSource: sl()),
     );
   }
 }

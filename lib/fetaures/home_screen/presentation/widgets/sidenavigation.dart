@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:studentmanagement/core/appdata/appdata.dart';
+import 'package:studentmanagement/fetaures/academiccalender/presentation/screens/academiccalender_screen.dart';
 import 'package:studentmanagement/fetaures/authentication/data/models/account_details_model.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/parameters/login_params.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/bloc/logincubit/login_cubit.dart';
@@ -62,10 +63,16 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                     MaterialPageRoute(builder: (_) => SettingsScreen()),
                   );
                 }),
-                _menuItem(Icons.settings_outlined, "Chat", () {
+                _menuItem(Icons.message, "Chat", () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => ChatScreen()),
+                  );
+                }),
+                _menuItem(Icons.calendar_month, "Academic Calender", () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => AcademicCalendarScreen()),
                   );
                 }),
                 const Spacer(),

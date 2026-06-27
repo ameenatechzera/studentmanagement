@@ -33,12 +33,10 @@ class ApiConstants {
     return '${baseUrl}app/feePaidList';
   }
 
-
   /// Returns the full URL for Fees / Get Acc Years
   static String getAccYearsServerPath(String baseUrl) {
     return '${baseUrl}app/accyears/1';
   }
-
 
   /// Returns the full URL for Fees / Get Fees UnPaid
   static String getFeesUnPaidServerPath(String baseUrl) {
@@ -109,5 +107,9 @@ class ApiConstants {
 
   static String saveEarlyLeavePath(String baseUrl) {
     return '${baseUrl}save-earlygoingrequest';
+  }
+
+  static String getAcademicCalendarPath(String baseUrl) {
+    return '${baseUrl}schoolcalendar/1';
   }
 }

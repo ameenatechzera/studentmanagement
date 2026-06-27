@@ -58,7 +58,7 @@ dependencies:
   firebase_core: ^3.0.0
   firebase_messaging: ^15.0.0
   flutter_local_notifications: ^17.0.0
-
+  simple_ticket_widget: ^1.0.1
   
 dev_dependencies:
   flutter_test:
@@ -122,6 +122,7 @@ flutter:
     - assets/images/defaultstudent.png
     - assets/icons/Group (3).svg
     - assets/icons/Group (4).svg
+    - assets/icons/Group (5).svg
 
   fonts:
     - family: TitilliumWeb

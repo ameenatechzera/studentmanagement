@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:media_store_plus/media_store_plus.dart';
 import 'package:studentmanagement/core/database/database_init.dart';
+import 'package:studentmanagement/fetaures/academiccalender/presentation/cubit/academiccalender_cubit.dart';
 import 'package:studentmanagement/fetaures/attendence/presentation/cubit/attendence_cubit.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/screens/appstart_screen.dart';
 import 'package:studentmanagement/fetaures/classdiary/presentation/cubit/diary_cubit.dart';
@@ -79,6 +80,9 @@ class MyApp extends StatelessWidget {
         BlocProvider<MaterialCubit>(create: (_) => sl<MaterialCubit>()),
         BlocProvider<AttendenceCubit>(create: (_) => sl<AttendenceCubit>()),
         BlocProvider<EarlygoCubit>(create: (_) => sl<EarlygoCubit>()),
+        BlocProvider<AcademiccalenderCubit>(
+          create: (_) => sl<AcademiccalenderCubit>(),
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
