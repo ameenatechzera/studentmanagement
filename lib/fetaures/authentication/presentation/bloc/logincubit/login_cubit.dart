@@ -43,7 +43,14 @@ class LoginCubit extends Cubit<LoginState> {
           print('failure ${failure.message}');
           emit(LoginFailure(failure.message));
         },
-        (loginResponse) {
+        (loginResponse) async {
+          final sharedPrefHelper = SharedPreferenceHelper();
+          await sharedPrefHelper.saveClassAndDivision(loginResponse.student!.studentStandard +'-'+loginResponse.student!.studentDivision);
+          AppData.studentClass =
+              '${loginResponse.student!.studentStandard}-${loginResponse.student!.studentDivision}'
+                  .toString();
+          AppData.profileUrl = loginResponse.student!.imageUrl
+              .toString();
           emit(LoginSuccess(loginResponse));
         },
       );

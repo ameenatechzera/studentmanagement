@@ -18,6 +18,7 @@ class SharedPreferenceHelper {
   static const String _appStoreVersionKey = 'appstore_version';
   static const String _schoolCodeKey = 'school_code';
   static const String _schoolNameKey ='school_name';
+  static const String _classWithDivisionKey = 'class_with_division';
 
   /// ------------------ SAVE FULL BRANCH DATA ------------------
   Future<void> saveBranchData(Map<String, dynamic> data) async {
@@ -116,6 +117,17 @@ class SharedPreferenceHelper {
   Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_tokenKey);
+  }
+
+  /// ------------------ Class And Division ------------------
+  Future<void> saveClassAndDivision(String classWithDivision) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_classWithDivisionKey, classWithDivision);
+  }
+
+  Future<String?> getClassAndDivision() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_classWithDivisionKey);
   }
 
   /// ------------------ BranchID ------------------
