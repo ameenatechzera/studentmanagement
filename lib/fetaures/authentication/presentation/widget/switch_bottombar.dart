@@ -56,171 +56,198 @@ class _SwitchAccountBottomSheetState extends State<SwitchAccountBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 30),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    return AnimatedPadding(
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeOut,
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Drag handle
-          Container(
-            width: 40,
-            height: 4,
-            margin: const EdgeInsets.only(bottom: 16),
-            decoration: BoxDecoration(
-              color: Colors.grey.shade300,
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-
-          const Text(
-            "Switch Account",
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
-          ),
-
-          const SizedBox(height: 20),
-
-          // Admission No
-          TextField(
-            controller: admissionController,
-            keyboardType: TextInputType.text,
-            textInputAction: TextInputAction.next,
-            decoration: InputDecoration(
-              hintText: "Admission No",
-              hintStyle: TextStyle(color: Colors.grey.shade400),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 14,
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: Colors.grey.shade300),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: const BorderSide(color: Color(0xff807FD8)),
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 14),
-
-          // DOB
-          TextField(
-            controller: dobController,
-            keyboardType: TextInputType.datetime,
-            inputFormatters: [DateInputFormatter()],
-            decoration: InputDecoration(
-              hintText: "DOB (DD-MM-YYYY)",
-              hintStyle: TextStyle(color: Colors.grey.shade400),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 14,
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: Colors.grey.shade300),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: const BorderSide(color: Color(0xff807FD8)),
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 24),
-
-          // Switch Button
-          BlocConsumer<LoginCubit, LoginState>(
-            listener: (context, state) async {
-              if (state is LoginSuccess) {
-                print('LoginSuccess_SwitchAccount');
-                final sharedPrefHelper = SharedPreferenceHelper();
-
-                await sharedPrefHelper.setToken(state.loginResponse.token);
-                await sharedPrefHelper.saveLoginResponse(state.loginResponse);
-                AppData.admissionNo = state.loginResponse.student!.admno
-                    .toString();
-                AppData.studentName = state.loginResponse.student!.name
-                    .toString();
-                AppData.studentStdId = state
-                    .loginResponse
-                    .student!
-                    .currentStudentStandardId
-                    .toString();
-                AppData.studentDivId = state
-                    .loginResponse
-                    .student!
-                    .currentStudentDivisionId
-                    .toString();
-                AppData.accYear = state.loginResponse.student!.accYear
-                    .toString();
-                print('AppData.accYear ${AppData.accYear}');
-                await SharedPreferenceHelper.saveNewAccount(
-                  AccountDetails(
-                    admissionNo: state.loginResponse.student!.admno.toString(),
-                    dob: state.loginResponse.student!.dob.toString(),
-                    stdId: state.loginResponse.student!.currentStudentDivisionId
-                        .toString(),
-                    divId: state.loginResponse.student!.currentStudentDivisionId
-                        .toString(),
-                    accYear: state.loginResponse.student!.accYear.toString(),
-                    name: state.loginResponse.student!.name,
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(20, 12, 20, 30),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: SafeArea(
+          top: false,
+          child: SingleChildScrollView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Drag handle
+                Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                );
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) {
-                      return MainScreen(loginResponse: state.loginResponse);
-                    },
-                  ),
-                );
-              }
-            },
-            builder: (context, state) {
-              return SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
-                  onPressed: state is LoginLoading ? null : onSwitch,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xff4A90E2),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: state is LoginLoading
-                      ? const SizedBox(
-                          height: 22,
-                          width: 22,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              Colors.white,
-                            ),
-                          ),
-                        )
-                      : const Text(
-                          "Switch",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
                 ),
-              );
-            },
+
+                const Text(
+                  "Switch Account",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                // Admission No
+                TextField(
+                  controller: admissionController,
+                  keyboardType: TextInputType.text,
+                  textInputAction: TextInputAction.next,
+                  decoration: InputDecoration(
+                    hintText: "Admission No",
+                    hintStyle: TextStyle(color: Colors.grey.shade400),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: Colors.grey.shade300),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(color: Color(0xff807FD8)),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 14),
+
+                // DOB
+                TextField(
+                  controller: dobController,
+                  keyboardType: TextInputType.datetime,
+                  inputFormatters: [DateInputFormatter()],
+                  decoration: InputDecoration(
+                    hintText: "DOB (DD-MM-YYYY)",
+                    hintStyle: TextStyle(color: Colors.grey.shade400),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: Colors.grey.shade300),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(color: Color(0xff807FD8)),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 24),
+
+                // Switch Button
+                BlocConsumer<LoginCubit, LoginState>(
+                  listener: (context, state) async {
+                    if (state is LoginSuccess) {
+                      print('LoginSuccess_SwitchAccount');
+                      final sharedPrefHelper = SharedPreferenceHelper();
+
+                      await sharedPrefHelper.setToken(
+                        state.loginResponse.token,
+                      );
+                      await sharedPrefHelper.saveLoginResponse(
+                        state.loginResponse,
+                      );
+                      AppData.admissionNo = state.loginResponse.student!.admno
+                          .toString();
+                      AppData.studentName = state.loginResponse.student!.name
+                          .toString();
+                      AppData.studentStdId = state
+                          .loginResponse
+                          .student!
+                          .currentStudentStandardId
+                          .toString();
+                      AppData.studentDivId = state
+                          .loginResponse
+                          .student!
+                          .currentStudentDivisionId
+                          .toString();
+                      AppData.accYear = state.loginResponse.student!.accYear
+                          .toString();
+                      print('AppData.accYear ${AppData.accYear}');
+                      await SharedPreferenceHelper.saveNewAccount(
+                        AccountDetails(
+                          admissionNo: state.loginResponse.student!.admno
+                              .toString(),
+                          dob: state.loginResponse.student!.dob.toString(),
+                          stdId: state
+                              .loginResponse
+                              .student!
+                              .currentStudentDivisionId
+                              .toString(),
+                          divId: state
+                              .loginResponse
+                              .student!
+                              .currentStudentDivisionId
+                              .toString(),
+                          accYear: state.loginResponse.student!.accYear
+                              .toString(),
+                          name: state.loginResponse.student!.name,
+                        ),
+                      );
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return MainScreen(
+                              loginResponse: state.loginResponse,
+                            );
+                          },
+                        ),
+                      );
+                    }
+                  },
+                  builder: (context, state) {
+                    return SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: state is LoginLoading ? null : onSwitch,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xff4A90E2),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: state is LoginLoading
+                            ? const SizedBox(
+                                height: 22,
+                                width: 22,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.white,
+                                  ),
+                                ),
+                              )
+                            : const Text(
+                                "Switch",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
-        ],
+        ),
       ),
     );
   }
