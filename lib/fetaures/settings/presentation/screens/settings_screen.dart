@@ -7,7 +7,8 @@ import 'package:studentmanagement/fetaures/authentication/presentation/screens/l
 import 'package:studentmanagement/services/shared_preference_helper.dart';
 
 class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({super.key});
+  final bool isFromBottomNav;
+  const SettingsScreen({super.key, this.isFromBottomNav = false});
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
@@ -39,7 +40,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> loadBranchData() async {
     final data = await SharedPreferenceHelper().getBranchData();
     print('BranchDetails $data');
-
+    debugPrint(data.toString());
     setState(() {
       branchData = data;
     });
@@ -47,6 +48,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint("Branch Data: $branchData");
+    debugPrint("Banner Image: ${branchData?["bannerImage"]}");
     if (branchData == null) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
@@ -59,36 +62,102 @@ class _SettingsScreenState extends State<SettingsScreen> {
               clipBehavior: Clip.none,
               alignment: Alignment.bottomCenter,
               children: [
+                // SizedBox(
+                //   height: 250,
+                //   width: double.infinity,
+
+                //   // child: Image.asset(
+                //   //   "assets/images/Rectangle 113.png",
+                //   //   fit: BoxFit.cover,
+                //   //   errorBuilder: (context, error, stackTrace) {
+                //   //     return Container(
+                //   //       color: Colors.grey.shade300,
+                //   //       child: const Center(child: Icon(Icons.image, size: 40)),
+                //   //     );
+                //   //   },
+                //   // ),
+                //   child:
+                //       (branchData!["bannerImage"] != null &&
+                //           branchData!["bannerImage"].toString().isNotEmpty)
+                //       ? Image.network(
+                //           branchData!["bannerImage"],
+                //           fit: BoxFit.cover,
+                //           errorBuilder: (context, error, stackTrace) {
+                //             return Image.asset(
+                //               "assets/images/Rectangle 113.png",
+                //               fit: BoxFit.cover,
+                //             );
+                //           },
+                //         )
+                //       : Image.asset(
+                //           "assets/images/Rectangle 113.png",
+                //           fit: BoxFit.cover,
+                //         ),
+                // ),
                 SizedBox(
                   height: 250,
                   width: double.infinity,
-                  child: Image.asset(
-                    "assets/images/Rectangle 113.png",
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        color: Colors.grey.shade300,
-                        child: const Center(child: Icon(Icons.image, size: 40)),
-                      );
-                    },
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      (branchData?["bannerImage"] != null &&
+                              branchData!["bannerImage"]
+                                  .toString()
+                                  .trim()
+                                  .isNotEmpty)
+                          ? Image.network(
+                              branchData!["bannerImage"],
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Image.asset(
+                                  "assets/images/Rectangle 113.png",
+                                  fit: BoxFit.cover,
+                                );
+                              },
+                            )
+                          : Image.asset(
+                              "assets/images/Rectangle 113.png",
+                              fit: BoxFit.cover,
+                            ),
+
+                      // Purple overlay with opacity
+                      Container(
+                        color: const Color(0xFF8B84E8).withOpacity(0.55),
+                      ),
+                    ],
                   ),
                 ),
-
-                /// BACK BUTTON
-                Positioned(
-                  top: 50,
-                  left: 16,
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Icon(
-                      Icons.arrow_back,
-                      color: Colors.black,
-                      size: 20,
+                if (!widget.isFromBottomNav)
+                  Positioned(
+                    top: 50,
+                    left: 16,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Icon(
+                        Icons.arrow_back,
+                        color: Colors.black,
+                        size: 20,
+                      ),
                     ),
                   ),
-                ),
+
+                /// BACK BUTTON
+                // Positioned(
+                //   top: 50,
+                //   left: 16,
+                //   child: GestureDetector(
+                //     onTap: () {
+                //       Navigator.pop(context);
+                //     },
+                //     child: const Icon(
+                //       Icons.arrow_back,
+                //       color: Colors.black,
+                //       size: 20,
+                //     ),
+                //   ),
+                // ),
                 Positioned(
                   top: 45,
                   right: 16,
@@ -228,7 +297,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                                 },
 
                                                 child: Text(
-                                                 "Ctistaledu.com",
+                                                  "Ctistaledu.com",
                                                   style: TextStyle(
                                                     fontSize: 15,
                                                     fontWeight: FontWeight.w500,

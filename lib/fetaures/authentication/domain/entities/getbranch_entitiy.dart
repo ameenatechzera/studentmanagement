@@ -10,6 +10,7 @@ class BranchData {
   final int? branchId;
   final int? currencyId;
   final String? branchName;
+  final String? currencyName;
   final String? place;
   final String? postPin;
   final String? district;
@@ -39,11 +40,13 @@ class BranchData {
   final String? createdUser;
   final String? modifiedDate;
   final String? modifiedUser;
+  final String? bannerImage;
 
   BranchData({
     this.branchId,
     this.currencyId,
     this.branchName,
+    this.currencyName,
     this.place,
     this.postPin,
     this.district,
@@ -73,5 +76,6 @@ class BranchData {
     this.createdUser,
     this.modifiedDate,
     this.modifiedUser,
+    this.bannerImage,
   });
 }

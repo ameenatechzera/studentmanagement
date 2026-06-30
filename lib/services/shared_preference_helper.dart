@@ -17,7 +17,7 @@ class SharedPreferenceHelper {
   static const String _playStoreVersionKey = 'playstore_version';
   static const String _appStoreVersionKey = 'appstore_version';
   static const String _schoolCodeKey = 'school_code';
-  static const String _schoolNameKey ='school_name';
+  static const String _schoolNameKey = 'school_name';
 
   /// ------------------ SAVE FULL BRANCH DATA ------------------
   Future<void> saveBranchData(Map<String, dynamic> data) async {

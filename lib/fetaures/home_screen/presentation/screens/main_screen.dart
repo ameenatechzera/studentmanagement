@@ -58,7 +58,7 @@ class _MainScreenState extends State<MainScreen> {
     final screens = [
       const HomeScreen(),
       StudentScreenN(loginResponse: widget.loginResponse),
-      SettingsScreen(),
+      SettingsScreen(isFromBottomNav: true),
       const NotificationScreen(),
     ];
 

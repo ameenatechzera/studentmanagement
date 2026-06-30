@@ -272,11 +272,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           return Center(child: Text(state.message));
                         }
 
-                        // if (allFeeds.isEmpty) {
-                        //   return const Center(
-                        //     child: Text("No feeds available"),
-                        //   );
-                        // }
+                        if (allFeeds.isEmpty) {
+                          return const Center(
+                            child: Text("No feeds available"),
+                          );
+                        }
 
                         return ValueListenableBuilder<bool>(
                           valueListenable: isLoadingMoreNotifier,

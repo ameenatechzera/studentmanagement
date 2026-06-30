@@ -87,7 +87,7 @@ class _Login_ScreenState extends State<Login_Screen> {
   bool _isProcessing = false;
 
   String schoolName = '';
-
+  Map<String, dynamic>? branchData;
   // ── ADDED: error state variables ──
   String? _admNoError;
   String? _dobError;
@@ -96,6 +96,7 @@ class _Login_ScreenState extends State<Login_Screen> {
   @override
   void initState() {
     getDeviceId();
+    loadBranchData();
     super.initState();
   }
 
@@ -126,7 +127,18 @@ class _Login_ScreenState extends State<Login_Screen> {
 
     return isValid;
   }
+
   // ─────────────────────────────
+  Future<void> loadBranchData() async {
+    final data = await SharedPreferenceHelper().getBranchData();
+
+    print("Login Screen Branch Data: $data");
+    print("Banner Image: ${data?['bannerImage']}");
+
+    setState(() {
+      branchData = data;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -136,18 +148,76 @@ class _Login_ScreenState extends State<Login_Screen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              // Top Image Section
+              // // Top Image Section
+              // Container(
+              //   height: 340,
+              //   width: double.infinity,
+              //   decoration: const BoxDecoration(
+              //     borderRadius: BorderRadius.only(
+              //       bottomLeft: Radius.circular(50),
+              //     ),
+              //     image: DecorationImage(
+              //       image: AssetImage('assets/images/dummy_image.png'),
+
+              //       fit: BoxFit.cover,
+              //     ),
+              //   ),
+              //   child: Container(
+              //     decoration: BoxDecoration(
+              //       color: const Color(0xFF8B84E8).withOpacity(0.55),
+              //       borderRadius: const BorderRadius.only(
+              //         bottomLeft: Radius.circular(50),
+              //       ),
+              //     ),
+              //     padding: const EdgeInsets.symmetric(
+              //       horizontal: 24,
+              //       vertical: 40,
+              //     ),
+              //     child: Column(
+              //       crossAxisAlignment: CrossAxisAlignment.start,
+              //       mainAxisAlignment: MainAxisAlignment.end,
+              //       children: [
+              //         Text(
+              //           "Welcome",
+              //           style: TextStyle(
+              //             color: Colors.white,
+              //             fontSize: 42,
+              //             fontWeight: FontWeight.bold,
+              //           ),
+              //         ),
+              //         SizedBox(height: 8),
+              //         Text(
+              //           AppData.schoolName ?? 'School Name',
+              //           style: const TextStyle(
+              //             color: Colors.white,
+              //             fontSize: 22,
+              //             fontWeight: FontWeight.w700,
+              //           ),
+              //         ),
+              //         SizedBox(height: 20),
+              //       ],
+              //     ),
+              //   ),
+              // ),
               Container(
                 height: 340,
                 width: double.infinity,
-                decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.only(
+                decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.only(
                     bottomLeft: Radius.circular(50),
                   ),
                   image: DecorationImage(
-                    image: AssetImage('assets/images/dummy_image.png'),
-
+                    image:
+                        (branchData?["bannerImage"] != null &&
+                            branchData!["bannerImage"]
+                                .toString()
+                                .trim()
+                                .isNotEmpty)
+                        ? NetworkImage(branchData!["bannerImage"])
+                        : const AssetImage("assets/images/dummy_image.png")
+                              as ImageProvider,
                     fit: BoxFit.cover,
+                    onError: (_, __) {},
                   ),
                 ),
                 child: Container(
@@ -165,7 +235,7 @@ class _Login_ScreenState extends State<Login_Screen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Text(
+                      const Text(
                         "Welcome",
                         style: TextStyle(
                           color: Colors.white,
@@ -173,7 +243,7 @@ class _Login_ScreenState extends State<Login_Screen> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Text(
                         AppData.schoolName ?? 'School Name',
                         style: const TextStyle(
@@ -182,12 +252,11 @@ class _Login_ScreenState extends State<Login_Screen> {
                           fontWeight: FontWeight.w700,
                         ),
                       ),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                     ],
                   ),
                 ),
               ),
-
               const SizedBox(height: 40),
 
               // Title

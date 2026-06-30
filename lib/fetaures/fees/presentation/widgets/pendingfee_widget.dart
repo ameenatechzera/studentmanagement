@@ -175,6 +175,7 @@ class _ExpandableFeeCardState extends State<_ExpandableFeeCard> {
                             /// FEE MONTH
                             Text(
                               widget.fee.feeMonth,
+                              softWrap: true,
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -192,6 +193,7 @@ class _ExpandableFeeCardState extends State<_ExpandableFeeCard> {
                                 const SizedBox(width: 8),
                                 const Text(
                                   'Pending Fee',
+                                  softWrap: true,
                                   style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600,
@@ -201,35 +203,81 @@ class _ExpandableFeeCardState extends State<_ExpandableFeeCard> {
                               ],
                             ),
                             const SizedBox(height: 10),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 6,
-                              ),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFFFEAEA),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const Icon(
-                                    Icons.calendar_today_outlined,
-                                    size: 12,
-                                    color: Colors.red,
+                            LayoutBuilder(
+                              builder: (context, constraints) {
+                                return ConstrainedBox(
+                                  constraints: BoxConstraints(
+                                    maxWidth: constraints.maxWidth,
                                   ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    'Last Date On ${widget.formatedDate}',
-                                    style: const TextStyle(
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.red,
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 6,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFFFEAEA),
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const Padding(
+                                          padding: EdgeInsets.only(top: 2),
+                                          child: Icon(
+                                            Icons.calendar_today_outlined,
+                                            size: 12,
+                                            color: Colors.red,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Flexible(
+                                          child: Text(
+                                            'Last Date On ${widget.formatedDate}',
+                                            softWrap: true,
+                                            style: const TextStyle(
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.w500,
+                                              color: Colors.red,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                ],
-                              ),
+                                );
+                              },
                             ),
+                            // Container(
+                            //   padding: const EdgeInsets.symmetric(
+                            //     horizontal: 10,
+                            //     vertical: 6,
+                            //   ),
+                            //   decoration: BoxDecoration(
+                            //     color: const Color(0xFFFFEAEA),
+                            //     borderRadius: BorderRadius.circular(20),
+                            //   ),
+                            //   child: Row(
+                            //     mainAxisSize: MainAxisSize.min,
+                            //     children: [
+                            //       const Icon(
+                            //         Icons.calendar_today_outlined,
+                            //         size: 12,
+                            //         color: Colors.red,
+                            //       ),
+                            //       const SizedBox(width: 4),
+                            //       Text(
+                            //         'Last Date On ${widget.formatedDate}dddddddddddddddddddddddddddd',
+                            //         style: const TextStyle(
+                            //           fontSize: 11,
+                            //           fontWeight: FontWeight.w500,
+                            //           color: Colors.red,
+                            //         ),
+                            //       ),
+                            //     ],
+                            //   ),
+                            // ),
                             // /// DUE DATE
                             // if (dueDateStatus)
                             //   Text(
@@ -245,77 +293,84 @@ class _ExpandableFeeCardState extends State<_ExpandableFeeCard> {
                       ),
 
                       /// TOTAL BALANCE + EXPAND ICON
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          // Text(
-                          //   widget.fee.totalBalance,
-                          //   style: const TextStyle(
-                          //     fontSize: 16,
-                          //     fontWeight: FontWeight.w600,
-                          //   ),
-                          // ),
-                          // Icon(
-                          //   _isExpanded
-                          //       ? Icons.keyboard_arrow_up
-                          //       : Icons.keyboard_arrow_down,
-                          //   color: const Color(0xFF807FD8),
-                          // ),
-                          //const SizedBox(height: 4),
-                          Text(
-                            widget.fee.totalBalance,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          minWidth: 62,
+                          maxWidth: 82,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            // Text(
+                            //   widget.fee.totalBalance,
+                            //   style: const TextStyle(
+                            //     fontSize: 16,
+                            //     fontWeight: FontWeight.w600,
+                            //   ),
+                            // ),
+                            // Icon(
+                            //   _isExpanded
+                            //       ? Icons.keyboard_arrow_up
+                            //       : Icons.keyboard_arrow_down,
+                            //   color: const Color(0xFF807FD8),
+                            // ),
+                            //const SizedBox(height: 4),
+                            Text(
+                              widget.fee.totalBalance,
+                              softWrap: true,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 4),
+                            const SizedBox(height: 4),
 
-                          SizedBox(
-                            height: 34,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                // TODO: Pay action
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF807FD8),
-                                foregroundColor: Colors.white,
-                                elevation: 0,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 20,
+                            SizedBox(
+                              height: 34,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  // TODO: Pay action
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF807FD8),
+                                  foregroundColor: Colors.white,
+                                  elevation: 0,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
                                 ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
+                                child: const Text(
+                                  'Pay',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                               ),
-                              child: const Text(
-                                'Pay',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
+                            ),
+                            const SizedBox(height: 4),
+                            // Icon(
+                            //   _isExpanded
+                            //       ? Icons.keyboard_arrow_up
+                            //       : Icons.keyboard_arrow_down,
+                            //   color: const Color(0xFF807FD8),
+                            // ),
+                            SizedBox(
+                              width: 60,
+                              child: Center(
+                                child: Icon(
+                                  _isExpanded
+                                      ? Icons.keyboard_arrow_up
+                                      : Icons.keyboard_arrow_down,
+                                  color: const Color(0xFF807FD8),
                                 ),
                               ),
                             ),
-                          ),
-                          const SizedBox(height: 4),
-                          // Icon(
-                          //   _isExpanded
-                          //       ? Icons.keyboard_arrow_up
-                          //       : Icons.keyboard_arrow_down,
-                          //   color: const Color(0xFF807FD8),
-                          // ),
-                          SizedBox(
-                            width: 60,
-                            child: Center(
-                              child: Icon(
-                                _isExpanded
-                                    ? Icons.keyboard_arrow_up
-                                    : Icons.keyboard_arrow_down,
-                                color: const Color(0xFF807FD8),
-                              ),
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -332,7 +387,8 @@ class _ExpandableFeeCardState extends State<_ExpandableFeeCard> {
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 6),
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             /// LEDGER NAME
                             Row(
@@ -346,23 +402,33 @@ class _ExpandableFeeCardState extends State<_ExpandableFeeCard> {
                                   ),
                                 ),
                                 const SizedBox(width: 8),
-                                Text(
-                                  detail.ledgerName,
-                                  style: const TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w500,
+                                Expanded(
+                                  child: Text(
+                                    detail.ledgerName,
+                                    softWrap: true,
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   ),
                                 ),
                               ],
                             ),
 
                             /// AMOUNT
-                            Text(
-                              detail.amount,
-                              style: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.red,
+                            ConstrainedBox(
+                              constraints: const BoxConstraints(
+                                minWidth: 50,
+                                maxWidth: 90,
+                              ),
+                              child: Text(
+                                detail.amount,
+                                softWrap: true,
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.red,
+                                ),
                               ),
                             ),
                           ],
