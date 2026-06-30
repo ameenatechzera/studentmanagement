@@ -397,28 +397,32 @@ class _ExpandableFeeCardState extends State<_ExpandableFeeCard> {
                           // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             /// LEDGER NAME
-                            Row(
-                              children: [
-                                Container(
-                                  width: 8,
-                                  height: 8,
-                                  decoration: const BoxDecoration(
-                                    color: Color(0xFF807FD8),
-                                    shape: BoxShape.circle,
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    detail.ledgerName,
-                                    softWrap: true,
-                                    style: const TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w500,
+                            Expanded(
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    width: 8,
+                                    height: 8,
+                                    margin: const EdgeInsets.only(top: 5),
+                                    decoration: const BoxDecoration(
+                                      color: Color(0xFF807FD8),
+                                      shape: BoxShape.circle,
                                     ),
                                   ),
-                                ),
-                              ],
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      detail.ledgerName,
+                                      softWrap: true,
+                                      style: const TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
 
                             /// AMOUNT
