@@ -34,6 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final ValueNotifier<List<FeedDetails>> allFeedsNotifier =
       ValueNotifier<List<FeedDetails>>([]);
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   void initState() {
     super.initState();
@@ -137,7 +138,9 @@ class _HomeScreenState extends State<HomeScreen> {
     // final playStoreVersion = await SharedPreferenceHelper().getPlayStoreVersion();
     // final appStoreVersion = await SharedPreferenceHelper().getAppStoreVersion();
     // print('playStoreVersionPref $playStoreVersion');
-    checkForUpdate(context, st_appVersion!);
+    if (Platform.isAndroid) {
+      checkForUpdate(context, st_appVersion!);
+    }
   }
 
   void _fetchFeeds({required int page}) {
@@ -211,7 +214,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   // await context.read<LoginCubit>().fetchSchools(
                   //   FetchSchoolRequest(slno: schoolCode),
                   // );
-                  await checkForUpdate(context, st_appVersion);
+                  if (Platform.isAndroid) {
+                    await checkForUpdate(context, st_appVersion);
+                  }
                 }
 
                 if (state is FeedLoaded) {

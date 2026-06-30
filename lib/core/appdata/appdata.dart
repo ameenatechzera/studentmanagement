@@ -20,4 +20,5 @@ class AppData {
   static String? place;
   static String? studentClass;
   static int? branchId;
+  static bool feeCollectionStatus = false;
 }

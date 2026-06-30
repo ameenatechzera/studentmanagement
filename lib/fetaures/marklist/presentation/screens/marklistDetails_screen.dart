@@ -4,6 +4,7 @@ import 'package:studentmanagement/core/appdata/appdata.dart';
 import 'package:studentmanagement/core/config/colors.dart';
 import 'package:studentmanagement/fetaures/marklist/domain/parameter/fetch_marklist_parameter.dart';
 import 'package:studentmanagement/fetaures/marklist/presentation/cubit/marklist_cubit.dart';
+import 'package:studentmanagement/services/shared_preference_helper.dart';
 
 class ExamMarkDetailsPage extends StatefulWidget {
   final String examTermId;
@@ -16,13 +17,21 @@ class ExamMarkDetailsPage extends StatefulWidget {
 
   @override
   State<ExamMarkDetailsPage> createState() => _ExamMarkDetailsPageState();
+
 }
+String classAndDivision ='';
 
 class _ExamMarkDetailsPageState extends State<ExamMarkDetailsPage> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() {
+
+    Future.microtask(() async {
+      String? value = await SharedPreferenceHelper().getClassAndDivision();
+      setState(() {
+        classAndDivision = value ?? "";
+      });
+
       context.read<MarklistCubit>().fetchMarkList(
         FetchMarkListParameter(
           branchId: 1,
@@ -176,7 +185,7 @@ class _ExamMarkDetailsPageState extends State<ExamMarkDetailsPage> {
                                   children: [
                                     InfoItem(
                                       title: "Class",
-                                      value: (AppData.studentClass ?? "No Class")
+                                      value: (classAndDivision)
                                     ),
                                     InfoItem(
                                       title: "Admission No",

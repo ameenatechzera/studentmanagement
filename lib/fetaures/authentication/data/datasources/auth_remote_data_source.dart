@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:studentmanagement/core/errors/error_message_model.dart';
 import 'package:studentmanagement/core/errors/exceptions.dart';
 import 'package:studentmanagement/core/network/api_endpoints.dart';
@@ -75,9 +76,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final url = ApiConstants.getLoginPath(baseUrl);
       final options = await ApiHelper.getAuthOptions();
 
-       print('🔹 Login URL: $url');
-       print('🔹 Request Body: ${params.toJson()}');
-     //  print('🔹 dbName: $dbName');
+      print('🔹 Login URL: $url');
+      print('🔹 Request Body: ${params.toJson()}');
+      //  print('🔹 dbName: $dbName');
       // print('🔹 token: $dbName');
 
       final response = await dio.post(
@@ -89,6 +90,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         //   headers: {"Accept": "application/json", "X-Database-Name": dbName},
         // ),
       );
+      debugPrint(response.data.toString(), wrapWidth: 1024);
 
       print('🔹 Status Code: ${response.statusCode}');
       print('🔹 ResponseLogin Data: ${response.data}');
@@ -196,7 +198,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<GetBranchEntity> getBranchDetails() async {
     try {
-       final baseUrl = await SharedPreferenceHelper().getBaseUrl();
+      final baseUrl = await SharedPreferenceHelper().getBaseUrl();
 
       if (baseUrl == null || baseUrl.isEmpty) {
         throw Exception("Base URL not set");
@@ -209,8 +211,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       // final url = ApiConstants.getBranchDetailsPath(baseUrl);
       // final url =
       //     "https://online.cristaledu.com/Api/public/api/app/branch-byid/1";
-       final url =
-           baseUrl+"app/branch-byid/1";
+      final url = baseUrl + "app/branch-byid/1";
       final options = await ApiHelper.getAuthOptions();
 
       print('🔹 Get Branch URL: $url');

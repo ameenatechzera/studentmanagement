@@ -335,15 +335,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studentmanagement/core/appdata/appdata.dart';
-
 import 'package:studentmanagement/fetaures/fees/domain/parameters/paidFees_request.dart';
 import 'package:studentmanagement/fetaures/fees/domain/parameters/paymentSaveRequest.dart';
 import 'package:studentmanagement/fetaures/fees/presentation/bloc/fees_cubit.dart';
 import 'package:studentmanagement/fetaures/fees/presentation/unPaidFee/un_paid_fee_cubit.dart';
 import 'package:studentmanagement/fetaures/fees/presentation/widgets/paidfee_widget.dart';
 import 'package:studentmanagement/fetaures/fees/presentation/widgets/pendingfee_widget.dart';
-import 'package:studentmanagement/fetaures/home_screen/presentation/cubit/feed_cubit.dart';
-
 import '../../domain/entities/accyearResult.dart';
 import '../../domain/entities/unpaid fee_result.dart' as unpaid;
 
@@ -689,11 +686,13 @@ class _FeesScreenState extends State<FeesScreen> {
         }
 
         if (state is FeesUnPaidSuccess) {
+          print('wwwwwwwwwwwwwwww${AppData.feeCollectionStatus}');
           if (state.feeUnPaidResult.data.isNotEmpty) {
             return PendingFee(
               feesUnpaidList: state.feeUnPaidResult,
               selectedIndexes: _selectedIndexes,
               onSelectionChanged: _onFeeSelectionChanged,
+              feeCollectionStatus: AppData.feeCollectionStatus,
             );
           } else {
             return const Padding(

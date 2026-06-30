@@ -7,12 +7,14 @@ import '../../domain/entities/unpaid fee_result.dart';
 class PendingFee extends StatelessWidget {
   UnpaidFeeResult feesUnpaidList;
   final Set<int> selectedIndexes;
+  final bool feeCollectionStatus;
   final void Function(int index, Datum fee, bool isSelected) onSelectionChanged;
   PendingFee({
     super.key,
     required this.feesUnpaidList,
     required this.selectedIndexes,
     required this.onSelectionChanged,
+    required this.feeCollectionStatus,
   });
 
   @override
@@ -53,6 +55,7 @@ class PendingFee extends StatelessWidget {
             dueDateStatus: dueDateStatus,
             isSelected: selectedIndexes.contains(index),
             onSelectionChanged: onSelectionChanged,
+            feeCollectionStatus: feeCollectionStatus,
           );
         },
       );
@@ -68,6 +71,7 @@ class _ExpandableFeeCard extends StatefulWidget {
   final String formatedDate;
   final bool dueDateStatus;
   final bool isSelected;
+  final bool feeCollectionStatus;
   final void Function(int index, Datum fee, bool isSelected) onSelectionChanged;
 
   const _ExpandableFeeCard({
@@ -77,6 +81,7 @@ class _ExpandableFeeCard extends StatefulWidget {
     required this.dueDateStatus,
     required this.isSelected,
     required this.onSelectionChanged,
+    required this.feeCollectionStatus,
   });
 
   @override
@@ -134,17 +139,18 @@ class _ExpandableFeeCardState extends State<_ExpandableFeeCard> {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Checkbox(
-                        value: widget.isSelected,
-                        activeColor: const Color(0xFF807FD8),
-                        onChanged: (value) {
-                          widget.onSelectionChanged(
-                            widget.index,
-                            widget.fee,
-                            value ?? false,
-                          );
-                        },
-                      ),
+                      if (widget.feeCollectionStatus)
+                        Checkbox(
+                          value: widget.isSelected,
+                          activeColor: const Color(0xFF807FD8),
+                          onChanged: (value) {
+                            widget.onSelectionChanged(
+                              widget.index,
+                              widget.fee,
+                              value ?? false,
+                            );
+                          },
+                        ),
 
                       /// ICON
                       Padding(

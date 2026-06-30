@@ -33,6 +33,7 @@ class MarklistCubit extends Cubit<MarklistState> {
 
   /// 🔹 Fetch MarkList (with params)
   Future<void> fetchMarkList(FetchMarkListParameter params) async {
+    print('FetchMarkListParameter ${params.toJson()}');
     emit(MarkListLoading());
 
     final result = await fetchMarkListUseCase(params);

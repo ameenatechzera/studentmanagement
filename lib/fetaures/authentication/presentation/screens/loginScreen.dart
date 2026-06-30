@@ -448,6 +448,12 @@ class _Login_ScreenState extends State<Login_Screen> {
                     await sharedPrefHelper.saveLoginResponse(
                       state.loginResponse,
                     );
+                    await sharedPrefHelper.saveClassAndDivision(
+                      state.loginResponse.student!.studentStandard +
+                          '-' +
+                          state.loginResponse.student!.studentDivision,
+                    );
+
                     AppData.admissionNo = state.loginResponse.student!.admno
                         .toString();
                     AppData.studentName = state.loginResponse.student!.name
@@ -469,6 +475,9 @@ class _Login_ScreenState extends State<Login_Screen> {
                     AppData.studentClass =
                         '${state.loginResponse.student!.studentStandard}-${state.loginResponse.student!.studentDivision}'
                             .toString();
+                    AppData.feeCollectionStatus =
+                        state.loginResponse.student?.feeCollectionStatus ??
+                        false;
                     print('AppData.studentClass ${AppData.studentClass}');
                     print(
                       'profileUrl ${state.loginResponse.student!.imageUrl.toString()}',

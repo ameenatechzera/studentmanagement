@@ -198,10 +198,12 @@ class _MainSplashScreenState extends State<MainSplashScreen> {
               /// SCHOOL NAME
               Text(
                 branchName ?? 'School Name',
+                textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 20,
+                  fontSize: 22,
                   fontWeight: FontWeight.w600,
                   color: Colors.black,
+                  height: 1.4,
                 ),
               ),
 
