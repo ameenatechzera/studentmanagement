@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:studentmanagement/core/appdata/appdata.dart';
+import 'package:studentmanagement/fetaures/academiccalender/domain/parameters/fetchcalender_parameter.dart';
 import 'package:studentmanagement/fetaures/academiccalender/presentation/cubit/academiccalender_cubit.dart';
 
 class AcademicCalendarScreen extends StatefulWidget {
@@ -40,7 +42,7 @@ class _AcademicCalendarScreenState extends State<AcademicCalendarScreen> {
   final ValueNotifier<int> selectedMonth = ValueNotifier(
     DateTime.now().month - 1,
   );
-
+  final ScrollController _monthScrollController = ScrollController();
   final months = [
     "Jan",
     "Feb",
@@ -55,6 +57,55 @@ class _AcademicCalendarScreenState extends State<AcademicCalendarScreen> {
     "Nov",
     "Dec",
   ];
+  @override
+  void initState() {
+    super.initState();
+
+    context.read<AcademiccalenderCubit>().fetchAcademicCalendar(
+      FetchCalendarParameter(
+        accYear: AppData.accYear!,
+        branchId: 1,
+        admno: AppData.admissionNo!,
+      ),
+    );
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _centerSelectedMonth(selectedMonth.value, jump: true);
+    });
+  }
+
+  @override
+  void dispose() {
+    _focusedDay.dispose();
+    selectedMonth.dispose();
+    _monthScrollController.dispose();
+    super.dispose();
+  }
+
+  void _centerSelectedMonth(int index, {bool jump = false}) {
+    if (!_monthScrollController.hasClients) return;
+
+    const double itemWidth = 62;
+
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    final targetOffset =
+        (index * itemWidth) - (screenWidth / 2) + (itemWidth / 2);
+
+    final maxOffset = _monthScrollController.position.maxScrollExtent;
+
+    final safeOffset = targetOffset.clamp(0.0, maxOffset);
+
+    if (jump) {
+      _monthScrollController.jumpTo(safeOffset);
+    } else {
+      _monthScrollController.animateTo(
+        safeOffset,
+        duration: const Duration(milliseconds: 350),
+        curve: Curves.easeOut,
+      );
+    }
+  }
 
   void _changeYear(int offset) {
     final focusedDay = _focusedDay.value;
@@ -87,10 +138,79 @@ class _AcademicCalendarScreenState extends State<AcademicCalendarScreen> {
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    context.read<AcademiccalenderCubit>().fetchAcademicCalendar();
+  DateTime? _parseEventDate(String? date) {
+    if (date == null || date.trim().isEmpty) return null;
+
+    try {
+      return DateTime.parse(date);
+    } catch (e) {
+      debugPrint("ACADEMIC CALENDAR DATE PARSE ERROR: $e");
+      return null;
+    }
+  }
+
+  _EventColors _getEventColors({
+    required String? categoryName,
+    required String? isHoliday,
+  }) {
+    final category = (categoryName ?? '').toLowerCase().trim();
+    final holiday = (isHoliday ?? '').toLowerCase().trim();
+
+    if (holiday == 'yes' || category.contains('holiday')) {
+      return const _EventColors(
+        dateColor: Color(0xffF04438),
+        typeColor: Color(0xffF04438),
+        stripeColor: Color(0xffF04438),
+      );
+    }
+
+    if (category.contains('meeting') || category.contains('pta')) {
+      return const _EventColors(
+        dateColor: Color(0xffD99A20),
+        typeColor: Color(0xffD99A20),
+        stripeColor: Color(0xffD99A20),
+      );
+    }
+
+    if (category.contains('special') ||
+        category.contains('special day') ||
+        category.contains('special days') ||
+        category.contains('onam') ||
+        category.contains('environment')) {
+      return const _EventColors(
+        dateColor: Color(0xff3A9670),
+        typeColor: Color(0xff3A9670),
+        stripeColor: Color(0xff3A9670),
+      );
+    }
+
+    if (category.contains('event') ||
+        category.contains('events') ||
+        category.contains('arts') ||
+        category.contains('quiz') ||
+        category.contains('assembly')) {
+      return const _EventColors(
+        dateColor: Color(0xff5B5CE2),
+        typeColor: Color(0xff5B5CE2),
+        stripeColor: Color(0xff5B5CE2),
+      );
+    }
+
+    return const _EventColors(
+      dateColor: Color(0xff777777),
+      typeColor: Color(0xff777777),
+      stripeColor: Color(0xffD8D8D8),
+    );
+  }
+
+  Future<void> _refreshCalendar() async {
+    await context.read<AcademiccalenderCubit>().fetchAcademicCalendar(
+      FetchCalendarParameter(
+        accYear: AppData.accYear!,
+        branchId: 1,
+        admno: AppData.admissionNo!,
+      ),
+    );
   }
 
   @override
@@ -153,12 +273,14 @@ class _AcademicCalendarScreenState extends State<AcademicCalendarScreen> {
                   valueListenable: selectedMonth,
                   builder: (context, selected, _) {
                     return ListView.builder(
+                      controller: _monthScrollController,
                       scrollDirection: Axis.horizontal,
                       itemCount: months.length,
                       itemBuilder: (context, index) {
                         return GestureDetector(
                           onTap: () {
                             selectedMonth.value = index;
+                            _centerSelectedMonth(index);
                           },
                           child: Padding(
                             padding: const EdgeInsets.only(right: 8),
@@ -175,6 +297,7 @@ class _AcademicCalendarScreenState extends State<AcademicCalendarScreen> {
               ),
 
               const SizedBox(height: 24),
+
               Expanded(
                 child: BlocBuilder<AcademiccalenderCubit, AcademiccalenderState>(
                   builder: (context, state) {
@@ -183,104 +306,125 @@ class _AcademicCalendarScreenState extends State<AcademicCalendarScreen> {
                     }
 
                     if (state is AcademiccalenderError) {
-                      return Center(child: Text(state.message));
+                      return Center(
+                        child: Text(
+                          state.message,
+                          style: const TextStyle(color: Colors.red),
+                        ),
+                      );
                     }
-
                     if (state is AcademiccalenderLoaded) {
-                      final events = state.response.data ?? [];
+                      final monthList = state.response.data ?? [];
 
-                      // final filteredEvents = events.where((event) {
-                      //   if (event.eventDate == null) return false;
+                      return ValueListenableBuilder<DateTime>(
+                        valueListenable: _focusedDay,
+                        builder: (context, focusedDay, _) {
+                          return ValueListenableBuilder<int>(
+                            valueListenable: selectedMonth,
+                            builder: (context, selected, _) {
+                              final selectedMonthNo = selected + 1;
 
-                      //   final eventDate = DateTime.parse(event.eventDate!);
+                              final selectedMonthData = monthList.where((
+                                monthData,
+                              ) {
+                                return monthData.monthNo == selectedMonthNo;
+                              }).toList();
 
-                      //   return eventDate.month == selectedMonth.value + 1 &&
-                      //       eventDate.year == _focusedDay.value.year;
-                      // }).toList();
+                              final events = selectedMonthData.isNotEmpty
+                                  ? selectedMonthData.first.events ?? []
+                                  : [];
 
-                      // if (filteredEvents.isEmpty) {
-                      //   return const Center(child: Text("No Events Found"));
-                      // }
+                              final filteredEvents = events.where((event) {
+                                final eventDate = _parseEventDate(
+                                  event.eventDate,
+                                );
 
-                      return ListView.separated(
-                        itemCount: events.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: 18),
-                        itemBuilder: (context, index) {
-                          final event = events[index];
-                          final eventDate = DateTime.parse(event.eventDate!);
+                                if (eventDate == null) return false;
 
-                          // Color dateColor;
-                          // Color typeColor;
-                          // Color stripeColor;
+                                return eventDate.month == selectedMonthNo &&
+                                    eventDate.year == focusedDay.year;
+                              }).toList();
 
-                          // switch (event.categoryName?.toLowerCase()) {
-                          //   case "public holiday":
-                          //     dateColor = Colors.red;
-                          //     typeColor = Colors.red;
-                          //     stripeColor = Colors.red;
-                          //     break;
+                              filteredEvents.sort((a, b) {
+                                final aDate = _parseEventDate(a.eventDate);
+                                final bDate = _parseEventDate(b.eventDate);
 
-                          //   case "arts":
-                          //     dateColor = Colors.orange;
-                          //     typeColor = Colors.orange;
-                          //     stripeColor = Colors.orange;
-                          //     break;
+                                if (aDate == null && bDate == null) return 0;
+                                if (aDate == null) return 1;
+                                if (bDate == null) return -1;
 
-                          //   case "onam":
-                          //     dateColor = Colors.teal;
-                          //     typeColor = Colors.green;
-                          //     stripeColor = Colors.green;
-                          //     break;
+                                return aDate.compareTo(bDate);
+                              });
 
-                          //   default:
-                          //     dateColor = Colors.deepPurple;
-                          //     typeColor = Colors.purple;
-                          //     stripeColor = Colors.purple;
-                          // }
-                          Color dateColor;
-                          Color typeColor;
-                          Color stripeColor;
+                              if (filteredEvents.isEmpty) {
+                                return RefreshIndicator(
+                                  onRefresh: _refreshCalendar,
+                                  child: ListView(
+                                    physics:
+                                        const AlwaysScrollableScrollPhysics(),
+                                    children: [
+                                      SizedBox(
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                            0.45,
+                                        child: Center(
+                                          child: Text(
+                                            "No Events Found In ${months[selected]} ${focusedDay.year}",
+                                            style: const TextStyle(
+                                              fontSize: 13,
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }
 
-                          switch (index % 5) {
-                            case 0:
-                              dateColor = Colors.red;
-                              typeColor = Colors.red;
-                              stripeColor = Colors.red;
-                              break;
+                              return RefreshIndicator(
+                                onRefresh: _refreshCalendar,
+                                child: ListView.separated(
+                                  physics:
+                                      const AlwaysScrollableScrollPhysics(),
+                                  itemCount: filteredEvents.length,
+                                  separatorBuilder: (_, __) =>
+                                      const SizedBox(height: 18),
+                                  itemBuilder: (context, index) {
+                                    final event = filteredEvents[index];
 
-                            case 1:
-                              dateColor = Colors.orange;
-                              typeColor = Colors.orange;
-                              stripeColor = Colors.orange;
-                              break;
+                                    final eventDate = _parseEventDate(
+                                      event.eventDate,
+                                    );
 
-                            case 2:
-                              dateColor = Colors.teal;
-                              typeColor = Colors.green;
-                              stripeColor = Colors.green;
-                              break;
+                                    if (eventDate == null) {
+                                      return const SizedBox.shrink();
+                                    }
 
-                            case 3:
-                              dateColor = Colors.deepPurple;
-                              typeColor = Colors.purple;
-                              stripeColor = Colors.purple;
-                              break;
+                                    final colors = _getEventColors(
+                                      categoryName: event.categoryName,
+                                      isHoliday: event.isHoliday,
+                                    );
 
-                            default:
-                              dateColor = Colors.grey;
-                              typeColor = Colors.grey;
-                              stripeColor = Colors.transparent;
-                          }
-                          return CalendarEventTile(
-                            date: eventDate.day.toString().padLeft(2, '0'),
-                            day: _getDayName(eventDate.weekday),
-                            dateColor: dateColor,
-                            title: event.eventTitle ?? '',
-                            type: event.categoryName ?? '',
-                            description: event.eventDescription,
-                            typeColor: typeColor,
-                            stripeColor: stripeColor,
-                            imageUrl: event.image,
+                                    return CalendarEventTile(
+                                      date: eventDate.day.toString().padLeft(
+                                        2,
+                                        '0',
+                                      ),
+                                      day: _getDayName(eventDate.weekday),
+                                      dateColor: colors.dateColor,
+                                      title: event.eventTitle ?? '',
+                                      type: event.categoryName ?? '',
+                                      description: event.eventDescription,
+                                      typeColor: colors.typeColor,
+                                      stripeColor: colors.stripeColor,
+                                      imageUrl: event.image,
+                                    );
+                                  },
+                                ),
+                              );
+                            },
                           );
                         },
                       );
@@ -290,69 +434,24 @@ class _AcademicCalendarScreenState extends State<AcademicCalendarScreen> {
                   },
                 ),
               ),
-              // Expanded(
-              //   child: ListView(
-              //     children: const [
-              //       CalendarEventTile(
-              //         date: "01",
-              //         day: "Sun",
-              //         dateColor: Colors.red,
-              //         title: "National Day",
-              //         type: "Holiday",
-              //         typeColor: Colors.red,
-              //         stripeColor: Colors.red,
-              //         imageUrl:
-              //             "https://www.vectorstock.com/royalty-free-vectors/cultural-event-vectors",
-              //       ),
-              //       SizedBox(height: 18),
-              //       CalendarEventTile(
-              //         date: "02",
-              //         day: "Mon",
-              //         dateColor: Colors.orange,
-              //         title: "First PTA Meeting",
-              //         type: "Meeting",
-              //         typeColor: Colors.orange,
-              //         stripeColor: Colors.orange,
-              //       ),
-              //       SizedBox(height: 18),
-              //       CalendarEventTile(
-              //         date: "03",
-              //         day: "Thu",
-              //         dateColor: Colors.teal,
-              //         title: "Environment Day",
-              //         type: "Assembly",
-              //         typeColor: Colors.green,
-              //         stripeColor: Colors.green,
-              //       ),
-              //       SizedBox(height: 18),
-              //       CalendarEventTile(
-              //         date: "04",
-              //         day: "Wen",
-              //         dateColor: Colors.deepPurple,
-              //         title: "General Knowlage Quiz",
-              //         type: "Event",
-              //         typeColor: Colors.purple,
-              //         stripeColor: Colors.purple,
-              //       ),
-              //       SizedBox(height: 18),
-              //       CalendarEventTile(
-              //         date: "05",
-              //         day: "The",
-              //         dateColor: Colors.grey,
-              //         title: "No Spacial Day",
-              //         type: "",
-              //         typeColor: Colors.grey,
-              //         stripeColor: Colors.transparent,
-              //       ),
-              //     ],
-              //   ),
-              // ),
             ],
           ),
         ),
       ),
     );
   }
+}
+
+class _EventColors {
+  final Color dateColor;
+  final Color typeColor;
+  final Color stripeColor;
+
+  const _EventColors({
+    required this.dateColor,
+    required this.typeColor,
+    required this.stripeColor,
+  });
 }
 
 class CalendarEventTile extends StatelessWidget {
@@ -552,240 +651,3 @@ class CalendarEventTile extends StatelessWidget {
     );
   }
 }
-// class CalendarEventTile extends StatelessWidget {
-//   final String date;
-//   final String day;
-//   final Color dateColor;
-//   final String title;
-//   final String type;
-//   final Color typeColor;
-//   final Color stripeColor;
-//   final String? imageUrl;
-
-//   const CalendarEventTile({
-//     super.key,
-//     required this.date,
-//     required this.day,
-//     required this.dateColor,
-//     required this.title,
-//     required this.type,
-//     required this.typeColor,
-//     required this.stripeColor,
-//     this.imageUrl,
-//   });
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Row(
-//       crossAxisAlignment: CrossAxisAlignment.start,
-//       children: [
-//         SizedBox(
-//           width: 40,
-//           child: Column(
-//             children: [
-//               Text(
-//                 date,
-//                 style: TextStyle(
-//                   fontSize: 30,
-//                   fontWeight: FontWeight.bold,
-//                   color: dateColor,
-//                 ),
-//               ),
-//               Text(
-//                 day,
-//                 style: const TextStyle(color: Colors.grey, fontSize: 12),
-//               ),
-//             ],
-//           ),
-//         ),
-
-//         const SizedBox(width: 12),
-
-//         Expanded(
-//           child: Container(
-//             padding: const EdgeInsets.all(12),
-//             decoration: BoxDecoration(
-//               color: const Color(0xffF3F3F3),
-//               borderRadius: BorderRadius.circular(8),
-//               border: Border.all(color: Colors.grey.shade300),
-//             ),
-//             child: Row(
-//               crossAxisAlignment: CrossAxisAlignment.start,
-//               children: [
-//                 Container(
-//                   width: 3,
-//                   height: 100,
-//                   decoration: BoxDecoration(
-//                     color: stripeColor,
-//                     borderRadius: BorderRadius.circular(4),
-//                   ),
-//                 ),
-
-//                 const SizedBox(width: 10),
-
-//                 Expanded(
-//                   child: Column(
-//                     crossAxisAlignment: CrossAxisAlignment.start,
-//                     children: [
-//                       Text(
-//                         title,
-//                         style: const TextStyle(
-//                           fontWeight: FontWeight.w600,
-//                           fontSize: 14,
-//                         ),
-//                       ),
-
-//                       if (type.isNotEmpty) ...[
-//                         const SizedBox(height: 6),
-//                         Row(
-//                           children: [
-//                             Icon(Icons.circle, size: 8, color: typeColor),
-//                             const SizedBox(width: 4),
-//                             Text(
-//                               type,
-//                               style: TextStyle(color: typeColor, fontSize: 11),
-//                             ),
-//                           ],
-//                         ),
-//                       ],
-
-//                       const SizedBox(height: 8),
-
-//                       const Text(
-//                         "Discussion Between Parents And Teachers On Student Progress, Performance, Attendance, Behavior And Overall Development.",
-//                         style: TextStyle(
-//                           fontSize: 12,
-//                           color: Colors.black54,
-//                           height: 1.4,
-//                         ),
-//                       ),
-//                     ],
-//                   ),
-//                 ),
-//                 if (title == "National Day")
-//                   Padding(
-//                     padding: const EdgeInsets.only(left: 8),
-//                     child: GestureDetector(
-//                       onTap: () {
-//                         showGeneralDialog(
-//                           context: context,
-//                           barrierDismissible: true,
-//                           barrierLabel: "",
-//                           barrierColor: Colors.black54,
-//                           pageBuilder: (_, __, ___) {
-//                             return Stack(
-//                               children: [
-//                                 Positioned(
-//                                   top: 180, // adjust
-//                                   left: 60, // adjust
-//                                   child: Material(
-//                                     color: Colors.transparent,
-//                                     child: Stack(
-//                                       clipBehavior: Clip.none,
-//                                       children: [
-//                                         ClipRRect(
-//                                           borderRadius: BorderRadius.circular(
-//                                             12,
-//                                           ),
-//                                           child: Image.network(
-//                                             "https://picsum.photos/200",
-//                                             width: 250,
-//                                             height: 200,
-//                                             fit: BoxFit.cover,
-//                                           ),
-//                                         ),
-
-//                                         Positioned(
-//                                           top: -8,
-//                                           right: -8,
-//                                           child: InkWell(
-//                                             onTap: () => Navigator.pop(context),
-//                                             child: Container(
-//                                               padding: const EdgeInsets.all(4),
-//                                               decoration: const BoxDecoration(
-//                                                 color: Colors.white,
-//                                                 shape: BoxShape.circle,
-//                                               ),
-//                                               child: const Icon(
-//                                                 Icons.close,
-//                                                 size: 18,
-//                                               ),
-//                                             ),
-//                                           ),
-//                                         ),
-//                                       ],
-//                                     ),
-//                                   ),
-//                                 ),
-//                               ],
-//                             );
-//                           },
-//                         );
-//                         // return Dialog(
-//                         //   backgroundColor: Colors.transparent,
-//                         //   child: Stack(
-//                         //     clipBehavior: Clip.none,
-//                         //     children: [
-//                         //       ClipRRect(
-//                         //         borderRadius: BorderRadius.circular(12),
-//                         //         child: Image.network(
-//                         //           "https://picsum.photos/200",
-//                         //           fit: BoxFit.contain,
-//                         //         ),
-//                         //       ),
-
-//                         //       Positioned(
-//                         //         top: -10,
-//                         //         right: -10,
-//                         //         child: InkWell(
-//                         //           onTap: () => Navigator.pop(context),
-//                         //           child: Container(
-//                         //             padding: const EdgeInsets.all(4),
-//                         //             decoration: const BoxDecoration(
-//                         //               color: Colors.white,
-//                         //               shape: BoxShape.circle,
-//                         //             ),
-//                         //             child: const Icon(
-//                         //               Icons.close,
-//                         //               size: 18,
-//                         //             ),
-//                         //           ),
-//                         //         ),
-//                         //       ),
-//                         //     ],
-//                         //   ),
-//                         // );
-//                       },
-
-//                       child: ClipRRect(
-//                         borderRadius: BorderRadius.circular(8),
-//                         child: Image.network(
-//                           "https://picsum.photos/200",
-//                           width: 80,
-//                           height: 80,
-//                           fit: BoxFit.cover,
-//                         ),
-//                       ),
-//                     ),
-//                   ),
-//                 // if (title == "National Day")
-//                 //   Padding(
-//                 //     padding: const EdgeInsets.only(left: 8),
-//                 //     child: ClipRRect(
-//                 //       borderRadius: BorderRadius.circular(8),
-//                 //       child: Image.network(
-//                 //         "https://picsum.photos/200",
-//                 //         width: 80,
-//                 //         height: 80,
-//                 //         fit: BoxFit.cover,
-//                 //       ),
-//                 //     ),
-//                 //   ),
-//               ],
-//             ),
-//           ),
-//         ),
-//       ],
-//     );
-//   }
-// }

@@ -66,20 +66,20 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                         MaterialPageRoute(builder: (_) => SettingsScreen()),
                       );
                     }),
-                    // _menuItem(Icons.message, "Chat", () {
-                    //   Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(builder: (_) => ChatScreen()),
-                    //   );
-                    // }),
-                    // _menuItem(Icons.calendar_month, "Academic Calender", () {
-                    //   Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //       builder: (_) => AcademicCalendarScreen(),
-                    //     ),
-                    //   );
-                    // }),
+                    _menuItem(Icons.message, "Chat", () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => ChatScreen()),
+                      );
+                    }),
+                    _menuItem(Icons.calendar_month, "Academic Calender", () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => AcademicCalendarScreen(),
+                        ),
+                      );
+                    }),
                     const SizedBox(height: 12),
                   ],
                 ),

@@ -4,10 +4,13 @@ import 'package:studentmanagement/core/errors/exceptions.dart';
 import 'package:studentmanagement/core/network/api_endpoints.dart';
 import 'package:studentmanagement/core/network/apihelper.dart';
 import 'package:studentmanagement/fetaures/academiccalender/data/models/fetchcalenderevents_model.dart';
+import 'package:studentmanagement/fetaures/academiccalender/domain/parameters/fetchcalender_parameter.dart';
 import 'package:studentmanagement/services/shared_preference_helper.dart';
 
 abstract class AcademicCalendarRemoteDataSource {
-  Future<AcademicCalendarResponseModel> fetchAcademicCalendar();
+  Future<FetchCalendarResponseModel> fetchAcademicCalendar(
+    FetchCalendarParameter parameter,
+  );
 }
 
 class AcademicCalendarRemoteDataSourceImpl
@@ -15,43 +18,54 @@ class AcademicCalendarRemoteDataSourceImpl
   final Dio dio = Dio();
 
   @override
-  Future<AcademicCalendarResponseModel> fetchAcademicCalendar() async {
+  Future<FetchCalendarResponseModel> fetchAcademicCalendar(
+    FetchCalendarParameter parameter,
+  ) async {
     print('📘 Fetch Academic Calendar Called');
 
     try {
-      /// Get Base URL
+      /// Base URL
       final baseUrl = await SharedPreferenceHelper().getBaseUrl();
 
       if (baseUrl == null || baseUrl.isEmpty) {
         throw Exception("Base URL not set");
       }
 
-      print('baseUrl => $baseUrl');
+      print("Base URL => $baseUrl");
 
-      /// Build API URL
+      /// API URL
       final url = ApiConstants.getAcademicCalendarPath(baseUrl);
 
-      print('url => $url');
+      print("URL => $url");
 
-      /// Auth Options
+      /// Authorization
       final options = await ApiHelper.getAuthOptions(withToken: true);
 
-      /// API Call
-      final response = await dio.get(url, options: options);
+      /// API Request
+      final response = await dio.post(
+        url,
+        data: parameter.toJson(),
+        options: options,
+      );
 
-      print('📘 Status Code: ${response.statusCode}');
-      print('📘 Response Data: ${response.data}');
+      print("Status Code => ${response.statusCode}");
+      print("Response => ${response.data}");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        return AcademicCalendarResponseModel.fromJson(response.data);
+        return FetchCalendarResponseModel.fromJson(response.data);
       } else {
         throw ServerException(
           errorMessageModel: ErrorMessageModel.fromJson(response.data),
         );
       }
-    } catch (e, stacktrace) {
-      print('❌ Exception in fetchAcademicCalendar: $e');
-      print(stacktrace);
+    } on DioException catch (e) {
+      print("Dio Exception => ${e.response?.data}");
+      throw ServerException(
+        errorMessageModel: ErrorMessageModel.fromJson(e.response?.data ?? {}),
+      );
+    } catch (e, stackTrace) {
+      print("Exception => $e");
+      print(stackTrace);
       rethrow;
     }
   }

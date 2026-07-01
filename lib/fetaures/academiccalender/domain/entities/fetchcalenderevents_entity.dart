@@ -1,47 +1,41 @@
-class AcademicCalendarResponse {
+class FetchCalendarResponse {
   final int? status;
   final bool? error;
-  final List<AcademicCalendarDetails>? data;
+  final List<CalendarMonthDetails>? data;
 
-  AcademicCalendarResponse({this.status, this.error, this.data});
+  FetchCalendarResponse({this.status, this.error, this.data});
 }
 
-class AcademicCalendarDetails {
+class CalendarMonthDetails {
+  final String? month;
+  final int? monthNo;
+  final List<CalendarEventDetails>? events;
+
+  CalendarMonthDetails({this.month, this.monthNo, this.events});
+}
+
+class CalendarEventDetails {
   final int? eventId;
-  final String? accYear;
-  final int? categoryId;
-  final String? categoryName;
   final String? eventDate;
   final String? eventTitle;
   final String? eventDescription;
   final String? image;
-  final String? standardIds;
-  final String? standardNames;
   final String? isHoliday;
-  final String? isNotificationSent;
-  final int? branchId;
-  final String? createdDate;
-  final String? createdUser;
-  final String? modifiedDate;
-  final String? modifiedUser;
+  final int? categoryId;
+  final String? categoryName;
+  final String? colorCode;
+  final String? icon;
 
-  AcademicCalendarDetails({
+  CalendarEventDetails({
     this.eventId,
-    this.accYear,
-    this.categoryId,
-    this.categoryName,
     this.eventDate,
     this.eventTitle,
     this.eventDescription,
     this.image,
-    this.standardIds,
-    this.standardNames,
     this.isHoliday,
-    this.isNotificationSent,
-    this.branchId,
-    this.createdDate,
-    this.createdUser,
-    this.modifiedDate,
-    this.modifiedUser,
+    this.categoryId,
+    this.categoryName,
+    this.colorCode,
+    this.icon,
   });
 }
