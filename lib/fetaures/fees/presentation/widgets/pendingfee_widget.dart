@@ -48,14 +48,17 @@ class PendingFee extends StatelessWidget {
             dueDateStatus = false;
           }
           print('dueDateStatusElse $dueDateStatus');
-          return _ExpandableFeeCard(
-            index: index,
-            fee: fee,
-            formatedDate: formatedDate,
-            dueDateStatus: dueDateStatus,
-            isSelected: selectedIndexes.contains(index),
-            onSelectionChanged: onSelectionChanged,
-            feeCollectionStatus: feeCollectionStatus,
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            child: _ExpandableFeeCard(
+              index: index,
+              fee: fee,
+              formatedDate: formatedDate,
+              dueDateStatus: dueDateStatus,
+              isSelected: selectedIndexes.contains(index),
+              onSelectionChanged: onSelectionChanged,
+              feeCollectionStatus: feeCollectionStatus,
+            ),
           );
         },
       );
@@ -98,16 +101,20 @@ class _ExpandableFeeCardState extends State<_ExpandableFeeCard> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: widget.isSelected ? const Color(0xFFF3F2FF) : Colors.white,
+        color: widget.isSelected ? const Color(0xFFF3F0FF) : Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: widget.isSelected
-            ? Border.all(color: const Color(0xFF807FD8), width: 1)
-            : null,
+        border: Border.all(
+          color: widget.isSelected
+              ? const Color(0xFF807FD8)
+              : const Color(0xFFE8EAF1),
+          width: widget.isSelected ? 1.5 : 1,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 16,
+            spreadRadius: 1,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
@@ -331,32 +338,32 @@ class _ExpandableFeeCardState extends State<_ExpandableFeeCard> {
                             ),
                             const SizedBox(height: 4),
 
-                            SizedBox(
-                              height: 34,
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  // TODO: Pay action
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFF807FD8),
-                                  foregroundColor: Colors.white,
-                                  elevation: 0,
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                ),
-                                child: const Text(
-                                  'Pay',
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                            ),
+                            // SizedBox(
+                            //   height: 34,
+                            //   child: ElevatedButton(
+                            //     onPressed: () {
+                            //       // TODO: Pay action
+                            //     },
+                            //     style: ElevatedButton.styleFrom(
+                            //       backgroundColor: const Color(0xFF807FD8),
+                            //       foregroundColor: Colors.white,
+                            //       elevation: 0,
+                            //       padding: const EdgeInsets.symmetric(
+                            //         horizontal: 20,
+                            //       ),
+                            //       shape: RoundedRectangleBorder(
+                            //         borderRadius: BorderRadius.circular(20),
+                            //       ),
+                            //     ),
+                            //     child: const Text(
+                            //       'Pay',
+                            //       style: TextStyle(
+                            //         fontSize: 13,
+                            //         fontWeight: FontWeight.w600,
+                            //       ),
+                            //     ),
+                            //   ),
+                            // ),
                             const SizedBox(height: 4),
                             // Icon(
                             //   _isExpanded

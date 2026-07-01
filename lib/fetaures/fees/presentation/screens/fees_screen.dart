@@ -476,7 +476,8 @@ class _FeesScreenState extends State<FeesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      //backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF7F5FF),
 
       body: Column(
         children: [

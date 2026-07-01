@@ -60,7 +60,7 @@ dependencies:
   firebase_messaging: ^15.0.0
   flutter_local_notifications: ^17.0.0
   simple_ticket_widget: ^1.0.1
-  
+  video_player: ^2.11.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

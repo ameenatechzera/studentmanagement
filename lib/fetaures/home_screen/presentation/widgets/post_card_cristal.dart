@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
@@ -12,6 +14,225 @@ import 'package:studentmanagement/fetaures/home_screen/domain/parameters/feedact
 import 'package:studentmanagement/fetaures/home_screen/presentation/cubit/feed_cubit.dart';
 import 'package:studentmanagement/services/shared_preference_helper.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+import 'package:webview_flutter_android/webview_flutter_android.dart';
+
+String feedExtractIframeVideoUrl(String value) {
+  try {
+    final cleaned = value
+        .replaceAll(r'\"', '"')
+        .replaceAll(r'\\', '')
+        .replaceAll('&amp;', '&')
+        .trim();
+
+    final iframeMatch = RegExp(r'''src=["']([^"']+)["']''').firstMatch(cleaned);
+
+    if (iframeMatch != null) {
+      return iframeMatch.group(1) ?? '';
+    }
+
+    final vimeoUrlMatch = RegExp(
+      r'''https?:\/\/[^\s"'<>]*vimeo\.com[^\s"'<>]*''',
+    ).firstMatch(cleaned);
+
+    if (vimeoUrlMatch != null) {
+      return vimeoUrlMatch.group(0) ?? '';
+    }
+
+    final uri = Uri.tryParse(cleaned);
+
+    if (uri != null && uri.pathSegments.isNotEmpty) {
+      final lastSegment = uri.pathSegments.last.trim();
+
+      final isOnlyNumber = RegExp(r'^\d+$').hasMatch(lastSegment);
+
+      if (isOnlyNumber) {
+        return 'https://player.vimeo.com/video/$lastSegment';
+      }
+    }
+
+    return '';
+  } catch (e) {
+    debugPrint("FEED IFRAME VIDEO PARSE ERROR: $e");
+    return '';
+  }
+}
+
+String feedPrepareVimeoUrl(String url) {
+  if (url.trim().isEmpty) return '';
+
+  final uri = Uri.tryParse(url.trim());
+
+  if (uri == null) return '';
+
+  String videoId = '';
+
+  if (uri.host.contains('player.vimeo.com')) {
+    final videoIndex = uri.pathSegments.indexOf('video');
+
+    if (videoIndex != -1 && uri.pathSegments.length > videoIndex + 1) {
+      videoId = uri.pathSegments[videoIndex + 1];
+    }
+  } else if (uri.host.contains('vimeo.com')) {
+    videoId = uri.pathSegments.isNotEmpty ? uri.pathSegments.last : '';
+  }
+
+  if (videoId.isEmpty) {
+    return url;
+  }
+
+  final params = Map<String, String>.from(uri.queryParameters);
+
+  params['title'] = '0';
+  params['byline'] = '0';
+  params['portrait'] = '0';
+  params['badge'] = '0';
+  params['dnt'] = '1';
+  params['transparent'] = '0';
+  params['autoplay'] = '0';
+  params['autopause'] = '1';
+  params['pip'] = '0';
+  params['loop'] = '0';
+
+  return Uri(
+    scheme: 'https',
+    host: 'player.vimeo.com',
+    path: '/video/$videoId',
+    queryParameters: params,
+  ).toString();
+}
+
+String feedBuildCleanVimeoPlayerHtml(String videoUrl) {
+  final safeUrl = const HtmlEscape().convert(videoUrl);
+
+  return '''
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #000000;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    #playerWrap {
+      position: fixed;
+      inset: 0;
+      background: #000000;
+    }
+
+    iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #000000;
+    }
+
+    #endOverlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #000000;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      z-index: 9999;
+      color: #ffffff;
+      font-family: Arial, sans-serif;
+    }
+
+    #replayButton {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      border: 2px solid #ffffff;
+      background: rgba(255, 255, 255, 0.12);
+      color: #ffffff;
+      font-size: 34px;
+      line-height: 72px;
+      text-align: center;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    #replayText {
+      margin-top: 14px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div id="playerWrap">
+    <iframe
+      id="vimeoPlayer"
+      src="$safeUrl"
+      allow="autoplay; fullscreen; picture-in-picture"
+      allowfullscreen>
+    </iframe>
+  </div>
+
+  <div id="endOverlay">
+    <div id="replayButton">↻</div>
+    <div id="replayText">Replay Video</div>
+  </div>
+
+  <script src="https://player.vimeo.com/api/player.js"></script>
+  <script>
+    const iframe = document.getElementById('vimeoPlayer');
+    const endOverlay = document.getElementById('endOverlay');
+    const replayButton = document.getElementById('replayButton');
+    const player = new Vimeo.Player(iframe);
+
+    let overlayShown = false;
+
+    function showCleanEndScreen() {
+      if (overlayShown) return;
+
+      overlayShown = true;
+      iframe.style.opacity = '0';
+      iframe.style.pointerEvents = 'none';
+      endOverlay.style.display = 'flex';
+
+      player.pause().catch(function() {});
+    }
+
+    player.on('timeupdate', function(data) {
+      if (!data || !data.duration || !data.seconds) return;
+
+      const remaining = data.duration - data.seconds;
+
+      if (remaining <= 0.08) {
+        showCleanEndScreen();
+      }
+    });
+
+    player.on('ended', function() {
+      showCleanEndScreen();
+    });
+
+    replayButton.addEventListener('click', function() {
+      overlayShown = false;
+      endOverlay.style.display = 'none';
+      iframe.style.opacity = '1';
+      iframe.style.pointerEvents = 'auto';
+
+      player.setCurrentTime(0).then(function() {
+        player.play();
+      }).catch(function() {});
+    });
+  </script>
+</body>
+</html>
+''';
+}
 
 class PostCard extends StatefulWidget {
   final FeedDetails feed;
@@ -215,7 +436,10 @@ class _PostCardState extends State<PostCard> {
   @override
   Widget build(BuildContext context) {
     final feed = widget.feed;
-
+    final mediaUrls = _getMediaUrls();
+    final activePage = mediaUrls.isNotEmpty && currentPage < mediaUrls.length
+        ? currentPage
+        : 0;
     // final images = getImages();
     //final logo = AppData.logo?.trim();
     return Column(
@@ -361,74 +585,142 @@ class _PostCardState extends State<PostCard> {
         //     ),
         //   ),
 
-        // 🔹 IMAGE SECTION
-        if (feed.files != null && feed.files!.isNotEmpty)
-          // if (images.isNotEmpty)
+        // // 🔹 IMAGE SECTION
+        // if (feed.files != null && feed.files!.isNotEmpty)
+        //   // if (images.isNotEmpty)
+        //   Column(
+        //     children: [
+        //       FutureBuilder<Size>(
+        //         future: _getImageSize(feed.files!.first.image ?? ""),
+        //         builder: (context, snapshot) {
+        //           if (!snapshot.hasData) {
+        //             return const SizedBox(
+        //               height: 200,
+        //               child: Center(child: CircularProgressIndicator()),
+        //             );
+        //           }
+        //           final size = snapshot.data!;
+        //           final aspectRatio = size.width / size.height;
+        //           return AspectRatio(
+        //             aspectRatio: aspectRatio,
+        //             child: PageView.builder(
+        //               itemCount: feed.files!.length,
+        //               onPageChanged: (index) {
+        //                 setState(() {
+        //                   currentPage = index;
+        //                 });
+        //               },
+        //               itemBuilder: (context, index) {
+        //                 final imageUrl = feed.files![index].image;
+        //                 return Image.network(
+        //                   imageUrl ?? "",
+        //                   fit: BoxFit.cover,
+        //                   width: double.infinity,
+        //                 );
+        //               },
+        //             ),
+        //           );
+        //         },
+        //       ),
+        //       // SizedBox(
+        //       //   width: double.infinity,
+        //       //   child: AspectRatio(
+        //       //     aspectRatio: getAspectRatio(images.first),
+        //       //     child: PageView.builder(
+        //       //       itemCount: images.length,
+        //       //       onPageChanged: (index) {
+        //       //         setState(() => currentPage = index);
+        //       //       },
+        //       //       itemBuilder: (context, index) {
+        //       //         final url = images[index];
+
+        //       //         return Image.network(
+        //       //           url,
+        //       //           fit: BoxFit.cover,
+        //       //           loadingBuilder: (c, child, p) {
+        //       //             if (p == null) return child;
+        //       //             return const Center(child: CircularProgressIndicator());
+        //       //           },
+        //       //           errorBuilder: (c, e, s) {
+        //       //             return const Icon(Icons.broken_image);
+        //       //           },
+        //       //         );
+        //       //       },
+        //       //     ),
+        //       //   ),
+        //       // ),
+
+        //       /// 🔹 DOT INDICATOR
+        //       if (feed.files!.length > 1)
+        // if (images.length > 1)
+        /// IMAGE + VIMEO VIDEO SECTION
+        if (mediaUrls.isNotEmpty)
           Column(
             children: [
-              FutureBuilder<Size>(
-                future: _getImageSize(feed.files!.first.image ?? ""),
+              FutureBuilder<double>(
+                future: _getMediaAspectRatio(mediaUrls[activePage]),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
                     return const SizedBox(
-                      height: 200,
+                      height: 220,
                       child: Center(child: CircularProgressIndicator()),
                     );
                   }
-                  final size = snapshot.data!;
-                  final aspectRatio = size.width / size.height;
+
+                  final aspectRatio = snapshot.data ?? 1.0;
+
                   return AspectRatio(
-                    aspectRatio: aspectRatio,
+                    aspectRatio: aspectRatio <= 0 ? 1.0 : aspectRatio,
                     child: PageView.builder(
-                      itemCount: feed.files!.length,
+                      itemCount: mediaUrls.length,
                       onPageChanged: (index) {
                         setState(() {
                           currentPage = index;
                         });
                       },
                       itemBuilder: (context, index) {
-                        final imageUrl = feed.files![index].image;
+                        final mediaUrl = mediaUrls[index];
+
+                        if (_isVimeoMedia(mediaUrl)) {
+                          final cleanedVideoUrl = _getCleanVimeoUrl(mediaUrl);
+
+                          if (cleanedVideoUrl.isEmpty) {
+                            return const Center(
+                              child: Icon(Icons.videocam_off, size: 45),
+                            );
+                          }
+
+                          return FeedVimeoThumbnailCard(
+                            videoUrl: cleanedVideoUrl,
+                          );
+                        }
+
                         return Image.network(
-                          imageUrl ?? "",
+                          mediaUrl,
                           fit: BoxFit.cover,
                           width: double.infinity,
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          },
+                          errorBuilder: (context, error, stackTrace) {
+                            debugPrint("Image load error: $error");
+
+                            return const Center(
+                              child: Icon(Icons.broken_image, size: 45),
+                            );
+                          },
                         );
                       },
                     ),
                   );
                 },
               ),
-              // SizedBox(
-              //   width: double.infinity,
-              //   child: AspectRatio(
-              //     aspectRatio: getAspectRatio(images.first),
-              //     child: PageView.builder(
-              //       itemCount: images.length,
-              //       onPageChanged: (index) {
-              //         setState(() => currentPage = index);
-              //       },
-              //       itemBuilder: (context, index) {
-              //         final url = images[index];
 
-              //         return Image.network(
-              //           url,
-              //           fit: BoxFit.cover,
-              //           loadingBuilder: (c, child, p) {
-              //             if (p == null) return child;
-              //             return const Center(child: CircularProgressIndicator());
-              //           },
-              //           errorBuilder: (c, e, s) {
-              //             return const Icon(Icons.broken_image);
-              //           },
-              //         );
-              //       },
-              //     ),
-              //   ),
-              // ),
-
-              /// 🔹 DOT INDICATOR
-              if (feed.files!.length > 1)
-                // if (images.length > 1)
+              if (mediaUrls.length > 1)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: List.generate(
@@ -513,6 +805,114 @@ class _PostCardState extends State<PostCard> {
           ),
       ],
     );
+  }
+
+  List<String> _getMediaUrls() {
+    final urls = <String>[];
+
+    void addUrl(String? value) {
+      if (value == null) return;
+
+      final cleaned = value.trim();
+
+      if (cleaned.isNotEmpty) {
+        urls.add(cleaned);
+      }
+    }
+
+    if (widget.feed.files != null && widget.feed.files!.isNotEmpty) {
+      for (final file in widget.feed.files!) {
+        addUrl(file.image);
+      }
+    }
+
+    if (widget.feed.image != null && widget.feed.image!.isNotEmpty) {
+      for (final image in widget.feed.image!) {
+        addUrl(image);
+      }
+    }
+
+    if (widget.feed.videoUrl != null && widget.feed.videoUrl!.isNotEmpty) {
+      for (final video in widget.feed.videoUrl!) {
+        addUrl(video);
+      }
+    }
+
+    final uniqueUrls = urls.toSet().toList();
+
+    debugPrint("════════ FEED MEDIA DEBUG ════════");
+    debugPrint("FEED ID: ${widget.feed.feedId}");
+    debugPrint("FILES COUNT: ${widget.feed.files?.length ?? 0}");
+    debugPrint("IMAGE COUNT: ${widget.feed.image?.length ?? 0}");
+    debugPrint("VIDEO COUNT: ${widget.feed.videoUrl?.length ?? 0}");
+    debugPrint("FINAL MEDIA COUNT: ${uniqueUrls.length}");
+    debugPrint("FINAL MEDIA URLS: $uniqueUrls");
+    debugPrint("══════════════════════════════════");
+
+    return uniqueUrls;
+  }
+
+  bool _isVimeoMedia(String? value) {
+    if (value == null || value.trim().isEmpty) return false;
+
+    final cleanedUrl = feedExtractIframeVideoUrl(value);
+
+    if (cleanedUrl.isEmpty) return false;
+
+    final uri = Uri.tryParse(cleanedUrl);
+
+    if (uri == null) return false;
+
+    return uri.host.contains('vimeo.com');
+  }
+
+  String _getCleanVimeoUrl(String value) {
+    final extractedUrl = feedExtractIframeVideoUrl(value);
+
+    if (extractedUrl.isEmpty) return '';
+
+    return feedPrepareVimeoUrl(extractedUrl);
+  }
+
+  Future<double> _getMediaAspectRatio(String mediaUrl) async {
+    if (mediaUrl.trim().isEmpty) return 1.0;
+
+    if (_isVimeoMedia(mediaUrl)) {
+      return _getIframeAspectRatio(mediaUrl) ?? 9 / 16;
+    }
+
+    try {
+      final size = await _getImageSize(mediaUrl);
+
+      if (size.width <= 0 || size.height <= 0) return 1.0;
+
+      return size.width / size.height;
+    } catch (e) {
+      debugPrint("Media aspect ratio error: $e");
+      return 1.0;
+    }
+  }
+
+  double? _getIframeAspectRatio(String value) {
+    try {
+      final widthMatch = RegExp(r'''width=["']?(\d+)["']?''').firstMatch(value);
+
+      final heightMatch = RegExp(
+        r'''height=["']?(\d+)["']?''',
+      ).firstMatch(value);
+
+      if (widthMatch == null || heightMatch == null) return null;
+
+      final width = double.tryParse(widthMatch.group(1) ?? '');
+      final height = double.tryParse(heightMatch.group(1) ?? '');
+
+      if (width == null || height == null) return null;
+      if (width <= 0 || height <= 0) return null;
+
+      return width / height;
+    } catch (e) {
+      return null;
+    }
   }
 
   String getGenderImage() {
@@ -648,6 +1048,243 @@ ${AppData.place ?? 'School Name'}
     } catch (e) {
       debugPrint("Share error: $e");
     }
+  }
+}
+
+class FeedVimeoThumbnailCard extends StatelessWidget {
+  final String videoUrl;
+
+  const FeedVimeoThumbnailCard({super.key, required this.videoUrl});
+
+  String getThumbnail() {
+    try {
+      final uri = Uri.parse(videoUrl);
+      String videoId = '';
+
+      if (uri.host.contains('player.vimeo.com')) {
+        final videoIndex = uri.pathSegments.indexOf('video');
+
+        if (videoIndex != -1 && uri.pathSegments.length > videoIndex + 1) {
+          videoId = uri.pathSegments[videoIndex + 1];
+        }
+      } else if (uri.host.contains('vimeo.com')) {
+        videoId = uri.pathSegments.isNotEmpty ? uri.pathSegments.last : '';
+      }
+
+      return videoId.isEmpty ? '' : "https://vumbnail.com/$videoId.jpg";
+    } catch (e) {
+      return '';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final thumbnail = getThumbnail();
+
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => FeedFullScreenVimeoPage(url: videoUrl),
+          ),
+        );
+      },
+      child: Container(
+        width: double.infinity,
+        color: Colors.black,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Positioned.fill(
+              child: thumbnail.isNotEmpty
+                  ? Image.network(
+                      thumbnail,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) {
+                        return Container(color: Colors.grey.shade300);
+                      },
+                    )
+                  : Container(color: Colors.grey.shade300),
+            ),
+
+            Positioned.fill(
+              child: Container(color: Colors.black.withOpacity(0.35)),
+            ),
+
+            Container(
+              padding: const EdgeInsets.all(18),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.25),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.play_arrow_rounded,
+                color: Colors.white,
+                size: 42,
+              ),
+            ),
+
+            Positioned(
+              bottom: 14,
+              left: 14,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 7,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: const Row(
+                  children: [
+                    Icon(Icons.open_in_new, color: Colors.white, size: 16),
+                    SizedBox(width: 6),
+                    Text(
+                      "Watch Fullscreen",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class FeedFullScreenVimeoPage extends StatefulWidget {
+  final String url;
+
+  const FeedFullScreenVimeoPage({super.key, required this.url});
+
+  @override
+  State<FeedFullScreenVimeoPage> createState() =>
+      _FeedFullScreenVimeoPageState();
+}
+
+class _FeedFullScreenVimeoPageState extends State<FeedFullScreenVimeoPage> {
+  late final WebViewController controller;
+  bool isLandscape = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final preparedUrl = feedPrepareVimeoUrl(widget.url);
+
+    controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setBackgroundColor(Colors.black)
+      ..loadHtmlString(feedBuildCleanVimeoPlayerHtml(preparedUrl));
+
+    if (controller.platform is AndroidWebViewController) {
+      final androidController = controller.platform as AndroidWebViewController;
+
+      AndroidWebViewController.enableDebugging(true);
+
+      androidController.setMediaPlaybackRequiresUserGesture(false);
+    }
+  }
+
+  Future<void> toggleRotation() async {
+    setState(() {
+      isLandscape = !isLandscape;
+    });
+
+    if (isLandscape) {
+      await SystemChrome.setPreferredOrientations([
+        DeviceOrientation.landscapeLeft,
+        DeviceOrientation.landscapeRight,
+      ]);
+
+      await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    } else {
+      await SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp,
+      ]);
+
+      await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    }
+  }
+
+  @override
+  void dispose() {
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final aspectRatio = isLandscape ? 16 / 9 : 9 / 16;
+
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: isLandscape
+          ? null
+          : AppBar(
+              backgroundColor: Colors.black,
+              iconTheme: const IconThemeData(color: Colors.white),
+              title: const Text("Video", style: TextStyle(color: Colors.white)),
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.screen_rotation),
+                  onPressed: toggleRotation,
+                ),
+              ],
+            ),
+      body: SafeArea(
+        child: Stack(
+          children: [
+            Center(
+              child: AspectRatio(
+                aspectRatio: aspectRatio,
+                child: WebViewWidget(controller: controller),
+              ),
+            ),
+
+            if (isLandscape)
+              Positioned(
+                top: 12,
+                left: 12,
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.arrow_back,
+                    color: Colors.white,
+                    size: 28,
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ),
+
+            if (isLandscape)
+              Positioned(
+                top: 12,
+                right: 12,
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.screen_lock_portrait,
+                    color: Colors.white,
+                    size: 28,
+                  ),
+                  onPressed: toggleRotation,
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
