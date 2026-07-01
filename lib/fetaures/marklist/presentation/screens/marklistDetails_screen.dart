@@ -159,11 +159,25 @@ class _ExamMarkDetailsPageState extends State<ExamMarkDetailsPage> {
                               children: [
                                 Row(
                                   children: [
-                                    const CircleAvatar(
-                                      radius: 24,
-                                      backgroundImage: NetworkImage(
-                                        "https://i.pravatar.cc/150?img=3",
-                                      ),
+                                    CircleAvatar(
+                                      radius: 25,
+                                      backgroundImage:
+                                      (AppData.profileUrl != null &&
+                                          AppData.profileUrl!.isNotEmpty)
+                                          ? NetworkImage(AppData.profileUrl!)
+                                          : null,
+                                      child:
+                                      (AppData.profileUrl == null ||
+                                          AppData.profileUrl!.isEmpty)
+                                          ? ClipOval(
+                                        child: Image.asset(
+                                          getGenderImage(),
+                                          fit: BoxFit.cover,
+                                          width: 50,
+                                          height: 50,
+                                        ),
+                                      )
+                                          : null,
                                     ),
                                     const SizedBox(width: 12),
                                     Text(
@@ -371,5 +385,16 @@ class MarkRow extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+String getGenderImage() {
+  final g = (AppData.gender ?? '').toLowerCase().trim();
+
+  if (g == 'male') {
+    return "assets/icons/c0d90970-7626-47b6-a097-ca0834c7a05f_removalai_preview.png";
+  } else if (g == 'female') {
+    return "assets/icons/1f5debb8-6e36-4d25-bde8-526f4dd89820_removalai_preview.png";
+  } else {
+    return "assets/images/defaultstudent.png";
   }
 }
