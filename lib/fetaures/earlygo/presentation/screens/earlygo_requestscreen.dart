@@ -202,6 +202,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studentmanagement/core/appdata/appdata.dart';
+import 'package:studentmanagement/fetaures/earlygo/domain/parameters/fetch_earlygo_parameter.dart';
 import 'package:studentmanagement/fetaures/earlygo/domain/parameters/save_earlyleave_parameter.dart';
 import 'package:studentmanagement/fetaures/earlygo/presentation/cubit/earlygo_cubit.dart';
 
@@ -260,7 +261,7 @@ class _EarlyGoRequestScreenState extends State<EarlyGoRequestScreen> {
     return BlocConsumer<EarlygoCubit, EarlygoState>(
       listener: (context, state) {
         if (state is SaveEarlyLeaveSuccess) {
-          context.read<EarlygoCubit>().fetchEarlyLeave();
+          context.read<EarlygoCubit>().fetchEarlyLeave(FetchEarlyGoParameter (accYear: AppData.accYear!, admNo: AppData.admissionNo!));
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(

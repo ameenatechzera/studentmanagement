@@ -5,6 +5,7 @@ import 'package:studentmanagement/core/errors/failure.dart';
 import 'package:studentmanagement/core/utils/typedef.dart';
 import 'package:studentmanagement/fetaures/earlygo/data/datasources/earlygo_remote_data_source.dart';
 import 'package:studentmanagement/fetaures/earlygo/data/models/fetch_earlygorequest_model.dart';
+import 'package:studentmanagement/fetaures/earlygo/domain/parameters/fetch_earlygo_parameter.dart';
 import 'package:studentmanagement/fetaures/earlygo/domain/parameters/save_earlyleave_parameter.dart';
 import 'package:studentmanagement/fetaures/earlygo/domain/repositories/earlygo_repository.dart';
 
@@ -14,9 +15,9 @@ class EarlyLeaveRepositoryImpl implements EarlyLeaveRepository {
   EarlyLeaveRepositoryImpl(this._remoteDataSource);
 
   @override
-  ResultFuture<FetchEarlyLeaveResponseModel> fetchEarlyLeave() async {
+  ResultFuture<FetchEarlyLeaveResponseModel> fetchEarlyLeave(FetchEarlyGoParameter request) async {
     try {
-      final result = await _remoteDataSource.fetchEarlyLeave();
+      final result = await _remoteDataSource.fetchEarlyLeave(request);
       return Right(result);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.errorMessageModel.statusMessage));

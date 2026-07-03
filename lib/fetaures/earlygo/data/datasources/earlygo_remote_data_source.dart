@@ -5,11 +5,12 @@ import 'package:studentmanagement/core/errors/exceptions.dart';
 import 'package:studentmanagement/core/network/api_endpoints.dart';
 import 'package:studentmanagement/core/network/apihelper.dart';
 import 'package:studentmanagement/fetaures/earlygo/data/models/fetch_earlygorequest_model.dart';
+import 'package:studentmanagement/fetaures/earlygo/domain/parameters/fetch_earlygo_parameter.dart';
 import 'package:studentmanagement/fetaures/earlygo/domain/parameters/save_earlyleave_parameter.dart';
 import 'package:studentmanagement/services/shared_preference_helper.dart';
 
 abstract class EarlyLeaveRemoteDataSource {
-  Future<FetchEarlyLeaveResponseModel> fetchEarlyLeave();
+  Future<FetchEarlyLeaveResponseModel> fetchEarlyLeave(FetchEarlyGoParameter request);
   Future<CommonResponseModel> saveEarlyLeave(SaveEarlyLeaveParameter params);
 }
 
@@ -17,9 +18,9 @@ class EarlyLeaveRemoteDataSourceImpl implements EarlyLeaveRemoteDataSource {
   final Dio dio = Dio();
 
   @override
-  Future<FetchEarlyLeaveResponseModel> fetchEarlyLeave() async {
+  Future<FetchEarlyLeaveResponseModel> fetchEarlyLeave(FetchEarlyGoParameter request) async {
     print('📘 Fetch Early Leave Called');
-
+    print('FetchEarlyGoParameter ${request.toJson()}');
     try {
       /// Get Base URL
       final baseUrl = await SharedPreferenceHelper().getBaseUrl();
@@ -39,7 +40,7 @@ class EarlyLeaveRemoteDataSourceImpl implements EarlyLeaveRemoteDataSource {
       final options = await ApiHelper.getAuthOptions(withToken: true);
 
       /// API Call
-      final response = await dio.get(url, options: options);
+      final response = await dio.post(url, data: request.toJson(), options: options);
 
       print('📘 Status Code: ${response.statusCode}');
       print('📘 Response Data: ${response.data}');

@@ -102,7 +102,7 @@ class ApiConstants {
 
   /// Returns the full URL forfeedACTION
   static String getEarlyLeavePath(String baseUrl) {
-    return '${baseUrl}get-all-earlygoingrequest/1';
+    return '${baseUrl}earlygoing-request-byadmno';
   }
 
   static String saveEarlyLeavePath(String baseUrl) {

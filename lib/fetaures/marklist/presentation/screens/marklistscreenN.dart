@@ -152,9 +152,11 @@ class MarkCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () async {
+
         await AppNavigator.pushSlide(
           context: context,
           page: ExamMarkDetailsPage(examTermId: termId, examTerm: title),
+
         );
         // 🔥 Reload after coming back
         context.read<MarklistCubit>().fetchExamTerms();

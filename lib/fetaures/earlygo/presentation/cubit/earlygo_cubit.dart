@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:studentmanagement/core/data/models/common_response_model.dart';
 import 'package:studentmanagement/fetaures/earlygo/data/models/fetch_earlygorequest_model.dart';
+import 'package:studentmanagement/fetaures/earlygo/domain/parameters/fetch_earlygo_parameter.dart';
 import 'package:studentmanagement/fetaures/earlygo/domain/parameters/save_earlyleave_parameter.dart';
 import 'package:studentmanagement/fetaures/earlygo/domain/usecases/fetch_earlygorequest_usecase.dart';
 import 'package:studentmanagement/fetaures/earlygo/domain/usecases/save_earlygo_usecase.dart';
@@ -16,10 +17,10 @@ class EarlygoCubit extends Cubit<EarlygoState> {
     required this.saveEarlyLeaveUseCase,
   }) : super(EarlygoInitial());
 
-  Future<void> fetchEarlyLeave() async {
+  Future<void> fetchEarlyLeave(FetchEarlyGoParameter request) async {
     emit(EarlyLeaveLoading());
 
-    final result = await fetchEarlyLeaveUseCase();
+    final result = await fetchEarlyLeaveUseCase(request);
 
     result.fold(
       (failure) {

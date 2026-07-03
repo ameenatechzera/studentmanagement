@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:studentmanagement/core/appdata/appdata.dart';
 import 'package:studentmanagement/core/navigation/app_navigator.dart';
+import 'package:studentmanagement/fetaures/academiccalender/presentation/screens/academiccalender_screen.dart';
 import 'package:studentmanagement/fetaures/attendence/domain/parameters/attendence_reportbydate_parameter.dart';
 import 'package:studentmanagement/fetaures/attendence/presentation/cubit/attendence_cubit.dart';
 import 'package:studentmanagement/fetaures/attendence/presentation/screens/attendence_screen.dart';
@@ -30,6 +31,11 @@ const _quickAccessItems = [
   {
     'icon': Icons.event_available,
     'label': 'Attendance',
+    'color': Color(0xFFFFF5AD),
+  },
+  {
+    'icon': Icons.event_available,
+    'label': 'Academic Calendar',
     'color': Color(0xFFFFF5AD),
   },
   {
@@ -142,23 +148,27 @@ class _HomeScreenState extends State<StudentScreenN>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildProfileCard(),
-              const SizedBox(height: 24),
-              // _buildSectionTitle('Notification'),
-              // const SizedBox(height: 10),
-              // _buildNotificationCard(),
-              const SizedBox(height: 24),
-              _buildSectionTitle('Quick Access'),
-              const SizedBox(height: 12),
-              _buildQuickAccessGrid(),
-              const SizedBox(height: 20),
-            ],
+      body: SingleChildScrollView(
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildProfileCard(),
+                const SizedBox(height: 24),
+                // _buildSectionTitle('Notification'),
+                // const SizedBox(height: 10),
+                // _buildNotificationCard(),
+                const SizedBox(height: 24),
+                _buildSectionTitle('Quick Access'),
+                const SizedBox(height: 12),
+                _buildQuickAccessGrid(),
+                const SizedBox(height: 20),
+
+
+              ],
+            ),
           ),
         ),
       ),
@@ -554,12 +564,34 @@ class _HomeScreenState extends State<StudentScreenN>
           ],
         ),
         const SizedBox(height: 12),
+        /// Third Row
+        Row(
+          children: [
+            // Large Card
+            Expanded(
+              flex: 3,
+              child: _buildQuickAccessTile(
+                icon: _quickAccessItems[6]['icon'] as IconData,
+                label: _quickAccessItems[6]['label'] as String,
+                color: _quickAccessItems[6]['color'] as Color,
+                // height: 90,
+              ),
+            ),
 
-        _buildQuickAccessTile(
-          icon: _quickAccessItems[6]['icon'] as IconData,
-          label: _quickAccessItems[6]['label'] as String,
-          color: _quickAccessItems[6]['color'] as Color,
+            const SizedBox(width: 12),
+
+            // Small Card
+            Expanded(
+              flex: 2,
+              child:  _buildQuickAccessTile(
+                icon: _quickAccessItems[7]['icon'] as IconData,
+                label: _quickAccessItems[7]['label'] as String,
+                color: _quickAccessItems[7]['color'] as Color,
+              ),
+            ),
+          ],
         ),
+
       ],
     );
   }
@@ -582,13 +614,18 @@ class _HomeScreenState extends State<StudentScreenN>
           AppNavigator.pushSlide(context: context, page: AllClassDiaryScreen());
         }
         if (label == "Mark List") {
-          AppNavigator.pushSlide(context: context, page: MarkListPage());
+         // MarkListStudent M = MarkListStudent(name: 'Haris', className: 'className', admissionNo: 'admissionNo', academicYear: 'academicYear');
+           AppNavigator.pushSlide(context: context, page: MarkListPage());
+          //AppNavigator.pushSlide(context: context, page: MarkListScreen(student: M, examTitle: '', subjects: [],));
         }
         if (label == "Material") {
           AppNavigator.pushSlide(context: context, page: SubjectPage());
         }
         if (label == "Attendance") {
           AppNavigator.pushSlide(context: context, page: AttendenceScreen());
+        }
+        if (label == "Academic Calendar") {
+          AppNavigator.pushSlide(context: context, page: AcademicCalendarScreen());
         }
         if (label == "Early Go") {
           AppNavigator.pushSlide(context: context, page: EarlyGoScreen());
