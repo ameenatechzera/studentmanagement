@@ -12,7 +12,7 @@ final class AcademiccalenderInitial extends AcademiccalenderState {}
 class AcademiccalenderLoading extends AcademiccalenderState {}
 
 class AcademiccalenderLoaded extends AcademiccalenderState {
-  final AcademicCalendarResponseModel response;
+  final FetchCalendarResponse response;
 
   const AcademiccalenderLoaded(this.response);
 }

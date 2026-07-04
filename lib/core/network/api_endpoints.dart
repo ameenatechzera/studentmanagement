@@ -110,7 +110,7 @@ class ApiConstants {
   }
 
   static String getAcademicCalendarPath(String baseUrl) {
-    return '${baseUrl}schoolcalendar/1';
+    return '${baseUrl}calendar-group-bymonth';
   }
 
   /// Returns the full URL for Fees / Save Fees
