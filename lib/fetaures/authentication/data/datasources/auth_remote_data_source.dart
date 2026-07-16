@@ -64,52 +64,127 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     }
   }
 
+  // @override
+  // Future<LoginResponseResult> loginServer(LoginRequest params) async {
+  //   try {
+  //     final baseUrl = await SharedPreferenceHelper().getBaseUrl();
+  //     if (baseUrl == null || baseUrl.isEmpty) {
+  //       throw Exception("Base URL not set");
+  //     }
+  //     // final dbName = await SharedPreferenceHelper().getDatabaseName();
+  //     // final url = ApiConstants.getLoginPath(baseUrl);
+  //     final url = ApiConstants.getLoginPath(baseUrl);
+  //     final options = await ApiHelper.getAuthOptions();
+
+  //     print('🔹 Login URL: $url');
+  //     print('🔹 Request Body: ${params.toJson()}');
+  //     //  print('🔹 dbName: $dbName');
+  //     // print('🔹 token: $dbName');
+
+  //     final response = await dio.post(
+  //       url,
+  //       data: params.toJson(),
+  //       options: options,
+  //       // options: Options(
+  //       //   contentType: "application/json",
+  //       //   headers: {"Accept": "application/json", "X-Database-Name": dbName},
+  //       // ),
+  //     );
+  //     debugPrint(response.data.toString(), wrapWidth: 1024);
+
+  //     print('🔹 Status Code: ${response.statusCode}');
+  //     print('🔹 ResponseLogin Data: ${response.data}');
+
+  //     if (response.statusCode == 200) {
+  //       return LoginResponseResult.fromJson(response.data);
+  //     } else {
+  //       if (response.statusCode == 401) {
+  //         throw ServerException(
+  //           errorMessageModel: ErrorMessageModel.fromJson(response.data),
+  //         );
+  //       }
+  //       throw ServerException(
+  //         errorMessageModel: ErrorMessageModel.fromJson(response.data),
+  //       );
+  //     }
+  //   } catch (e, stacktrace) {
+  //     print('❌ Exception during loginServer: $e');
+  //     print('Stacktrace: $stacktrace');
+  //     rethrow;
+  //   }
+  // }
   @override
   Future<LoginResponseResult> loginServer(LoginRequest params) async {
     try {
       final baseUrl = await SharedPreferenceHelper().getBaseUrl();
+
       if (baseUrl == null || baseUrl.isEmpty) {
         throw Exception("Base URL not set");
       }
-      // final dbName = await SharedPreferenceHelper().getDatabaseName();
-      // final url = ApiConstants.getLoginPath(baseUrl);
+
       final url = ApiConstants.getLoginPath(baseUrl);
       final options = await ApiHelper.getAuthOptions();
 
-      print('🔹 Login URL: $url');
-      print('🔹 Request Body: ${params.toJson()}');
-      //  print('🔹 dbName: $dbName');
-      // print('🔹 token: $dbName');
+      print("\n================ LOGIN REQUEST ================");
+      print("URL            : $url");
+      print("Method         : POST");
+      print("Headers        : ${options.headers}");
+      print("Content Type   : ${options.contentType}");
+      print("Request Body   : ${params.toJson()}");
+      print("===============================================\n");
 
       final response = await dio.post(
         url,
         data: params.toJson(),
         options: options,
-        // options: Options(
-        //   contentType: "application/json",
-        //   headers: {"Accept": "application/json", "X-Database-Name": dbName},
-        // ),
       );
-      debugPrint(response.data.toString(), wrapWidth: 1024);
 
-      print('🔹 Status Code: ${response.statusCode}');
-      print('🔹 ResponseLogin Data: ${response.data}');
+      print("\n================ LOGIN RESPONSE ================");
+      print("Status Code    : ${response.statusCode}");
+      print("Status Message : ${response.statusMessage}");
+      print("Response Header: ${response.headers}");
+      print("Response Data  : ${response.data}");
+      print("===============================================\n");
 
       if (response.statusCode == 200) {
         return LoginResponseResult.fromJson(response.data);
       } else {
-        if (response.statusCode == 401) {
-          throw ServerException(
-            errorMessageModel: ErrorMessageModel.fromJson(response.data),
-          );
-        }
         throw ServerException(
           errorMessageModel: ErrorMessageModel.fromJson(response.data),
         );
       }
-    } catch (e, stacktrace) {
-      print('❌ Exception during loginServer: $e');
-      print('Stacktrace: $stacktrace');
+    } on DioException catch (e, stackTrace) {
+      print("\n================ DIO EXCEPTION =================");
+      print("Error Type      : ${e.type}");
+      print("Message         : ${e.message}");
+
+      print("\n--------------- REQUEST ----------------");
+      print("URL             : ${e.requestOptions.uri}");
+      print("Method          : ${e.requestOptions.method}");
+      print("Headers         : ${e.requestOptions.headers}");
+      print("Request Data    : ${e.requestOptions.data}");
+
+      if (e.response != null) {
+        print("\n--------------- RESPONSE ----------------");
+        print("Status Code     : ${e.response?.statusCode}");
+        print("Status Message  : ${e.response?.statusMessage}");
+        print("Headers         : ${e.response?.headers}");
+        print("Response Data   : ${e.response?.data}");
+      } else {
+        print("\nNo response received from server.");
+      }
+
+      print("\n--------------- STACKTRACE ---------------");
+      print(stackTrace);
+      print("===============================================\n");
+
+      rethrow;
+    } catch (e, stackTrace) {
+      print("\n============== GENERAL EXCEPTION ==============");
+      print("Exception       : $e");
+      print("StackTrace      : $stackTrace");
+      print("==============================================\n");
+
       rethrow;
     }
   }

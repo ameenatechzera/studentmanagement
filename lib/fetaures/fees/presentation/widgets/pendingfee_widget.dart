@@ -196,26 +196,26 @@ class _ExpandableFeeCardState extends State<_ExpandableFeeCard> {
                             ),
 
                             const SizedBox(height: 10),
-                            Row(
-                              children: [
-                                SvgPicture.asset(
-                                  'assets/icons/Group (5).svg',
-                                  // width: 10,
-                                  // height: 20,
-                                ),
-                                const SizedBox(width: 8),
-                                const Text(
-                                  'Pending Fee',
-                                  softWrap: true,
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 10),
+                            // Row(
+                            //   children: [
+                            //     SvgPicture.asset(
+                            //       'assets/icons/Group (5).svg',
+                            //       // width: 10,
+                            //       // height: 20,
+                            //     ),
+                            //     const SizedBox(width: 8),
+                            //     const Text(
+                            //       'Pending Fee',
+                            //       softWrap: true,
+                            //       style: TextStyle(
+                            //         fontSize: 14,
+                            //         fontWeight: FontWeight.w600,
+                            //         color: Colors.black,
+                            //       ),
+                            //     ),
+                            //   ],
+                            // ),
+                            // const SizedBox(height: 10),
                             LayoutBuilder(
                               builder: (context, constraints) {
                                 return ConstrainedBox(

@@ -18,7 +18,7 @@ class MaterialsScreen extends StatelessWidget {
       context.read<MaterialCubit>().fetchMaterials(
         FetchMaterialParameter(
           branchId: 1,
-          accYear:AppData.accYear!.toString(),
+          accYear: AppData.accYear!.toString(),
           standardId: AppData.studentStdId!.toString(),
           divisionId: AppData.studentDivId!.toString(),
         ),

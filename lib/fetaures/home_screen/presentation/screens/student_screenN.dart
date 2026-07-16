@@ -13,7 +13,6 @@ import 'package:studentmanagement/fetaures/authentication/presentation/widget/sw
 import 'package:studentmanagement/fetaures/earlygo/presentation/screens/earlygo_listingscreen.dart';
 import 'package:studentmanagement/fetaures/authentication/data/models/account_details_model.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/entities/login_entity.dart';
-import 'package:studentmanagement/fetaures/authentication/presentation/widget/switch_account.dart';
 import 'package:studentmanagement/fetaures/classdiary/presentation/screens/alldiary_screen.dart';
 import 'package:studentmanagement/fetaures/fees/presentation/screens/fees_screen.dart';
 import 'package:studentmanagement/fetaures/marklist/presentation/screens/marklistscreenN.dart';
@@ -38,7 +37,6 @@ const _quickAccessItems = [
     'color': const Color(0xFF7C7CF6),
   },
 ];
-
 
 final ValueNotifier<bool> showAllNotifications = ValueNotifier<bool>(false);
 List<AccountDetails> accounts = [];
@@ -144,6 +142,7 @@ class _HomeScreenState extends State<StudentScreenN>
       backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
+          physics: BouncingScrollPhysics(),
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -151,13 +150,13 @@ class _HomeScreenState extends State<StudentScreenN>
               _buildProfileCard(),
               const SizedBox(height: 24),
               // _buildSectionTitle('Notification'),
-              // const SizedBox(height: 10),
+              // const SizedBox(height: 150),
               // _buildNotificationCard(),
               const SizedBox(height: 24),
               _buildSectionTitle('Quick Access'),
               const SizedBox(height: 12),
               _buildQuickAccessGrid(),
-              const SizedBox(height: 20),
+              const SizedBox(height: 100),
             ],
           ),
         ),
@@ -222,11 +221,12 @@ class _HomeScreenState extends State<StudentScreenN>
                         builder: (context) {
                           return Padding(
                             padding: EdgeInsets.only(
-                              bottom: MediaQuery.of(context).viewInsets.bottom, // ✅ keyboard pushes sheet up
+                              bottom: MediaQuery.of(
+                                context,
+                              ).viewInsets.bottom, // ✅ keyboard pushes sheet up
                             ),
                             child: const SwitchAccountBottomSheet(),
                           );
-
                         },
                       );
                     },
