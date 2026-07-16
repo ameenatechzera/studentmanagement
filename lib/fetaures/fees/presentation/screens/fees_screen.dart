@@ -818,6 +818,7 @@ class _FeesScreenState extends State<FeesScreen> {
               if (state is AccYearSuccess) {
                 accYears.clear();
                 accYears.addAll(state.accYearResult.data);
+                print('AppData.accYear ${AppData.accYear}');
 
                 _selectedAccYear ??= AppData.accYear ?? accYears.first.accYear;
 

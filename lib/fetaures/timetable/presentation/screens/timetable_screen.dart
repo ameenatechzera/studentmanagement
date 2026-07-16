@@ -568,7 +568,7 @@ class _PeriodRow extends StatelessWidget {
                                 ),
                                 SizedBox(width: 6),
                                 Text(
-                                  '09:00 Am To 10:00 Am',
+                                  '',
                                   style: TextStyle(
                                     color: Colors.grey,
                                     fontSize: 12,

@@ -108,8 +108,9 @@ class FeesRemoteDataSourceImpl implements FeesRemoteDataSource {
 
     final url = ApiConstants.getAccYearsServerPath(baseUrl!);
     // final token = await SharedPreferenceHelper().getToken() ?? "";
-    print('Register URL: $url');
+    print('AccYear URL: $url');
     // print(' token: $token');
+
 
     final options = await ApiHelper.getAuthOptions(withToken: true);
 
