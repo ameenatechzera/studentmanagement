@@ -19,13 +19,16 @@ class FeesCubit extends Cubit<FeesState> {
   final FetchUnPaidFeesDetailsUseCase _fetchUnPaidFeesDetailsUseCase;
   final SaveFeesDetailsUseCase _saveFeesDetailsUseCase;
 
-  FeesCubit({required FetchPaidFeesDetailsUseCase fetchPaidFeesDetailsUseCase , required FetchAccYearListUseCase fetchAccYearListUseCase,
-  required FetchUnPaidFeesDetailsUseCase fetchUnPaidFeesDetailsUseCase, required SaveFeesDetailsUseCase saveFeesDetailsUseCase})
-    : _fetchPaidFeesDetailsUseCase = fetchPaidFeesDetailsUseCase,
-        _fetchAccYearListUseCase = fetchAccYearListUseCase,
-        _fetchUnPaidFeesDetailsUseCase = fetchUnPaidFeesDetailsUseCase,
-        _saveFeesDetailsUseCase = saveFeesDetailsUseCase,
-      super(FeesInitial());
+  FeesCubit({
+    required FetchPaidFeesDetailsUseCase fetchPaidFeesDetailsUseCase,
+    required FetchAccYearListUseCase fetchAccYearListUseCase,
+    required FetchUnPaidFeesDetailsUseCase fetchUnPaidFeesDetailsUseCase,
+    required SaveFeesDetailsUseCase saveFeesDetailsUseCase,
+  }) : _fetchPaidFeesDetailsUseCase = fetchPaidFeesDetailsUseCase,
+       _fetchAccYearListUseCase = fetchAccYearListUseCase,
+       _fetchUnPaidFeesDetailsUseCase = fetchUnPaidFeesDetailsUseCase,
+       _saveFeesDetailsUseCase = saveFeesDetailsUseCase,
+       super(FeesInitial());
 
   Future<void> fetchUnPaidFeeDetails(PaidFeesRequest request) async {
     print('PaidFeesRequest ${request.toJson()}');
@@ -34,10 +37,10 @@ class FeesCubit extends Cubit<FeesState> {
       final result = await _fetchUnPaidFeesDetailsUseCase(request);
 
       result.fold(
-            (failure) {
+        (failure) {
           emit(FeeUnPaid_Failure(failure.message));
         },
-            (response) {
+        (response) {
           emit(FeesUnPaid_Success(response));
         },
       );
@@ -48,10 +51,11 @@ class FeesCubit extends Cubit<FeesState> {
       emit(FeeUnPaid_Failure('An unexpected error occurred'));
     }
   }
+
   Future<void> fetchPaidFeesDetails(PaidFeesRequest request) async {
     print('PaidFeesRequest ${request.toJson()}');
 
-    emit(FeesInitial());
+    emit(FeesPaidLoading());
     try {
       final result = await _fetchPaidFeesDetailsUseCase(request);
 
@@ -77,10 +81,10 @@ class FeesCubit extends Cubit<FeesState> {
       final result = await _fetchAccYearListUseCase();
 
       result.fold(
-            (failure) {
+        (failure) {
           emit(AccYearFailure(failure.message));
         },
-            (accYearResponse) {
+        (accYearResponse) {
           emit(AccYearSuccess(accYearResponse));
         },
       );
@@ -99,10 +103,10 @@ class FeesCubit extends Cubit<FeesState> {
       final result = await _saveFeesDetailsUseCase(request);
 
       result.fold(
-            (failure) {
+        (failure) {
           emit(SaveFees_Failure(failure.message));
         },
-            (response) {
+        (response) {
           emit(FeeSave_Success(response));
         },
       );

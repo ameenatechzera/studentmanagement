@@ -361,20 +361,156 @@ class _FeesScreenState extends State<FeesScreen> {
 
   int _selectedTabIndex = 0;
   String? _selectedAccYear;
-
+  bool _isAccYearLoading = true;
+  bool _isPendingLoading = true;
+  bool _isPaidLoading = true;
   static const Color selectedTabPurple = Color(0xFF807FD8);
   static const Color unselectedTabColor = Color(0xFFF0EFFB);
 
   @override
   void initState() {
     super.initState();
-    context.read<FeesCubit>().fetchAccYearList();
-    context.read<UnPaidFeeCubit>().fetchUnPaidFeesDetails(
-      PaidFeesRequest(accyear: AppData.accYear!, admno: AppData.admissionNo!),
+
+    // Wait until the first frame is painted. This guarantees that the initial
+    // circular indicators are visible before the academic-year API starts.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context.read<FeesCubit>().fetchAccYearList();
+    });
+  }
+
+  void _fetchFeesForYear(String accYear) {
+    context.read<FeesCubit>().fetchPaidFeesDetails(
+      PaidFeesRequest(accyear: accYear, admno: AppData.admissionNo!),
     );
 
-    context.read<FeesCubit>().fetchPaidFeesDetails(
-      PaidFeesRequest(accyear: AppData.accYear!, admno: AppData.admissionNo!),
+    context.read<UnPaidFeeCubit>().fetchUnPaidFeesDetails(
+      PaidFeesRequest(accyear: accYear, admno: AppData.admissionNo!),
+    );
+  }
+
+  void _handleFeesState(BuildContext context, FeesState state) {
+    if (!mounted) return;
+
+    if (state is AccYearsInitial) {
+      setState(() {
+        _isAccYearLoading = true;
+        _isPendingLoading = true;
+        _isPaidLoading = true;
+      });
+      return;
+    }
+
+    if (state is AccYearSuccess) {
+      final years = state.accYearResult.data;
+
+      setState(() {
+        accYears
+          ..clear()
+          ..addAll(years);
+
+        _isAccYearLoading = false;
+
+        if (accYears.isEmpty) {
+          _selectedAccYear = null;
+          _isPendingLoading = false;
+          _isPaidLoading = false;
+        } else {
+          final appYear = AppData.accYear;
+          final hasAppYear =
+              appYear != null &&
+              accYears.any((item) => item.accYear == appYear);
+
+          _selectedAccYear = hasAppYear ? appYear : accYears.first.accYear;
+
+          _isPendingLoading = true;
+          _isPaidLoading = true;
+        }
+      });
+
+      if (_selectedAccYear != null) {
+        _fetchFeesForYear(_selectedAccYear!);
+      }
+      return;
+    }
+
+    if (state is AccYearFailure) {
+      setState(() {
+        _isAccYearLoading = false;
+        _isPendingLoading = false;
+        _isPaidLoading = false;
+      });
+      return;
+    }
+
+    // Your current paid-fee API uses FeesInitial as its loading state.
+    if (state is FeesInitial) {
+      if (!_isPaidLoading) {
+        setState(() {
+          _isPaidLoading = true;
+        });
+      }
+      return;
+    }
+
+    if (state is FeesPaidSuccess) {
+      if (_isPaidLoading) {
+        setState(() {
+          _isPaidLoading = false;
+        });
+      }
+      return;
+    }
+
+    if (state is FeesPaidFailure) {
+      setState(() {
+        _isPaidLoading = false;
+
+        // fetchAccYearList() currently emits FeesPaidFailure from its catch
+        // block. Stop all initial loaders in that exceptional case as well.
+        if (_isAccYearLoading) {
+          _isAccYearLoading = false;
+          _isPendingLoading = false;
+        }
+      });
+    }
+  }
+
+  void _handleUnpaidState(BuildContext context, UnPaidFeeState state) {
+    if (!mounted) return;
+
+    if (state is FeeUnpaidInitial || state is FeeUnpaid_Loading) {
+      if (!_isPendingLoading) {
+        setState(() {
+          _isPendingLoading = true;
+        });
+      }
+      return;
+    }
+
+    if (state is FeesUnPaidSuccess || state is FeeUnPaidFailure) {
+      if (_isPendingLoading) {
+        setState(() {
+          _isPendingLoading = false;
+        });
+      }
+    }
+  }
+
+  Widget _sectionLoader() {
+    return const SizedBox(
+      width: double.infinity,
+      height: 140,
+      child: Center(
+        child: SizedBox(
+          width: 30,
+          height: 30,
+          child: CircularProgressIndicator(
+            strokeWidth: 3,
+            color: selectedTabPurple,
+          ),
+        ),
+      ),
     );
   }
 
@@ -412,7 +548,7 @@ class _FeesScreenState extends State<FeesScreen> {
     final selectedFeeList = _selectedFees.values.toList();
     List<saveFeeDetails> saveDetails =
         selectedFeeList
-            ?.expand(
+            .expand(
               (datum) => datum.details.map(
                 (detail) => saveFeeDetails(
                   feeMonthId: datum.feeMonth,
@@ -475,203 +611,211 @@ class _FeesScreenState extends State<FeesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      //backgroundColor: Colors.white,
-      backgroundColor: const Color(0xFFF7F5FF),
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<FeesCubit, FeesState>(listener: _handleFeesState),
+        BlocListener<UnPaidFeeCubit, UnPaidFeeState>(
+          listener: _handleUnpaidState,
+        ),
+      ],
+      child: Scaffold(
+        //backgroundColor: Colors.white,
+        backgroundColor: const Color(0xFFF7F5FF),
 
-      body: Column(
-        children: [
-          _headerSection(),
+        body: Column(
+          children: [
+            _headerSection(),
 
-          Expanded(
-            child: SingleChildScrollView(
-              padding: EdgeInsets.only(
-                bottom: _selectedFees.isNotEmpty ? 100 : 20,
-              ),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (_selectedTabIndex == 0) ...[
-                      const Text(
-                        'Recently Pending',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w800,
-                          color: Colors.black,
-                          fontSize: 15,
+            Expanded(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.only(
+                  bottom: _selectedFees.isNotEmpty ? 100 : 20,
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (_selectedTabIndex == 0) ...[
+                        const Text(
+                          'Recently Pending',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w800,
+                            color: Colors.black,
+                            fontSize: 15,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 10),
-                      _pendingFeeSection(),
+                        const SizedBox(height: 10),
+                        _pendingFeeSection(),
+                      ],
+
+                      if (_selectedTabIndex == 1) ...[_pendingFeeSection()],
+
+                      if (_selectedTabIndex == 2) ...[_paidFeeSection()],
                     ],
-
-                    if (_selectedTabIndex == 1) ...[_pendingFeeSection()],
-
-                    if (_selectedTabIndex == 2) ...[_paidFeeSection()],
-                  ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
+
+        //                 BlocConsumer<UnPaidFeeCubit, UnPaidFeeState>(
+        //                   listener: (context, state) {},
+        //                   builder: (context, state) {
+        //                     if (state is FeeUnpaidInitial) {
+        //                       return const Center(
+        //                         child: Padding(
+        //                           padding: EdgeInsets.all(24),
+        //                           child: CircularProgressIndicator(
+        //                             strokeWidth: 2,
+        //                           ),
+        //                         ),
+        //                       );
+        //                     }
+
+        //                     if (state is FeesUnPaidSuccess) {
+        //                       if (state.feeUnPaidResult.data.isNotEmpty) {
+        //                         return PendingFee(
+        //                           feesUnpaidList: state.feeUnPaidResult,
+        //                           selectedIndexes: _selectedIndexes,
+        //                           onSelectionChanged: _onFeeSelectionChanged,
+        //                         );
+        //                       } else {
+        //                         return const SizedBox();
+        //                       }
+        //                     }
+
+        //                     if (state is FeeUnPaidFailure) {
+        //                       return Center(child: Text(state.error));
+        //                     }
+
+        //                     return const SizedBox();
+        //                   },
+        //                 ),
+        //               ],
+
+        //               // if (_selectedTabIndex == 0) const SizedBox(height: 20),
+
+        //               // if (_selectedTabIndex == 0 || _selectedTabIndex == 2) ...[
+        //               //   const Text(
+        //               //     'Paid',
+        //               //     style: TextStyle(
+        //               //       fontWeight: FontWeight.bold,
+        //               //       color: Colors.green,
+        //               //       fontSize: 15,
+        //               //     ),
+        //               //   ),
+        //               //   const SizedBox(height: 8),
+
+        //               //   BlocConsumer<FeesCubit, FeesState>(
+        //               //     listener: (context, state) {},
+        //               //     builder: (context, state) {
+        //               //       if (state is FeesInitial) {
+        //               //         return const Center(
+        //               //           child: Padding(
+        //               //             padding: EdgeInsets.all(24),
+        //               //             child: CircularProgressIndicator(
+        //               //               strokeWidth: 2,
+        //               //             ),
+        //               //           ),
+        //               //         );
+        //               //       }
+
+        //               //       if (state is FeesPaidSuccess) {
+        //               //         return PaidFee(feePaidResult: state.feePaidResult);
+        //               //       }
+
+        //               //       return const SizedBox();
+        //               //     },
+        //               //   ),
+        //               // ],
+        //             ],
+        //           ),
+        //         ),
+        //       ),
+        //     ),
+        //   ],
+        // ),
+        bottomNavigationBar: _selectedFees.isNotEmpty && _selectedTabIndex != 2
+            ? SafeArea(
+                child: Container(
+                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.08),
+                        blurRadius: 12,
+                        offset: const Offset(0, -4),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${_selectedFees.length} fee selected',
+                              style: const TextStyle(
+                                fontSize: 13,
+                                color: Colors.grey,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Total: ${_selectedTotal.toStringAsFixed(2)}',
+                              style: const TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      TextButton(
+                        onPressed: _clearSelectedFees,
+                        child: const Text(
+                          'Clear',
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(width: 8),
+
+                      ElevatedButton(
+                        onPressed: _onPayPressed,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: selectedTabPurple,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: const Text(
+                          'Pay',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            : null,
       ),
-
-      //                 BlocConsumer<UnPaidFeeCubit, UnPaidFeeState>(
-      //                   listener: (context, state) {},
-      //                   builder: (context, state) {
-      //                     if (state is FeeUnpaidInitial) {
-      //                       return const Center(
-      //                         child: Padding(
-      //                           padding: EdgeInsets.all(24),
-      //                           child: CircularProgressIndicator(
-      //                             strokeWidth: 2,
-      //                           ),
-      //                         ),
-      //                       );
-      //                     }
-
-      //                     if (state is FeesUnPaidSuccess) {
-      //                       if (state.feeUnPaidResult.data.isNotEmpty) {
-      //                         return PendingFee(
-      //                           feesUnpaidList: state.feeUnPaidResult,
-      //                           selectedIndexes: _selectedIndexes,
-      //                           onSelectionChanged: _onFeeSelectionChanged,
-      //                         );
-      //                       } else {
-      //                         return const SizedBox();
-      //                       }
-      //                     }
-
-      //                     if (state is FeeUnPaidFailure) {
-      //                       return Center(child: Text(state.error));
-      //                     }
-
-      //                     return const SizedBox();
-      //                   },
-      //                 ),
-      //               ],
-
-      //               // if (_selectedTabIndex == 0) const SizedBox(height: 20),
-
-      //               // if (_selectedTabIndex == 0 || _selectedTabIndex == 2) ...[
-      //               //   const Text(
-      //               //     'Paid',
-      //               //     style: TextStyle(
-      //               //       fontWeight: FontWeight.bold,
-      //               //       color: Colors.green,
-      //               //       fontSize: 15,
-      //               //     ),
-      //               //   ),
-      //               //   const SizedBox(height: 8),
-
-      //               //   BlocConsumer<FeesCubit, FeesState>(
-      //               //     listener: (context, state) {},
-      //               //     builder: (context, state) {
-      //               //       if (state is FeesInitial) {
-      //               //         return const Center(
-      //               //           child: Padding(
-      //               //             padding: EdgeInsets.all(24),
-      //               //             child: CircularProgressIndicator(
-      //               //               strokeWidth: 2,
-      //               //             ),
-      //               //           ),
-      //               //         );
-      //               //       }
-
-      //               //       if (state is FeesPaidSuccess) {
-      //               //         return PaidFee(feePaidResult: state.feePaidResult);
-      //               //       }
-
-      //               //       return const SizedBox();
-      //               //     },
-      //               //   ),
-      //               // ],
-      //             ],
-      //           ),
-      //         ),
-      //       ),
-      //     ),
-      //   ],
-      // ),
-      bottomNavigationBar: _selectedFees.isNotEmpty && _selectedTabIndex != 2
-          ? SafeArea(
-              child: Container(
-                padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.08),
-                      blurRadius: 12,
-                      offset: const Offset(0, -4),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '${_selectedFees.length} fee selected',
-                            style: const TextStyle(
-                              fontSize: 13,
-                              color: Colors.grey,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Total: ${_selectedTotal.toStringAsFixed(2)}',
-                            style: const TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    TextButton(
-                      onPressed: _clearSelectedFees,
-                      child: const Text(
-                        'Clear',
-                        style: TextStyle(
-                          color: Colors.red,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(width: 8),
-
-                    ElevatedButton(
-                      onPressed: _onPayPressed,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: selectedTabPurple,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 24,
-                          vertical: 12,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      child: const Text(
-                        'Pay',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            )
-          : null,
     );
   }
 
@@ -679,12 +823,15 @@ class _FeesScreenState extends State<FeesScreen> {
     return BlocConsumer<UnPaidFeeCubit, UnPaidFeeState>(
       listener: (context, state) {},
       builder: (context, state) {
-        if (state is FeeUnpaidInitial) {
-          return Padding(
-            padding: EdgeInsets.only(left: 24, right: 24),
-            child: CircularProgressIndicator(strokeWidth: 2),
-          );
+        if (_isAccYearLoading || _isPendingLoading) {
+          return _sectionLoader();
         }
+        // if (state is FeeUnpaidInitial || state is FeeUnpaid_Loading) {
+        //   return Padding(
+        //     padding: EdgeInsets.only(left: 24, right: 24),
+        //     child: CircularProgressIndicator(strokeWidth: 2),
+        //   );
+        // }
 
         if (state is FeesUnPaidSuccess) {
           print('wwwwwwwwwwwwwwww${AppData.feeCollectionStatus}');
@@ -716,14 +863,17 @@ class _FeesScreenState extends State<FeesScreen> {
     return BlocConsumer<FeesCubit, FeesState>(
       listener: (context, state) {},
       builder: (context, state) {
-        if (state is FeesInitial) {
-          return const Center(
-            child: Padding(
-              padding: EdgeInsets.only(left: 24, right: 24),
-              child: CircularProgressIndicator(strokeWidth: 2),
-            ),
-          );
+        if (_isAccYearLoading || _isPaidLoading) {
+          return _sectionLoader();
         }
+        // if (state is FeesInitial || state is FeesPaidLoading) {
+        //   return const Center(
+        //     child: Padding(
+        //       padding: EdgeInsets.only(left: 24, right: 24),
+        //       child: CircularProgressIndicator(strokeWidth: 2),
+        //     ),
+        //   );
+        // }
 
         if (state is FeesPaidSuccess) {
           return PaidFee(feePaidResult: state.feePaidResult);
@@ -818,6 +968,7 @@ class _FeesScreenState extends State<FeesScreen> {
               if (state is AccYearSuccess) {
                 accYears.clear();
                 accYears.addAll(state.accYearResult.data);
+                print('AppData.accYear ${AppData.accYear}');
 
                 _selectedAccYear ??= AppData.accYear ?? accYears.first.accYear;
 
@@ -1039,6 +1190,7 @@ class _FeesScreenState extends State<FeesScreen> {
                       title: 'Total Paid',
                       subtitle: '(This Year)',
                       amount: _formatAmount(totalPaid),
+                      isLoading: _isAccYearLoading || _isPaidLoading,
                       // currency: 'AED',
                       color: Colors.green,
                     ),
@@ -1051,6 +1203,7 @@ class _FeesScreenState extends State<FeesScreen> {
                       title: 'Pending',
                       subtitle: '(This Year)',
                       amount: _formatAmount(totalPending),
+                      isLoading: _isAccYearLoading || _isPendingLoading,
                       // currency: 'AED',
                       color: Colors.red,
                     ),
@@ -1068,6 +1221,7 @@ class _FeesScreenState extends State<FeesScreen> {
     required String title,
     required String subtitle,
     required String amount,
+    required bool isLoading,
     //required String currency,
     required Color color,
   }) {
@@ -1091,12 +1245,34 @@ class _FeesScreenState extends State<FeesScreen> {
           ),
         ),
         const SizedBox(height: 16),
-        Text(
-          amount,
-          style: TextStyle(
-            fontSize: 25,
-            color: color,
-            fontWeight: FontWeight.w900,
+        // Text(
+        //   amount,
+        //   style: TextStyle(
+        //     fontSize: 25,
+        //     color: color,
+        //     fontWeight: FontWeight.w900,
+        //   ),
+        // ),
+        SizedBox(
+          height: 30,
+          child: Center(
+            child: isLoading
+                ? SizedBox(
+                    width: 22,
+                    height: 22,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.5,
+                      color: color,
+                    ),
+                  )
+                : Text(
+                    amount,
+                    style: TextStyle(
+                      fontSize: 25,
+                      color: color,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
           ),
         ),
         const SizedBox(height: 5),

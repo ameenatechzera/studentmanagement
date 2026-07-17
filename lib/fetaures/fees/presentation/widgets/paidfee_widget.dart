@@ -542,10 +542,10 @@ class _PaidFeeState extends State<PaidFee> {
       final receiptNo = fee.receiptNo.toString();
       final paymentMode = fee.paymentMode.toString();
       final totalAmount = fee.totalPaidAmount.toString();
-      final narration = fee.narration?.toString().trim() ?? '';
+      // final narration = fee.narration?.toString().trim() ?? '';
 
-      final bool hasNarration =
-          narration.isNotEmpty && narration.toLowerCase() != 'null';
+      // final bool hasNarration =
+      //     narration.isNotEmpty && narration.toLowerCase() != 'null';
       final amount = double.tryParse(totalAmount) ?? 0;
       final words = NumberToWord()
           .convert('en-in', amount.toInt())
@@ -779,11 +779,11 @@ class _PaidFeeState extends State<PaidFee> {
                 ),
 
                 pw.SizedBox(height: 8),
-                if (hasNarration)
-                  pw.Text(
-                    'Narration: $narration',
-                    style: const pw.TextStyle(fontSize: 8),
-                  ),
+                // if (hasNarration)
+                //   pw.Text(
+                //     'Narration: $narration',
+                //     style: const pw.TextStyle(fontSize: 8),
+                //   ),
                 // pw.Text(
                 //   'Narration: 2 Uniforms',
                 //   style: const pw.TextStyle(fontSize: 8),

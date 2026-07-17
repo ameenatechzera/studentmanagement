@@ -76,3 +76,17 @@ class GetBranchFailure extends LoginState {
 
   const GetBranchFailure(this.message);
 }
+
+class LoginStatusLoading extends LoginState {}
+
+class LoginStatusSuccess extends LoginState {
+  final LoginStatusEntity response;
+
+  const LoginStatusSuccess(this.response);
+}
+
+class LoginStatusFailure extends LoginState {
+  final String message;
+
+  const LoginStatusFailure(this.message);
+}

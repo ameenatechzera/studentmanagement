@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -280,46 +279,56 @@ class _TimeTableScreenState extends State<TimeTableScreen> {
               _changeDay(-1);
             }
           },
-          child: BlocBuilder<TimetableCubit, TimetableState>(
-            builder: (context, state) {
-              if (state is TimetableLoaded) {
-                loadedList = state.response.data ?? [];
-              }
-              return CustomScrollView(
-                slivers: [
-                  SliverToBoxAdapter(child: _buildCalendar()),
+          child: Column(
+            children: [
+              _buildCalendar(),
 
-                  const SliverToBoxAdapter(child: SizedBox(height: 18)),
+              const SizedBox(height: 18),
 
-                  if (state is TimetableLoading)
-                    SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(12, 0, 12, 20),
-                      sliver: SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                          (context, index) => const Padding(
-                            padding: EdgeInsets.only(bottom: 12),
-                            child: PendingFeeShimmer(),
+              Expanded(
+                child: BlocBuilder<TimetableCubit, TimetableState>(
+                  builder: (context, state) {
+                    if (state is TimetableLoaded) {
+                      loadedList = state.response.data ?? [];
+                    }
+                    return CustomScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      slivers: [
+                        // SliverToBoxAdapter(child: _buildCalendar()),
+
+                        // const SliverToBoxAdapter(child: SizedBox(height: 18)),
+                        if (state is TimetableLoading)
+                          SliverPadding(
+                            padding: const EdgeInsets.fromLTRB(12, 0, 12, 20),
+                            sliver: SliverList(
+                              delegate: SliverChildBuilderDelegate(
+                                (context, index) => const Padding(
+                                  padding: EdgeInsets.only(bottom: 12),
+                                  child: PendingFeeShimmer(),
+                                ),
+                                childCount: 6,
+                              ),
+                            ),
                           ),
-                          childCount: 6,
-                        ),
-                      ),
-                    ),
 
-                  if (state is TimetableError)
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: Center(child: Text(state.message)),
-                      ),
-                    ),
-                  if (state is TimetableLoaded || loadedList.isNotEmpty)
-                    _buildTimetableList(),
-                  // if (state is TimetableLoaded) _buildTimetableList(state),
-                  // if (state is DaySelectionChanged)
-                  //   _buildTimetableDaySelectedList(state),
-                ],
-              );
-            },
+                        if (state is TimetableError)
+                          SliverToBoxAdapter(
+                            child: Padding(
+                              padding: const EdgeInsets.all(20),
+                              child: Center(child: Text(state.message)),
+                            ),
+                          ),
+                        if (state is TimetableLoaded || loadedList.isNotEmpty)
+                          _buildTimetableList(),
+                        // if (state is TimetableLoaded) _buildTimetableList(state),
+                        // if (state is DaySelectionChanged)
+                        //   _buildTimetableDaySelectedList(state),
+                      ],
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -568,7 +577,7 @@ class _PeriodRow extends StatelessWidget {
                                 ),
                                 SizedBox(width: 6),
                                 Text(
-                                  '09:00 Am To 10:00 Am',
+                                  '',
                                   style: TextStyle(
                                     color: Colors.grey,
                                     fontSize: 12,

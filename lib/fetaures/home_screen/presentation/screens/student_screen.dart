@@ -90,7 +90,10 @@ class _StudentScreenState extends State<StudentScreen> {
         // bubbleColor: Color(0xFFCFF8C6),
         iconColor: Color(0xFF1F2B1F),
         onTap: () {
-          AppNavigator.pushSlide(context: context, page: MarkListPage());
+
+           AppNavigator.pushSlide(context: context, page: MarkListPage());
+
+
         },
       ),
       _QuickAccessItem(

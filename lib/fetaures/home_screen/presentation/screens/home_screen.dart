@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 
@@ -34,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final ValueNotifier<List<FeedDetails>> allFeedsNotifier =
       ValueNotifier<List<FeedDetails>>([]);
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
+  Completer<void>? _refreshCompleter;
   @override
   void initState() {
     super.initState();
@@ -238,7 +239,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       ...newFeeds,
                     ];
                   }
-
+                  if (_refreshCompleter != null &&
+                      !_refreshCompleter!.isCompleted) {
+                    _refreshCompleter!.complete();
+                  }
                   final ids = allFeedsNotifier.value
                       .map((e) => e.feedId)
                       .toList();
@@ -259,6 +263,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   if (currentPageNotifier.value > 1) {
                     currentPageNotifier.value = currentPageNotifier.value - 1;
+                  }
+                  if (_refreshCompleter != null &&
+                      !_refreshCompleter!.isCompleted) {
+                    _refreshCompleter!.complete();
                   }
                 }
               },
@@ -289,44 +297,65 @@ class _HomeScreenState extends State<HomeScreen> {
                             return ValueListenableBuilder<bool>(
                               valueListenable: hasMoreDataNotifier,
                               builder: (context, hasMoreData, ____) {
-                                return CustomScrollView(
-                                  physics: BouncingScrollPhysics(),
-                                  controller: _scrollController,
-                                  slivers: [
-                                    SliverList(
-                                      delegate: SliverChildBuilderDelegate((
-                                        context,
-                                        index,
-                                      ) {
-                                        if (index == allFeeds.length) {
+                                return RefreshIndicator(
+                                  color: Colors.deepPurple,
+                                  onRefresh: () async {
+                                    currentPageNotifier.value = 1;
+                                    lastPageNotifier.value = 1;
+                                    hasMoreDataNotifier.value = true;
+                                    isLoadingMoreNotifier.value = false;
+
+                                    //allFeedsNotifier.value = [];
+                                    _refreshCompleter = Completer<void>();
+                                    _fetchFeeds(page: 1);
+                                    return _refreshCompleter!.future;
+                                    // // Wait until loading finishes
+                                    // while (isFirstLoadingNotifier.value) {
+                                    //   await Future.delayed(
+                                    //     const Duration(milliseconds: 100),
+                                    //   );
+                                    // }
+                                  },
+                                  child: CustomScrollView(
+                                    physics: BouncingScrollPhysics(),
+                                    controller: _scrollController,
+                                    slivers: [
+                                      SliverList(
+                                        delegate: SliverChildBuilderDelegate((
+                                          context,
+                                          index,
+                                        ) {
+                                          if (index == allFeeds.length) {
+                                            return Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    vertical: 20,
+                                                  ),
+                                              child: Center(
+                                                child: isLoadingMore
+                                                    ? const CircularProgressIndicator()
+                                                    : const SizedBox(),
+                                              ),
+                                            );
+                                          }
+
                                           return Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                              vertical: 20,
+                                            padding: const EdgeInsets.only(
+                                              top: 8.0,
                                             ),
-                                            child: Center(
-                                              child: isLoadingMore
-                                                  ? const CircularProgressIndicator()
-                                                  : const SizedBox(),
+                                            child: PostCard(
+                                              feed: allFeeds[index],
                                             ),
                                           );
-                                        }
+                                        }, childCount: allFeeds.length + 1),
+                                      ),
 
-                                        return Padding(
-                                          padding: const EdgeInsets.only(
-                                            top: 8.0,
-                                          ),
-                                          child: PostCard(
-                                            feed: allFeeds[index],
-                                          ),
-                                        );
-                                      }, childCount: allFeeds.length + 1),
-                                    ),
-
-                                    /// Extra space for bottom bar
-                                    const SliverToBoxAdapter(
-                                      child: SizedBox(height: 100),
-                                    ),
-                                  ],
+                                      /// Extra space for bottom bar
+                                      const SliverToBoxAdapter(
+                                        child: SizedBox(height: 100),
+                                      ),
+                                    ],
+                                  ),
                                 );
                               },
                             );

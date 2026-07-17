@@ -6,18 +6,24 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:studentmanagement/core/appdata/appdata.dart';
 import 'package:studentmanagement/core/navigation/app_navigator.dart';
+import 'package:studentmanagement/fetaures/academiccalender/presentation/screens/academiccalender_screen.dart';
 import 'package:studentmanagement/fetaures/attendence/domain/parameters/attendence_reportbydate_parameter.dart';
 import 'package:studentmanagement/fetaures/attendence/presentation/cubit/attendence_cubit.dart';
 import 'package:studentmanagement/fetaures/attendence/presentation/screens/attendence_screen.dart';
+import 'package:studentmanagement/fetaures/authentication/domain/parameters/login_params.dart';
+import 'package:studentmanagement/fetaures/authentication/presentation/bloc/logincubit/login_cubit.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/widget/switch_bottombar.dart';
 import 'package:studentmanagement/fetaures/earlygo/presentation/screens/earlygo_listingscreen.dart';
 import 'package:studentmanagement/fetaures/authentication/data/models/account_details_model.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/entities/login_entity.dart';
 import 'package:studentmanagement/fetaures/classdiary/presentation/screens/alldiary_screen.dart';
 import 'package:studentmanagement/fetaures/fees/presentation/screens/fees_screen.dart';
+import 'package:studentmanagement/fetaures/home_screen/domain/parameters/fetchfeed_parameter.dart';
+import 'package:studentmanagement/fetaures/home_screen/presentation/cubit/feed_cubit.dart';
 import 'package:studentmanagement/fetaures/marklist/presentation/screens/marklistscreenN.dart';
 import 'package:studentmanagement/fetaures/materials/presentation/screens/subjectlist_screen.dart';
 import 'package:studentmanagement/fetaures/timetable/presentation/screens/timetable_screen.dart';
+import 'package:studentmanagement/services/shared_preference_helper.dart';
 
 // --- Data ---
 const _quickAccessItems = [
@@ -29,6 +35,11 @@ const _quickAccessItems = [
   {
     'icon': Icons.event_available,
     'label': 'Attendance',
+    'color': Color(0xFFFFF5AD),
+  },
+  {
+    'icon': Icons.event_available,
+    'label': 'Academic Calendar',
     'color': Color(0xFFFFF5AD),
   },
   {
@@ -75,6 +86,122 @@ class _HomeScreenState extends State<StudentScreenN>
   //     await prefs.setString('attendance_fetch_date', today);
   //   }
   // }
+  late LoginResponseResult _currentLoginResponse;
+  bool _isRefreshingProfile = false;
+
+  void _refreshStudentProfile() {
+    if (_isRefreshingProfile) return;
+
+    final admissionNo = AppData.admissionNo?.trim() ?? '';
+    final dob = AppData.dob?.trim() ?? '';
+
+    if (admissionNo.isEmpty || dob.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Admission number or DOB is unavailable'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      _isRefreshingProfile = true;
+    });
+
+    context.read<LoginCubit>().loginUser(
+      LoginRequest(admno: admissionNo, dob: dob),
+    );
+  }
+
+  Future<void> _handleRefreshSuccess(LoginSuccess state) async {
+    try {
+      final response = state.loginResponse;
+      final student = response.student;
+
+      if (student == null) {
+        throw Exception('Student data is unavailable');
+      }
+
+      final sharedPrefHelper = SharedPreferenceHelper();
+
+      // Store the latest authentication data.
+      await sharedPrefHelper.setToken(response.token);
+      await sharedPrefHelper.saveLoginResponse(response);
+      await sharedPrefHelper.saveClassAndDivision(
+        '${student.studentStandard}-${student.studentDivision}',
+      );
+
+      // Refresh all in-memory student values.
+      AppData.admissionNo = student.admno.toString();
+      AppData.studentName = student.name.toString();
+      AppData.studentStdId = student.currentStudentStandardId.toString();
+      AppData.studentDivId = student.currentStudentDivisionId.toString();
+      AppData.accYear = student.accYear.toString();
+      AppData.gender = student.gender.toString();
+      AppData.dob = student.dob.toString();
+      AppData.studentClass =
+          '${student.studentStandard}-${student.studentDivision}';
+      AppData.feeCollectionStatus = student.feeCollectionStatus ?? false;
+      AppData.profileUrl = student.imageUrl.toString();
+
+      // Update the saved account with the latest student information.
+      await SharedPreferenceHelper.saveNewAccount(
+        AccountDetails(
+          admissionNo: student.admno.toString(),
+          dob: student.dob.toString(),
+          stdId: student.currentStudentStandardId.toString(),
+          divId: student.currentStudentDivisionId,
+          accYear: student.accYear.toString(),
+          name: student.name,
+        ),
+      );
+
+      // Refresh feeds exactly as in the login flow.
+      await context.read<FeedCubit>().fetchFeeds(
+        FetchFeedParameter(
+          standardId: AppData.studentStdId!,
+          divisionId: AppData.studentDivId!,
+          fromDateTime: '',
+          admissionNo: AppData.admissionNo!,
+          branchId: AppData.branchId ?? 1,
+          page: 1,
+          perPage: 12,
+        ),
+      );
+
+      if (!mounted) return;
+
+      setState(() {
+        _currentLoginResponse = response;
+        _isRefreshingProfile = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Student data refreshed'),
+          duration: Duration(seconds: 1),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (error) {
+      debugPrint('Student refresh error: $error');
+
+      if (!mounted) return;
+
+      setState(() {
+        _isRefreshingProfile = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Could not update student data'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   Future<void> checkAndFetchAttendance() async {
     final prefs = await SharedPreferences.getInstance();
 
@@ -138,26 +265,55 @@ class _HomeScreenState extends State<StudentScreenN>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          physics: BouncingScrollPhysics(),
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildProfileCard(),
-              const SizedBox(height: 24),
-              // _buildSectionTitle('Notification'),
-              // const SizedBox(height: 150),
-              // _buildNotificationCard(),
-              const SizedBox(height: 24),
-              _buildSectionTitle('Quick Access'),
-              const SizedBox(height: 12),
-              _buildQuickAccessGrid(),
-              const SizedBox(height: 100),
-            ],
+    return BlocListener<LoginCubit, LoginState>(
+      listener: (context, state) async {
+        if (state is LoginLoading) {
+          if (!mounted) return;
+          setState(() {
+            _isRefreshingProfile = true;
+          });
+        }
+
+        if (state is LoginSuccess) {
+          await _handleRefreshSuccess(state);
+        }
+
+        if (state is LoginFailure) {
+          if (!mounted) return;
+
+          setState(() {
+            _isRefreshingProfile = false;
+          });
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Failed to refresh student data'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: SingleChildScrollView(
+            physics: BouncingScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildProfileCard(),
+                const SizedBox(height: 24),
+                // _buildSectionTitle('Notification'),
+                // const SizedBox(height: 150),
+                // _buildNotificationCard(),
+                const SizedBox(height: 24),
+                _buildSectionTitle('Quick Access'),
+                const SizedBox(height: 12),
+                _buildQuickAccessGrid(),
+                const SizedBox(height: 100),
+              ],
+            ),
           ),
         ),
       ),
@@ -199,6 +355,36 @@ class _HomeScreenState extends State<StudentScreenN>
                 color: Colors.white,
                 height: 100,
                 fit: BoxFit.contain,
+              ),
+            ),
+          ),
+          Positioned(
+            top: 0,
+            right: 0,
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(20),
+                onTap: () {
+                  context.read<LoginCubit>().loginUser(
+                    LoginRequest(
+                      admno: AppData.admissionNo!,
+                      dob: AppData.dob!,
+                    ),
+                  );
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.refresh,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                ),
               ),
             ),
           ),
@@ -555,10 +741,32 @@ class _HomeScreenState extends State<StudentScreenN>
         ),
         const SizedBox(height: 12),
 
-        _buildQuickAccessTile(
-          icon: _quickAccessItems[6]['icon'] as IconData,
-          label: _quickAccessItems[6]['label'] as String,
-          color: _quickAccessItems[6]['color'] as Color,
+        /// Third Row
+        Row(
+          children: [
+            // Large Card
+            Expanded(
+              flex: 3,
+              child: _buildQuickAccessTile(
+                icon: _quickAccessItems[6]['icon'] as IconData,
+                label: _quickAccessItems[6]['label'] as String,
+                color: _quickAccessItems[6]['color'] as Color,
+                // height: 90,
+              ),
+            ),
+
+            const SizedBox(width: 12),
+
+            // Small Card
+            Expanded(
+              flex: 2,
+              child: _buildQuickAccessTile(
+                icon: _quickAccessItems[7]['icon'] as IconData,
+                label: _quickAccessItems[7]['label'] as String,
+                color: _quickAccessItems[7]['color'] as Color,
+              ),
+            ),
+          ],
         ),
       ],
     );
@@ -582,13 +790,21 @@ class _HomeScreenState extends State<StudentScreenN>
           AppNavigator.pushSlide(context: context, page: AllClassDiaryScreen());
         }
         if (label == "Mark List") {
+          // MarkListStudent M = MarkListStudent(name: 'Haris', className: 'className', admissionNo: 'admissionNo', academicYear: 'academicYear');
           AppNavigator.pushSlide(context: context, page: MarkListPage());
+          //AppNavigator.pushSlide(context: context, page: MarkListScreen(student: M, examTitle: '', subjects: [],));
         }
         if (label == "Material") {
           AppNavigator.pushSlide(context: context, page: SubjectPage());
         }
         if (label == "Attendance") {
           AppNavigator.pushSlide(context: context, page: AttendenceScreen());
+        }
+        if (label == "Academic Calendar") {
+          AppNavigator.pushSlide(
+            context: context,
+            page: AcademicCalendarScreen(),
+          );
         }
         if (label == "Early Go") {
           AppNavigator.pushSlide(context: context, page: EarlyGoScreen());

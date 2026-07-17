@@ -12,16 +12,19 @@ final class FeesPaidFailure extends FeesState {
 
   FeesPaidFailure(this.error);
 }
+
 final class AccYearFailure extends FeesState {
   final String error;
 
   AccYearFailure(this.error);
 }
+
 final class FeesPaidSuccess extends FeesState {
   final PaidFeeResult feePaidResult;
 
   FeesPaidSuccess(this.feePaidResult);
 }
+
 final class AccYearSuccess extends FeesState {
   final AccYearResult accYearResult;
 
@@ -37,18 +40,23 @@ final class FeeUnPaid_Failure extends FeesState {
 
   FeeUnPaid_Failure(this.error);
 }
+
 final class SaveFees_Failure extends FeesState {
   final String error;
 
   SaveFees_Failure(this.error);
 }
+
 final class FeesUnPaid_Success extends FeesState {
   final UnpaidFeeResult feeUnPaidResult;
 
   FeesUnPaid_Success(this.feeUnPaidResult);
 }
+
 final class FeeSave_Success extends FeesState {
   final FeeSaveResult feeSaveResult;
 
   FeeSave_Success(this.feeSaveResult);
 }
+
+final class FeesPaidLoading extends FeesState {}

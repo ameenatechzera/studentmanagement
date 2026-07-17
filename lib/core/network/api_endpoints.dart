@@ -102,7 +102,7 @@ class ApiConstants {
 
   /// Returns the full URL forfeedACTION
   static String getEarlyLeavePath(String baseUrl) {
-    return '${baseUrl}get-all-earlygoingrequest/1';
+    return '${baseUrl}earlygoing-request-byadmno';
   }
 
   static String saveEarlyLeavePath(String baseUrl) {
@@ -116,5 +116,9 @@ class ApiConstants {
   /// Returns the full URL for Fees / Save Fees
   static String getFeesSaveServerPath(String baseUrl) {
     return '${baseUrl}save-paymentmaster';
+  }
+
+  static String getSaveLoginStatusPath(String baseUrl) {
+    return '${baseUrl}app/student/login-history';
   }
 }

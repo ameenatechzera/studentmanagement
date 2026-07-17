@@ -484,6 +484,7 @@ class _Login_ScreenState extends State<Login_Screen> {
                     );
                     AppData.profileUrl = state.loginResponse.student!.imageUrl
                         .toString();
+                    AppData.dob = state.loginResponse.student!.dob;
                     await SharedPreferenceHelper.saveNewAccount(
                       AccountDetails(
                         admissionNo: state.loginResponse.student!.admno

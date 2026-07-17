@@ -5,12 +5,15 @@ import 'package:studentmanagement/fetaures/authentication/domain/entities/device
 import 'package:studentmanagement/fetaures/authentication/domain/entities/getbranch_entitiy.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/entities/getschool_entity.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/entities/login_entity.dart';
+import 'package:studentmanagement/fetaures/authentication/domain/entities/login_status_entity.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/parameters/device_register_request.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/parameters/fetchschool_parameter.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/parameters/login_params.dart';
+import 'package:studentmanagement/fetaures/authentication/domain/parameters/login_status_parameter.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/usecases/device_register_usecase.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/usecases/getbranch_usecase.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/usecases/getschool_usecase.dart';
+import 'package:studentmanagement/fetaures/authentication/domain/usecases/login_status_usecase.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/usecases/login_usecase.dart';
 import 'package:studentmanagement/services/shared_preference_helper.dart';
 
@@ -21,15 +24,18 @@ class LoginCubit extends Cubit<LoginState> {
   final CheckDeviceRegisterStatusUseCase _checkDeviceRegisterStatusUseCase;
   final FetchSchoolUseCase _fetchSchoolUseCase;
   final GetBranchUseCase _getBranchUseCase;
+  final LoginStatusUseCase _loginStatusUseCase;
   LoginCubit({
     required LoginServerUseCase loginServerUseCase,
     required CheckDeviceRegisterStatusUseCase checkDeviceRegisterStatusUseCase,
     required FetchSchoolUseCase fetchSchoolUseCase,
     required GetBranchUseCase getBranchUseCase,
+    required LoginStatusUseCase loginStatusUseCase,
   }) : _loginUseCase = loginServerUseCase,
        _checkDeviceRegisterStatusUseCase = checkDeviceRegisterStatusUseCase,
        _fetchSchoolUseCase = fetchSchoolUseCase,
        _getBranchUseCase = getBranchUseCase,
+       _loginStatusUseCase = loginStatusUseCase,
        super(LoginInitial());
 
   Future<void> loginUser(LoginRequest loginRequest) async {
@@ -45,12 +51,15 @@ class LoginCubit extends Cubit<LoginState> {
         },
         (loginResponse) async {
           final sharedPrefHelper = SharedPreferenceHelper();
-          await sharedPrefHelper.saveClassAndDivision(loginResponse.student!.studentStandard +'-'+loginResponse.student!.studentDivision);
+          await sharedPrefHelper.saveClassAndDivision(
+            loginResponse.student!.studentStandard +
+                '-' +
+                loginResponse.student!.studentDivision,
+          );
           AppData.studentClass =
               '${loginResponse.student!.studentStandard}-${loginResponse.student!.studentDivision}'
                   .toString();
-          AppData.profileUrl = loginResponse.student!.imageUrl
-              .toString();
+          AppData.profileUrl = loginResponse.student!.imageUrl.toString();
           emit(LoginSuccess(loginResponse));
         },
       );
@@ -98,17 +107,18 @@ class LoginCubit extends Cubit<LoginState> {
           emit(FetchSchoolFailure(failure.message));
         },
         (response) async {
-          if(response.status==200 || response.status==201) {
+          if (response.status == 200 || response.status == 201) {
             print("schoolResponse $response");
             final pref = SharedPreferenceHelper();
             await pref.setAppStoreVersion(
-                response.schoolDetails!.first.appStoreVersion!);
+              response.schoolDetails!.first.appStoreVersion!,
+            );
             await pref.setPlayStoreVersion(
-                response.schoolDetails!.first.playStoreVersion!);
+              response.schoolDetails!.first.playStoreVersion!,
+            );
             AppData.schoolName = response.schoolDetails!.first.schoolName!;
             emit(FetchSchoolSuccess(response));
-          }
-          else{
+          } else {
             emit(FetchSchoolSuccess(response));
           }
         },
@@ -139,6 +149,31 @@ class LoginCubit extends Cubit<LoginState> {
       print('❌ Exception during getBranchDetails: $e');
       print('Stacktrace: $stacktrace');
       emit(GetBranchFailure('An unexpected error occurred'));
+    }
+  }
+
+  Future<void> saveLoginStatus(LoginStatusParameter request) async {
+    print('LoginStatusRequest ${request.toJson()}');
+
+    emit(LoginStatusLoading());
+
+    try {
+      final result = await _loginStatusUseCase(request);
+
+      result.fold(
+        (failure) {
+          print('❌ LoginStatus failure: ${failure.message}');
+          emit(LoginStatusFailure(failure.message));
+        },
+        (response) {
+          print('✅ LoginStatus Success');
+          emit(LoginStatusSuccess(response));
+        },
+      );
+    } catch (e, stacktrace) {
+      print('❌ Exception during saveLoginStatus: $e');
+      print('Stacktrace: $stacktrace');
+      emit(LoginStatusFailure('An unexpected error occurred'));
     }
   }
 }

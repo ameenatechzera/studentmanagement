@@ -523,7 +523,12 @@ class _MaterialListPageState extends State<MaterialListPage>
       bool matchesTab = false;
 
       if (tab == "Files") {
-        final String filePath = item.material?.trim() ?? '';
+        // final String filePath = item.material?.trim() ?? '';
+
+        // matchesTab = filePath.isNotEmpty && _isSupportedFile(filePath);
+        final String filePath = item.material.isNotEmpty
+            ? item.material.first.trim()
+            : '';
 
         matchesTab = filePath.isNotEmpty && _isSupportedFile(filePath);
       } else if (tab == "Links") {
@@ -548,7 +553,9 @@ class _MaterialListPageState extends State<MaterialListPage>
 
   String _getDisplayName(MaterialList item, String tab) {
     if (tab == "Files") {
-      return _fileNameOnly(item.material ?? "Unnamed File");
+      return _fileNameOnly(
+        item.material.isNotEmpty ? item.material.first : "Unnamed File",
+      );
     }
 
     if (tab == "Links") {
@@ -559,7 +566,7 @@ class _MaterialListPageState extends State<MaterialListPage>
       return item.notes ?? "No Notes";
     }
 
-    return item.material ?? "";
+    return item.material.isNotEmpty ? item.material.first : "";
   }
 
   bool _isSupportedFile(String path) {
@@ -580,8 +587,17 @@ class _MaterialListPageState extends State<MaterialListPage>
         cleanPath.endsWith('.webp');
   }
 
+  // String _cleanPath(String path) {
+  //   return path.toLowerCase().split('?').first.trim();
+  // }
   String _cleanPath(String path) {
-    return path.toLowerCase().split('?').first.trim();
+    return path
+        .replaceAll('"', '')
+        .replaceAll('\\', '')
+        .toLowerCase()
+        .split('?')
+        .first
+        .trim();
   }
 
   String _fileNameOnly(String path) {
@@ -610,16 +626,51 @@ class _MaterialListPageState extends State<MaterialListPage>
     }
   }
 
+  // Future<String?> _makeFullFileUrl(String? filePath) async {
+  //   if (filePath == null || filePath.trim().isEmpty) {
+  //     return null;
+  //   }
+
+  //   final String trimmedFilePath = filePath.trim();
+
+  //   if (trimmedFilePath.startsWith('http://') ||
+  //       trimmedFilePath.startsWith('https://')) {
+  //     return Uri.encodeFull(trimmedFilePath);
+  //   }
+
+  //   final String? baseUrl = await SharedPreferenceHelper().getBaseUrl();
+
+  //   if (baseUrl == null || baseUrl.trim().isEmpty) {
+  //     return null;
+  //   }
+
+  //   String updatedBaseUrl = baseUrl.trim().replaceAll("api/", "");
+
+  //   if (!updatedBaseUrl.endsWith('/')) {
+  //     updatedBaseUrl = '$updatedBaseUrl/';
+  //   }
+
+  //   final String cleanedFilePath = trimmedFilePath.startsWith('/')
+  //       ? trimmedFilePath.substring(1)
+  //       : trimmedFilePath;
+
+  //   return Uri.encodeFull(updatedBaseUrl + cleanedFilePath);
+  // }
   Future<String?> _makeFullFileUrl(String? filePath) async {
     if (filePath == null || filePath.trim().isEmpty) {
       return null;
     }
 
-    final String trimmedFilePath = filePath.trim();
+    // Remove unwanted quotes and backslashes
+    String cleanedFilePath = filePath
+        .trim()
+        .replaceAll('"', '')
+        .replaceAll('\\', '');
 
-    if (trimmedFilePath.startsWith('http://') ||
-        trimmedFilePath.startsWith('https://')) {
-      return Uri.encodeFull(trimmedFilePath);
+    // Already a full URL
+    if (cleanedFilePath.startsWith('http://') ||
+        cleanedFilePath.startsWith('https://')) {
+      return Uri.encodeFull(cleanedFilePath);
     }
 
     final String? baseUrl = await SharedPreferenceHelper().getBaseUrl();
@@ -634,16 +685,17 @@ class _MaterialListPageState extends State<MaterialListPage>
       updatedBaseUrl = '$updatedBaseUrl/';
     }
 
-    final String cleanedFilePath = trimmedFilePath.startsWith('/')
-        ? trimmedFilePath.substring(1)
-        : trimmedFilePath;
+    if (cleanedFilePath.startsWith('/')) {
+      cleanedFilePath = cleanedFilePath.substring(1);
+    }
 
     return Uri.encodeFull(updatedBaseUrl + cleanedFilePath);
   }
 
   Future<void> _openFile(MaterialList item) async {
-    final String? fileUrl = await _makeFullFileUrl(item.material);
-
+    final String? fileUrl = await _makeFullFileUrl(
+      item.material.isNotEmpty ? item.material.first : null,
+    );
     if (!mounted) return;
 
     if (fileUrl == null || fileUrl.trim().isEmpty) {
@@ -665,7 +717,9 @@ class _MaterialListPageState extends State<MaterialListPage>
         MaterialPageRoute(
           builder: (_) => MaterialImageViewerScreen(
             imageUrl: fileUrl,
-            title: _fileNameOnly(item.material ?? 'Image'),
+            title: _fileNameOnly(
+              item.material.isNotEmpty ? item.material.first : 'Image',
+            ),
           ),
         ),
       );
@@ -821,7 +875,7 @@ class _MaterialListPageState extends State<MaterialListPage>
         return _MaterialCard(
           title: displayName,
           tab: tab,
-          filePath: item.material,
+          filePath: item.material.isNotEmpty ? item.material.first : null,
           isBookmarked: isBookmarked,
           onBookmarkTap: () {
             setState(() {

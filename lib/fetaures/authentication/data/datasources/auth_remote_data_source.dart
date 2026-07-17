@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:studentmanagement/core/appdata/appdata.dart';
 import 'package:studentmanagement/core/errors/error_message_model.dart';
 import 'package:studentmanagement/core/errors/exceptions.dart';
 import 'package:studentmanagement/core/network/api_endpoints.dart';
@@ -7,6 +8,7 @@ import 'package:studentmanagement/core/network/apihelper.dart';
 import 'package:studentmanagement/fetaures/authentication/data/models/device_register_model.dart';
 import 'package:studentmanagement/fetaures/authentication/data/models/getbranch_model.dart';
 import 'package:studentmanagement/fetaures/authentication/data/models/getschool_model.dart';
+import 'package:studentmanagement/fetaures/authentication/data/models/login_status_model.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/entities/device_register_result.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/entities/getbranch_entitiy.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/entities/getschool_entity.dart';
@@ -15,6 +17,7 @@ import 'package:studentmanagement/fetaures/authentication/domain/entities/regist
 import 'package:studentmanagement/fetaures/authentication/domain/parameters/device_register_request.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/parameters/fetchschool_parameter.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/parameters/login_params.dart';
+import 'package:studentmanagement/fetaures/authentication/domain/parameters/login_status_parameter.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/parameters/register_server_params.dart';
 import 'package:studentmanagement/services/shared_preference_helper.dart';
 
@@ -310,6 +313,41 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
       if (response.statusCode == 200) {
         return GetBranchResponseModel.fromJson(response.data);
+      } else {
+        throw ServerException(
+          errorMessageModel: ErrorMessageModel.fromJson(response.data),
+        );
+      }
+    } catch (e, stacktrace) {
+      print('❌ Exception during getBranchDetails: $e');
+      print('Stacktrace: $stacktrace');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<LoginStatusModel> loginStatus(LoginStatusParameter parameter) async {
+    try {
+      final baseUrl = await SharedPreferenceHelper().getBaseUrl();
+
+      if (baseUrl == null || baseUrl.isEmpty) {
+        throw Exception("Base URL not set");
+      }
+
+      final url = ApiConstants.getSaveLoginStatusPath(baseUrl);
+      final options = await ApiHelper.getAuthOptions();
+
+      final response = await dio.post(
+        url,
+        data: parameter.toJson(),
+        options: options,
+      );
+
+      print('🔹 Status Code: ${response.statusCode}');
+      print('🔹 Response Data: ${response.data}');
+
+      if (response.statusCode == 200) {
+        return LoginStatusModel.fromJson(response.data);
       } else {
         throw ServerException(
           errorMessageModel: ErrorMessageModel.fromJson(response.data),

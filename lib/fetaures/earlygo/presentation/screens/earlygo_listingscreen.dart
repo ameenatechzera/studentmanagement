@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
+import 'package:studentmanagement/core/appdata/appdata.dart';
 import 'package:studentmanagement/fetaures/earlygo/domain/entities/fetch_earlygorequest_entity.dart';
+import 'package:studentmanagement/fetaures/earlygo/domain/parameters/fetch_earlygo_parameter.dart';
 import 'package:studentmanagement/fetaures/earlygo/presentation/cubit/earlygo_cubit.dart';
 import 'package:studentmanagement/fetaures/earlygo/presentation/screens/earlygo_requestscreen.dart';
+import 'package:studentmanagement/fetaures/home_screen/domain/parameters/fetchfeed_parameter.dart';
 
 class EarlyGoScreen extends StatefulWidget {
   const EarlyGoScreen({super.key});
@@ -17,7 +20,7 @@ class _EarlyGoScreenState extends State<EarlyGoScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<EarlygoCubit>().fetchEarlyLeave();
+    context.read<EarlygoCubit>().fetchEarlyLeave(FetchEarlyGoParameter (accYear: AppData.accYear!, admNo: AppData.admissionNo!));
   }
 
   @override
@@ -98,7 +101,7 @@ class _EarlyGoScreenState extends State<EarlyGoScreen> {
 }
 
 class EarlyGoCard extends StatelessWidget {
-  final EarlyLeaveDetails request;
+  final EarlygoList request;
 
   const EarlyGoCard({super.key, required this.request});
 
@@ -140,14 +143,14 @@ class EarlyGoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('earlyLeaveDate => ${request.earlyLeaveDate}');
+    print('earlyLeaveDate => ${request.earlyLeaveData}');
     print('requestDate => ${request.requestDate}');
     String date = '';
     String day = '';
 
     try {
-      if (request.earlyLeaveDate != null) {
-        final parsedDate = DateTime.parse(request.earlyLeaveDate!);
+      if (request.earlyLeaveData != null) {
+        final parsedDate = DateTime.parse(request.earlyLeaveData!);
 
         date = DateFormat('dd-MM-yyyy').format(parsedDate);
         day = DateFormat('EEEE').format(parsedDate);
