@@ -31,6 +31,7 @@ abstract class AuthRemoteDataSource {
   );
   Future<FetchSchoolEntity> fetchSchools(FetchSchoolRequest request);
   Future<GetBranchEntity> getBranchDetails();
+  Future<LoginStatusModel> loginStatus(LoginStatusParameter parameter);
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {

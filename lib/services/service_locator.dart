@@ -18,6 +18,7 @@ import 'package:studentmanagement/fetaures/authentication/domain/repositories/au
 import 'package:studentmanagement/fetaures/authentication/domain/usecases/device_register_usecase.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/usecases/getbranch_usecase.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/usecases/getschool_usecase.dart';
+import 'package:studentmanagement/fetaures/authentication/domain/usecases/login_status_usecase.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/usecases/login_usecase.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/bloc/logincubit/login_cubit.dart';
 import 'package:studentmanagement/fetaures/classdiary/data/datasources/diary_remote_data_source.dart';
@@ -93,6 +94,7 @@ class ServiceLocator {
         checkDeviceRegisterStatusUseCase: sl(),
         fetchSchoolUseCase: sl(),
         getBranchUseCase: sl(),
+        loginStatusUseCase: sl(),
       ),
     );
     // usecase
@@ -101,6 +103,7 @@ class ServiceLocator {
     sl.registerLazySingleton(() => CheckDeviceRegisterStatusUseCase(sl()));
     sl.registerLazySingleton(() => FetchSchoolUseCase(sl()));
     sl.registerLazySingleton(() => GetBranchUseCase(sl()));
+    sl.registerLazySingleton(() => LoginStatusUseCase(sl()));
 
     // Data Source
     sl.registerLazySingleton<AuthRemoteDataSource>(

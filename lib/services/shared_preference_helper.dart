@@ -214,6 +214,21 @@ class SharedPreferenceHelper {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setStringList('accounts', []);
   }
+
+  Future<void> saveLoginStatusDate(String date) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('login_status_date', date);
+  }
+
+  Future<String?> getLoginStatusDate() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('login_status_date');
+  }
+
+  Future<void> clearLoginStatusDate() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('login_status_date');
+  }
   // //printer
   // Future<bool> saveSelectedPrinter(String selectedPrinter) async {
   //   final prefs = await SharedPreferences.getInstance();

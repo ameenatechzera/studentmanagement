@@ -4,9 +4,11 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:studentmanagement/core/appdata/appdata.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/parameters/fetchschool_parameter.dart';
+import 'package:studentmanagement/fetaures/authentication/domain/parameters/login_status_parameter.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/bloc/logincubit/login_cubit.dart';
 import 'package:studentmanagement/fetaures/home_screen/domain/entities/fetchfeed_entity.dart';
 import 'package:studentmanagement/fetaures/home_screen/domain/parameters/fetchfeed_parameter.dart';
@@ -36,12 +38,28 @@ class _HomeScreenState extends State<HomeScreen> {
       ValueNotifier<List<FeedDetails>>([]);
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   Completer<void>? _refreshCompleter;
+  Future<void> saveLoginStatusIfNeeded() async {
+    final helper = SharedPreferenceHelper();
+
+    final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+
+    final lastSavedDate = await helper.getLoginStatusDate();
+
+    if (lastSavedDate != today) {
+      context.read<LoginCubit>().saveLoginStatus(
+        LoginStatusParameter(admno: AppData.admissionNo!),
+      );
+    }
+  }
+
   @override
   void initState() {
     super.initState();
 
     print("🚀 INIT → Fetch page 1");
     getVersion();
+    saveLoginStatusIfNeeded();
+    print('save loginstatus success');
     _fetchFeeds(page: 1);
 
     _scrollController.addListener(() {
@@ -201,197 +219,216 @@ class _HomeScreenState extends State<HomeScreen> {
         drawerOpenedNotifier.value = isOpened;
       },
       body: SafeArea(
-        child: Stack(
-          children: [
-            BlocConsumer<FeedCubit, FeedState>(
+        child: MultiBlocListener(
+          listeners: [
+            BlocListener<LoginCubit, LoginState>(
               listener: (context, state) async {
-                if (state is VersionFetchSuccess) {
-                  final packageInfo = await PackageInfo.fromPlatform();
-                  String st_appVersion =
-                      packageInfo.version + "+" + packageInfo.buildNumber;
-                  print('st_appVersion $st_appVersion');
-                  // final schoolCode =
-                  // await SharedPreferenceHelper().getSchoolCode();
-                  // await context.read<LoginCubit>().fetchSchools(
-                  //   FetchSchoolRequest(slno: schoolCode),
-                  // );
-                  if (Platform.isAndroid) {
-                    await checkForUpdate(context, st_appVersion);
-                  }
+                if (state is LoginStatusSuccess) {
+                  final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+
+                  await SharedPreferenceHelper().saveLoginStatusDate(today);
+
+                  print("✅ Login status saved");
                 }
 
-                if (state is FeedLoaded) {
-                  final newFeeds = state.response.data ?? [];
-                  final pagination = state.response.pagination;
-
-                  isFirstLoadingNotifier.value = false;
-                  isLoadingMoreNotifier.value = false;
-
-                  lastPageNotifier.value = pagination?.lastPage ?? 1;
-                  hasMoreDataNotifier.value =
-                      currentPageNotifier.value < lastPageNotifier.value;
-
-                  if (currentPageNotifier.value == 1) {
-                    allFeedsNotifier.value = List<FeedDetails>.from(newFeeds);
-                  } else {
-                    allFeedsNotifier.value = [
-                      ...allFeedsNotifier.value,
-                      ...newFeeds,
-                    ];
-                  }
-                  if (_refreshCompleter != null &&
-                      !_refreshCompleter!.isCompleted) {
-                    _refreshCompleter!.complete();
-                  }
-                  final ids = allFeedsNotifier.value
-                      .map((e) => e.feedId)
-                      .toList();
-                  final uniqueIds = ids.toSet();
-                  if (ids.length != uniqueIds.length) {
-                    // duplicate detected
-                  }
-                  final schoolCode = await SharedPreferenceHelper()
-                      .getSchoolCode();
-                  await context.read<LoginCubit>().fetchSchools(
-                    FetchSchoolRequest(slno: schoolCode),
-                  );
-                }
-
-                if (state is FeedError) {
-                  isFirstLoadingNotifier.value = false;
-                  isLoadingMoreNotifier.value = false;
-
-                  if (currentPageNotifier.value > 1) {
-                    currentPageNotifier.value = currentPageNotifier.value - 1;
-                  }
-                  if (_refreshCompleter != null &&
-                      !_refreshCompleter!.isCompleted) {
-                    _refreshCompleter!.complete();
-                  }
+                if (state is LoginStatusFailure) {
+                  print("❌ ${state.message}");
                 }
               },
-              builder: (context, state) {
-                return ValueListenableBuilder<bool>(
-                  valueListenable: isFirstLoadingNotifier,
-                  builder: (context, isFirstLoading, _) {
-                    return ValueListenableBuilder<List<FeedDetails>>(
-                      valueListenable: allFeedsNotifier,
-                      builder: (context, allFeeds, __) {
-                        if (isFirstLoading && state is FeedLoading) {
-                          return PostCardSkeleton();
-                        }
-
-                        if (state is FeedError && allFeeds.isEmpty) {
-                          return Center(child: Text(state.message));
-                        }
-
-                        if (allFeeds.isEmpty) {
-                          return const Center(
-                            child: Text("No feeds available"),
-                          );
-                        }
-
-                        return ValueListenableBuilder<bool>(
-                          valueListenable: isLoadingMoreNotifier,
-                          builder: (context, isLoadingMore, ___) {
-                            return ValueListenableBuilder<bool>(
-                              valueListenable: hasMoreDataNotifier,
-                              builder: (context, hasMoreData, ____) {
-                                return RefreshIndicator(
-                                  color: Colors.deepPurple,
-                                  onRefresh: () async {
-                                    currentPageNotifier.value = 1;
-                                    lastPageNotifier.value = 1;
-                                    hasMoreDataNotifier.value = true;
-                                    isLoadingMoreNotifier.value = false;
-
-                                    //allFeedsNotifier.value = [];
-                                    _refreshCompleter = Completer<void>();
-                                    _fetchFeeds(page: 1);
-                                    return _refreshCompleter!.future;
-                                    // // Wait until loading finishes
-                                    // while (isFirstLoadingNotifier.value) {
-                                    //   await Future.delayed(
-                                    //     const Duration(milliseconds: 100),
-                                    //   );
-                                    // }
-                                  },
-                                  child: CustomScrollView(
-                                    physics: BouncingScrollPhysics(),
-                                    controller: _scrollController,
-                                    slivers: [
-                                      SliverList(
-                                        delegate: SliverChildBuilderDelegate((
-                                          context,
-                                          index,
-                                        ) {
-                                          if (index == allFeeds.length) {
-                                            return Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                    vertical: 20,
-                                                  ),
-                                              child: Center(
-                                                child: isLoadingMore
-                                                    ? const CircularProgressIndicator()
-                                                    : const SizedBox(),
-                                              ),
-                                            );
-                                          }
-
-                                          return Padding(
-                                            padding: const EdgeInsets.only(
-                                              top: 8.0,
-                                            ),
-                                            child: PostCard(
-                                              feed: allFeeds[index],
-                                            ),
-                                          );
-                                        }, childCount: allFeeds.length + 1),
-                                      ),
-
-                                      /// Extra space for bottom bar
-                                      const SliverToBoxAdapter(
-                                        child: SizedBox(height: 100),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
-                            );
-                          },
-                        );
-                      },
-                    );
-                  },
-                );
-              },
-            ),
-
-            // ✅ FIXED: Drawer toggle button with HitTestBehavior.opaque
-            Positioned(
-              left: 0,
-              top: MediaQuery.of(context).size.height * 0.4,
-              child: GestureDetector(
-                onTap: () {
-                  _scaffoldKey.currentState?.openDrawer();
-                },
-                behavior: HitTestBehavior
-                    .opaque, // ✅ Key fix — transparent areas now receive taps
-                child: Container(
-                  width: 24,
-                  height: 80,
-                  decoration: const BoxDecoration(
-                    color: Colors.black12,
-                    borderRadius: BorderRadius.horizontal(
-                      right: Radius.circular(20),
-                    ),
-                  ),
-                  child: const Icon(Icons.chevron_right, size: 18),
-                ),
-              ),
             ),
           ],
+          child: Stack(
+            children: [
+              BlocConsumer<FeedCubit, FeedState>(
+                listener: (context, state) async {
+                  if (state is VersionFetchSuccess) {
+                    final packageInfo = await PackageInfo.fromPlatform();
+                    String st_appVersion =
+                        packageInfo.version + "+" + packageInfo.buildNumber;
+                    print('st_appVersion $st_appVersion');
+                    // final schoolCode =
+                    // await SharedPreferenceHelper().getSchoolCode();
+                    // await context.read<LoginCubit>().fetchSchools(
+                    //   FetchSchoolRequest(slno: schoolCode),
+                    // );
+                    if (Platform.isAndroid) {
+                      await checkForUpdate(context, st_appVersion);
+                    }
+                  }
+
+                  if (state is FeedLoaded) {
+                    final newFeeds = state.response.data ?? [];
+                    final pagination = state.response.pagination;
+
+                    isFirstLoadingNotifier.value = false;
+                    isLoadingMoreNotifier.value = false;
+
+                    lastPageNotifier.value = pagination?.lastPage ?? 1;
+                    hasMoreDataNotifier.value =
+                        currentPageNotifier.value < lastPageNotifier.value;
+
+                    if (currentPageNotifier.value == 1) {
+                      allFeedsNotifier.value = List<FeedDetails>.from(newFeeds);
+                    } else {
+                      allFeedsNotifier.value = [
+                        ...allFeedsNotifier.value,
+                        ...newFeeds,
+                      ];
+                    }
+                    if (_refreshCompleter != null &&
+                        !_refreshCompleter!.isCompleted) {
+                      _refreshCompleter!.complete();
+                    }
+                    final ids = allFeedsNotifier.value
+                        .map((e) => e.feedId)
+                        .toList();
+                    final uniqueIds = ids.toSet();
+                    if (ids.length != uniqueIds.length) {
+                      // duplicate detected
+                    }
+                    final schoolCode = await SharedPreferenceHelper()
+                        .getSchoolCode();
+                    await context.read<LoginCubit>().fetchSchools(
+                      FetchSchoolRequest(slno: schoolCode),
+                    );
+                  }
+
+                  if (state is FeedError) {
+                    isFirstLoadingNotifier.value = false;
+                    isLoadingMoreNotifier.value = false;
+
+                    if (currentPageNotifier.value > 1) {
+                      currentPageNotifier.value = currentPageNotifier.value - 1;
+                    }
+                    if (_refreshCompleter != null &&
+                        !_refreshCompleter!.isCompleted) {
+                      _refreshCompleter!.complete();
+                    }
+                  }
+                },
+                builder: (context, state) {
+                  return ValueListenableBuilder<bool>(
+                    valueListenable: isFirstLoadingNotifier,
+                    builder: (context, isFirstLoading, _) {
+                      return ValueListenableBuilder<List<FeedDetails>>(
+                        valueListenable: allFeedsNotifier,
+                        builder: (context, allFeeds, __) {
+                          if (isFirstLoading && state is FeedLoading) {
+                            return PostCardSkeleton();
+                          }
+
+                          if (state is FeedError && allFeeds.isEmpty) {
+                            return Center(child: Text(state.message));
+                          }
+
+                          if (allFeeds.isEmpty) {
+                            return const Center(
+                              child: Text("No feeds available"),
+                            );
+                          }
+
+                          return ValueListenableBuilder<bool>(
+                            valueListenable: isLoadingMoreNotifier,
+                            builder: (context, isLoadingMore, ___) {
+                              return ValueListenableBuilder<bool>(
+                                valueListenable: hasMoreDataNotifier,
+                                builder: (context, hasMoreData, ____) {
+                                  return RefreshIndicator(
+                                    color: Colors.deepPurple,
+                                    onRefresh: () async {
+                                      currentPageNotifier.value = 1;
+                                      lastPageNotifier.value = 1;
+                                      hasMoreDataNotifier.value = true;
+                                      isLoadingMoreNotifier.value = false;
+
+                                      //allFeedsNotifier.value = [];
+                                      _refreshCompleter = Completer<void>();
+                                      _fetchFeeds(page: 1);
+                                      return _refreshCompleter!.future;
+                                      // // Wait until loading finishes
+                                      // while (isFirstLoadingNotifier.value) {
+                                      //   await Future.delayed(
+                                      //     const Duration(milliseconds: 100),
+                                      //   );
+                                      // }
+                                    },
+                                    child: CustomScrollView(
+                                      physics: BouncingScrollPhysics(),
+                                      controller: _scrollController,
+                                      slivers: [
+                                        SliverList(
+                                          delegate: SliverChildBuilderDelegate((
+                                            context,
+                                            index,
+                                          ) {
+                                            if (index == allFeeds.length) {
+                                              return Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      vertical: 20,
+                                                    ),
+                                                child: Center(
+                                                  child: isLoadingMore
+                                                      ? const CircularProgressIndicator()
+                                                      : const SizedBox(),
+                                                ),
+                                              );
+                                            }
+
+                                            return Padding(
+                                              padding: const EdgeInsets.only(
+                                                top: 8.0,
+                                              ),
+                                              child: PostCard(
+                                                feed: allFeeds[index],
+                                              ),
+                                            );
+                                          }, childCount: allFeeds.length + 1),
+                                        ),
+
+                                        /// Extra space for bottom bar
+                                        const SliverToBoxAdapter(
+                                          child: SizedBox(height: 100),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                          );
+                        },
+                      );
+                    },
+                  );
+                },
+              ),
+
+              // ✅ FIXED: Drawer toggle button with HitTestBehavior.opaque
+              Positioned(
+                left: 0,
+                top: MediaQuery.of(context).size.height * 0.4,
+                child: GestureDetector(
+                  onTap: () {
+                    _scaffoldKey.currentState?.openDrawer();
+                  },
+                  behavior: HitTestBehavior
+                      .opaque, // ✅ Key fix — transparent areas now receive taps
+                  child: Container(
+                    width: 24,
+                    height: 80,
+                    decoration: const BoxDecoration(
+                      color: Colors.black12,
+                      borderRadius: BorderRadius.horizontal(
+                        right: Radius.circular(20),
+                      ),
+                    ),
+                    child: const Icon(Icons.chevron_right, size: 18),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
