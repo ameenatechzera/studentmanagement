@@ -156,7 +156,14 @@ class _HomeScreenState extends State<StudentScreenN>
           name: student.name,
         ),
       );
-
+      await context.read<AttendenceCubit>().getAttendanceReportByDate(
+        AttendanceReportByDateParameter(
+          admno: AppData.admissionNo,
+          date: DateFormat('yyyy-MM-dd').format(DateTime.now()),
+          accYear: AppData.accYear,
+          branchId: AppData.branchId,
+        ),
+      );
       // Refresh feeds exactly as in the login flow.
       await context.read<FeedCubit>().fetchFeeds(
         FetchFeedParameter(
@@ -236,6 +243,7 @@ class _HomeScreenState extends State<StudentScreenN>
   void initState() {
     // TODO: implement initState
     super.initState();
+    _currentLoginResponse = widget.loginResponse!;
     loadAccounts();
     WidgetsBinding.instance.addObserver(this);
     checkAndFetchAttendance();
@@ -322,6 +330,7 @@ class _HomeScreenState extends State<StudentScreenN>
 
   // --- Profile Card ---
   Widget _buildProfileCard() {
+    final student = _currentLoginResponse.student!;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -365,25 +374,41 @@ class _HomeScreenState extends State<StudentScreenN>
               color: Colors.transparent,
               child: InkWell(
                 borderRadius: BorderRadius.circular(20),
-                onTap: () {
-                  context.read<LoginCubit>().loginUser(
-                    LoginRequest(
-                      admno: AppData.admissionNo!,
-                      dob: AppData.dob!,
-                    ),
-                  );
-                },
+                onTap: _refreshStudentProfile,
+                // onTap: () {
+                //   context.read<LoginCubit>().loginUser(
+                //     LoginRequest(
+                //       admno: AppData.admissionNo!,
+                //       dob: AppData.dob!,
+                //     ),
+                //   );
+                // },
                 child: Container(
                   padding: const EdgeInsets.all(6),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.2),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
-                    Icons.refresh,
-                    color: Colors.white,
-                    size: 20,
-                  ),
+
+                  // child: const Icon(
+                  //   Icons.refresh,
+                  //   color: Colors.white,
+                  //   size: 20,
+                  // ),
+                  child: _isRefreshingProfile
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Icon(
+                          Icons.refresh,
+                          color: Colors.white,
+                          size: 20,
+                        ),
                 ),
               ),
             ),
@@ -442,7 +467,7 @@ class _HomeScreenState extends State<StudentScreenN>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        widget.loginResponse!.student!.name,
+                        student.name,
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 13,
@@ -451,7 +476,7 @@ class _HomeScreenState extends State<StudentScreenN>
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        widget.loginResponse!.student!.mobile,
+                        student.mobile,
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 11,
@@ -468,18 +493,9 @@ class _HomeScreenState extends State<StudentScreenN>
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    _buildStatItem(
-                      'Class',
-                      widget.loginResponse!.student!.studentStandard.toString(),
-                    ),
-                    _buildStatItem(
-                      'Div',
-                      widget.loginResponse!.student!.studentDivision.toString(),
-                    ),
-                    _buildStatItem(
-                      'Admission No',
-                      widget.loginResponse!.student!.admno.toString(),
-                    ),
+                    _buildStatItem('Class', student.studentStandard.toString()),
+                    _buildStatItem('Div', student.studentDivision.toString()),
+                    _buildStatItem('Admission No', student.admno.toString()),
                   ],
                 ),
               ),
