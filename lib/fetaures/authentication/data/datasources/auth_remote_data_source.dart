@@ -337,7 +337,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
       final url = ApiConstants.getSaveLoginStatusPath(baseUrl);
       final options = await ApiHelper.getAuthOptions();
-
+      print(url);
       final response = await dio.post(
         url,
         data: parameter.toJson(),

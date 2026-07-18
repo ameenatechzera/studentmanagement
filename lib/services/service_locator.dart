@@ -25,7 +25,6 @@ import 'package:studentmanagement/fetaures/classdiary/data/datasources/diary_rem
 import 'package:studentmanagement/fetaures/classdiary/data/repositories/diary_repository_impl.dart';
 import 'package:studentmanagement/fetaures/classdiary/domain/repositories/diary_repository.dart';
 import 'package:studentmanagement/fetaures/classdiary/domain/usecases/fetch_diary_usecase.dart';
-import 'package:studentmanagement/fetaures/classdiary/domain/usecases/saveDiaryStatusUseCase.dart';
 import 'package:studentmanagement/fetaures/classdiary/presentation/cubit/diary_cubit.dart';
 import 'package:studentmanagement/fetaures/earlygo/data/datasources/earlygo_remote_data_source.dart';
 import 'package:studentmanagement/fetaures/earlygo/data/repositories/earlygo_repository_impl.dart';
@@ -94,7 +93,8 @@ class ServiceLocator {
         loginServerUseCase: sl(),
         checkDeviceRegisterStatusUseCase: sl(),
         fetchSchoolUseCase: sl(),
-        getBranchUseCase: sl(), loginStatusUseCase: sl(),
+        getBranchUseCase: sl(),
+        loginStatusUseCase: sl(),
       ),
     );
     // usecase
@@ -103,6 +103,7 @@ class ServiceLocator {
     sl.registerLazySingleton(() => CheckDeviceRegisterStatusUseCase(sl()));
     sl.registerLazySingleton(() => FetchSchoolUseCase(sl()));
     sl.registerLazySingleton(() => GetBranchUseCase(sl()));
+    sl.registerLazySingleton(() => LoginStatusUseCase(sl()));
 
     // Data Source
     sl.registerLazySingleton<AuthRemoteDataSource>(
@@ -130,7 +131,7 @@ class ServiceLocator {
     // ------------------- DIARY -------------------
 
     /// Cubit
-    sl.registerFactory(() => DiaryCubit(fetchDiaryUseCase: sl(), saveDiaryStatusUseCase: sl()));
+    sl.registerFactory(() => DiaryCubit(fetchDiaryUseCase: sl()));
 
     /// UseCase
     sl.registerLazySingleton(() => FetchDiaryUseCase(sl()));
@@ -187,7 +188,6 @@ class ServiceLocator {
     sl.registerLazySingleton(() => FetchFeedUseCase(sl()));
     sl.registerLazySingleton(() => FeedActionUseCase(sl()));
     sl.registerLazySingleton(() => SaveFeesDetailsUseCase(sl()));
-    sl.registerLazySingleton(() => SaveDiaryStatusUseCase(sl()));
 
     sl.registerLazySingleton<FeedRemoteDataSource>(
       () => FeedRemoteDataSourceImpl(),
@@ -210,10 +210,6 @@ class ServiceLocator {
     sl.registerLazySingleton(() => FetchExamTermsUseCase(sl()));
     sl.registerLazySingleton(() => FetchMarkListUseCase(sl()));
     sl.registerLazySingleton(() => FetchAccYearListUseCase(sl()));
-
-    sl.registerLazySingleton(() => LoginStatusUseCase(sl()));
-
-
 
     sl.registerLazySingleton<MarkListRemoteDataSource>(
       () => MarkListRemoteDataSourceImpl(),
