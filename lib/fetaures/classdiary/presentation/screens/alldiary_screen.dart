@@ -1578,6 +1578,7 @@ import 'package:photo_view/photo_view.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:studentmanagement/core/appdata/appdata.dart';
 import 'package:studentmanagement/fetaures/classdiary/domain/entities/fetch_diary_entity.dart';
+import 'package:studentmanagement/fetaures/classdiary/domain/parameters/diarystatusSaveRequest.dart';
 import 'package:studentmanagement/fetaures/classdiary/domain/parameters/fetch_diary_parameter.dart';
 import 'package:studentmanagement/fetaures/classdiary/presentation/cubit/diary_cubit.dart';
 import 'package:studentmanagement/fetaures/classdiary/presentation/widgets/classdiary_skeleton.dart';
@@ -1894,7 +1895,7 @@ String buildCleanVimeoPlayerHtml(String videoUrl) {
 </html>
 ''';
 }
-
+List<FetchDiaryDetails>? diaryDataList; // replace DiaryData with your actual model type
 class AllClassDiaryScreen extends StatefulWidget {
   const AllClassDiaryScreen({super.key});
 
@@ -1952,10 +1953,18 @@ class _AllClassDiaryScreenState extends State<AllClassDiaryScreen> {
               );
             }
 
-            if (state is DiaryLoaded) {
-              final diaryList = state.response.data ?? [];
 
-              if (diaryList.isEmpty) {
+
+            if (state is DiaryLoaded) {
+              diaryDataList = state.response.data;
+            } else if (state is DiaryStatusCompleted) {
+             // diaryDataList = state.response.data;
+            }
+
+            if (diaryDataList != null) {
+              final diaryList = diaryDataList;
+
+              if (diaryList!.isEmpty) {
                 return const Center(
                   child: Text(
                     'No Diary',
@@ -1967,17 +1976,16 @@ class _AllClassDiaryScreenState extends State<AllClassDiaryScreen> {
               return ListView.separated(
                 padding: const EdgeInsets.fromLTRB(24, 22, 24, 24),
                 itemCount: diaryList.length,
-                separatorBuilder: (context, index) =>
-                    const SizedBox(height: 22),
+                separatorBuilder: (context, index) => const SizedBox(height: 22),
                 itemBuilder: (context, index) {
                   final diary = diaryList[index];
+                  print('diaryIdSelected ${diary.diaryId}');
 
                   return _DiaryCard(
                     index: index,
+                    diaryId: '${diary.diaryId}',
                     teacherName: '${diary.employeeName}',
-                    teacherRole: diary.employeeName != null
-                        ? '${diary.employeeName}'
-                        : '',
+                    teacherRole: diary.employeeName != null ? '${diary.employeeName}' : '',
                     title: diary.diaryTitle ?? 'Announcement',
                     description: diary.description ?? '',
                     date: diary.diaryDate ?? 'Today',
@@ -1999,6 +2007,7 @@ class _AllClassDiaryScreenState extends State<AllClassDiaryScreen> {
 
 class _DiaryCard extends StatelessWidget {
   final int index;
+  final String diaryId;
   final String teacherName;
   final String teacherRole;
   final String title;
@@ -2010,6 +2019,7 @@ class _DiaryCard extends StatelessWidget {
 
   const _DiaryCard({
     required this.index,
+    required this.diaryId,
     required this.teacherName,
     required this.teacherRole,
     required this.title,
@@ -2097,6 +2107,17 @@ class _DiaryCard extends StatelessWidget {
             GestureDetector(
               onTap: () {
                 expandedIndexNotifier.value = isExpanded ? null : index;
+                print('DiaryIdSelected $diaryId');
+                context.read<DiaryCubit>().saveDiaryStatus(
+                  SaveDiaryStatusParameter(
+                    admNo: AppData.admissionNo!,
+                    accYear: AppData.accYear!,
+                    diaryId: diaryId,
+                    readStatus: 'true',
+                    branchId: AppData.branchId.toString(),
+                    createdUser: '',
+                  ),
+                );
               },
               child: Container(
                 width: double.infinity,

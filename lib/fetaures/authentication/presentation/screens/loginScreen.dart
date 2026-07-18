@@ -647,14 +647,14 @@ class _Login_ScreenState extends State<Login_Screen> {
                       //   ),
                       // );
                     } else {
-                      showAppSnackBar(context, 'Device Not Registered..!');
+                      showAppSnackBar(context, 'Invalid Date of birth Or Admission No');
                     }
                   }
                   if (state is DeviceRegisterStatusFailure) {
                     showAppSnackBar(context, state.error);
                   }
                   if (state is LoginFailure) {
-                    showAppSnackBar(context, 'Invalid Credentials');
+                    showAppSnackBar(context, 'Invalid Date of birth Or Admission No');
                   }
                 },
                 builder: (context, state) {

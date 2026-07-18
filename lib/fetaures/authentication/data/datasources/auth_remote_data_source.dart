@@ -23,14 +23,15 @@ import 'package:studentmanagement/services/shared_preference_helper.dart';
 
 abstract class AuthRemoteDataSource {
   Future<RegisterResponseResult> registerServer(
-    RegisterServerRequest registerServerParams,
-  );
+      RegisterServerRequest registerServerParams,
+      );
   Future<LoginResponseResult> loginServer(LoginRequest loginRequest);
   Future<DeviceRegisterResult> checkDeviceRegisterStatus(
-    DeviceRegisterRequest request,
-  );
+      DeviceRegisterRequest request,
+      );
   Future<FetchSchoolEntity> fetchSchools(FetchSchoolRequest request);
   Future<GetBranchEntity> getBranchDetails();
+  Future<LoginStatusModel> loginStatus(LoginStatusParameter parameter);
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -38,8 +39,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<RegisterResponseResult> registerServer(
-    RegisterServerRequest registerServerParams,
-  ) async {
+      RegisterServerRequest registerServerParams,
+      ) async {
     // Load base URL safely
     final baseUrl = await SharedPreferenceHelper().getBaseUrl();
 
@@ -194,8 +195,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<DeviceRegisterResult> checkDeviceRegisterStatus(
-    DeviceRegisterRequest request,
-  ) async {
+      DeviceRegisterRequest request,
+      ) async {
     try {
       final baseUrl = await SharedPreferenceHelper().getBaseUrl();
       if (baseUrl == null || baseUrl.isEmpty) {

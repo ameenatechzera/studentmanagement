@@ -91,6 +91,9 @@
 //     );
 //   }
 // }
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:studentmanagement/core/appdata/appdata.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/screens/second_splash.dart';
@@ -163,21 +166,46 @@ class _MainSplashScreenState extends State<MainSplashScreen> {
   }
 
   /// 🔥 COMMON LOGO (API or fallback)
+  // Widget buildLogo(double height) {
+  //   return logo != null && logo!.isNotEmpty
+  //       ? Image.network(
+  //           logo ?? '',
+  //           height: height,
+  //           fit: BoxFit.contain,
+  //           errorBuilder: (_, __, ___) => Image.asset(
+  //             'assets/images/cristal_horizontal.png', // fallback
+  //             height: height,
+  //           ),
+  //         )
+  //       : Image.asset(
+  //           'assets/images/cristal_horizontal.png', // fallback
+  //           height: height,
+  //         );
+  // }
   Widget buildLogo(double height) {
-    return logo != null && logo!.isNotEmpty
-        ? Image.network(
-            logo ?? '',
-            height: height,
-            fit: BoxFit.contain,
-            errorBuilder: (_, __, ___) => Image.asset(
-              'assets/images/cristal_horizontal.png', // fallback
-              height: height,
-            ),
-          )
+    Uint8List? bytes;
+    if (logo != null && logo!.isNotEmpty) {
+      try {
+        bytes = base64Decode(logo!);
+      } catch (_) {
+        bytes = null;
+      }
+    }
+
+    return bytes != null
+        ? Image.memory(
+      bytes,
+      height: height,
+      fit: BoxFit.contain,
+      errorBuilder: (_, __, ___) => Image.asset(
+        'assets/images/cristal_horizontal.png', // fallback
+        height: height,
+      ),
+    )
         : Image.asset(
-            'assets/images/cristal_horizontal.png', // fallback
-            height: height,
-          );
+      'assets/images/cristal_horizontal.png', // fallback
+      height: height,
+    );
   }
 
   @override

@@ -18,12 +18,14 @@ import 'package:studentmanagement/fetaures/authentication/domain/repositories/au
 import 'package:studentmanagement/fetaures/authentication/domain/usecases/device_register_usecase.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/usecases/getbranch_usecase.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/usecases/getschool_usecase.dart';
+import 'package:studentmanagement/fetaures/authentication/domain/usecases/login_status_usecase.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/usecases/login_usecase.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/bloc/logincubit/login_cubit.dart';
 import 'package:studentmanagement/fetaures/classdiary/data/datasources/diary_remote_data_source.dart';
 import 'package:studentmanagement/fetaures/classdiary/data/repositories/diary_repository_impl.dart';
 import 'package:studentmanagement/fetaures/classdiary/domain/repositories/diary_repository.dart';
 import 'package:studentmanagement/fetaures/classdiary/domain/usecases/fetch_diary_usecase.dart';
+import 'package:studentmanagement/fetaures/classdiary/domain/usecases/saveDiaryStatusUseCase.dart';
 import 'package:studentmanagement/fetaures/classdiary/presentation/cubit/diary_cubit.dart';
 import 'package:studentmanagement/fetaures/earlygo/data/datasources/earlygo_remote_data_source.dart';
 import 'package:studentmanagement/fetaures/earlygo/data/repositories/earlygo_repository_impl.dart';
@@ -92,7 +94,7 @@ class ServiceLocator {
         loginServerUseCase: sl(),
         checkDeviceRegisterStatusUseCase: sl(),
         fetchSchoolUseCase: sl(),
-        getBranchUseCase: sl(),
+        getBranchUseCase: sl(), loginStatusUseCase: sl(),
       ),
     );
     // usecase
@@ -128,7 +130,7 @@ class ServiceLocator {
     // ------------------- DIARY -------------------
 
     /// Cubit
-    sl.registerFactory(() => DiaryCubit(fetchDiaryUseCase: sl()));
+    sl.registerFactory(() => DiaryCubit(fetchDiaryUseCase: sl(), saveDiaryStatusUseCase: sl()));
 
     /// UseCase
     sl.registerLazySingleton(() => FetchDiaryUseCase(sl()));
@@ -185,6 +187,7 @@ class ServiceLocator {
     sl.registerLazySingleton(() => FetchFeedUseCase(sl()));
     sl.registerLazySingleton(() => FeedActionUseCase(sl()));
     sl.registerLazySingleton(() => SaveFeesDetailsUseCase(sl()));
+    sl.registerLazySingleton(() => SaveDiaryStatusUseCase(sl()));
 
     sl.registerLazySingleton<FeedRemoteDataSource>(
       () => FeedRemoteDataSourceImpl(),
@@ -207,6 +210,10 @@ class ServiceLocator {
     sl.registerLazySingleton(() => FetchExamTermsUseCase(sl()));
     sl.registerLazySingleton(() => FetchMarkListUseCase(sl()));
     sl.registerLazySingleton(() => FetchAccYearListUseCase(sl()));
+
+    sl.registerLazySingleton(() => LoginStatusUseCase(sl()));
+
+
 
     sl.registerLazySingleton<MarkListRemoteDataSource>(
       () => MarkListRemoteDataSourceImpl(),

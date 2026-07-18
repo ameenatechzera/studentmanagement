@@ -144,6 +144,7 @@ class _HomeScreenState extends State<StudentScreenN>
           '${student.studentStandard}-${student.studentDivision}';
       AppData.feeCollectionStatus = student.feeCollectionStatus ?? false;
       AppData.profileUrl = student.imageUrl.toString();
+      AppData.profile64 = student.profile64.toString();
 
       // Update the saved account with the latest student information.
       await SharedPreferenceHelper.saveNewAccount(
@@ -416,24 +417,43 @@ class _HomeScreenState extends State<StudentScreenN>
                         },
                       );
                     },
-                    child: CircleAvatar(
+                    child:
+                    // CircleAvatar(
+                    //   radius: 25,
+                    //   backgroundImage:
+                    //       (AppData.profileUrl != null &&
+                    //           AppData.profileUrl!.isNotEmpty)
+                    //       ? NetworkImage(AppData.profileUrl!)
+                    //       : null,
+                    //   child:
+                    //       (AppData.profileUrl == null ||
+                    //           AppData.profileUrl!.isEmpty)
+                    //       ? ClipOval(
+                    //           child: Image.asset(
+                    //             getGenderImage(),
+                    //             fit: BoxFit.cover,
+                    //             width: 50,
+                    //             height: 50,
+                    //           ),
+                    //         )
+                    //       : null,
+                    // ),
+                    CircleAvatar(
                       radius: 25,
                       backgroundImage:
-                          (AppData.profileUrl != null &&
-                              AppData.profileUrl!.isNotEmpty)
-                          ? NetworkImage(AppData.profileUrl!)
+                      (AppData.profile64 != null && AppData.profile64!.isNotEmpty)
+                          ? MemoryImage(base64Decode(AppData.profile64!))
                           : null,
                       child:
-                          (AppData.profileUrl == null ||
-                              AppData.profileUrl!.isEmpty)
+                      (AppData.profile64 == null || AppData.profile64!.isEmpty)
                           ? ClipOval(
-                              child: Image.asset(
-                                getGenderImage(),
-                                fit: BoxFit.cover,
-                                width: 50,
-                                height: 50,
-                              ),
-                            )
+                        child: Image.asset(
+                          getGenderImage(),
+                          fit: BoxFit.cover,
+                          width: 50,
+                          height: 50,
+                        ),
+                      )
                           : null,
                     ),
                   ),

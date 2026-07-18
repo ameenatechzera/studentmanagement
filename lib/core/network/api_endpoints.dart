@@ -121,4 +121,9 @@ class ApiConstants {
   static String getSaveLoginStatusPath(String baseUrl) {
     return '${baseUrl}app/student/login-history';
   }
+  /// save diary status
+  static String getDiaryStatusSavePath(String baseUrl) {
+    return '${baseUrl}app/save-diary-readstatus';
+  }
+
 }
