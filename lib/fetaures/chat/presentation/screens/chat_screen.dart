@@ -76,13 +76,13 @@ class ChatScreen extends StatelessWidget {
 
                   return ListTile(
                     onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) {
-                            return ChatDetailScreen();
-                          },
-                        ),
-                      );
+                      // Navigator.of(context).push(
+                      //   MaterialPageRoute(
+                      //     builder: (context) {
+                      //       return ChatDetailScreen();
+                      //     },
+                      //   ),
+                      // );
                     },
                     contentPadding: EdgeInsets.zero,
 

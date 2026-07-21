@@ -11,7 +11,7 @@ publish_to: 'none'
 #version: 1.0.8+9 #fourth update playstore 23-06-2026
 #version: 1.0.9+10 #fourth update playstore 27-06-2026
 #version: 1.0.10+11 #fourth update play store 01-07-2026
-version: 1.0.10+12 #fourth update play store 18-07-2026
+version: 1.0.10+14 #fourth update play store 18-07-2026
 environment:
   sdk: ^3.10.4
 
@@ -53,7 +53,7 @@ dependencies:
   android_intent_plus: ^5.2.1
   webview_flutter_android: ^3.16.0
   emoji_picker_flutter: ^4.3.0
-  photo_manager: ^3.0.0
+#  photo_manager: ^3.0.0
   image_picker: ^1.2.2
   record: ^6.1.2
   audioplayers: ^6.5.1

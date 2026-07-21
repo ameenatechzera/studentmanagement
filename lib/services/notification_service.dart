@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
+import 'package:studentmanagement/core/appdata/appdata.dart';
 import 'package:studentmanagement/services/shared_preference_helper.dart';
 
 @pragma('vm:entry-point')
@@ -97,7 +98,8 @@ class NotificationService {
     try {
       final response = await http.post(
         Uri.parse(
-          "https://alhidaya.cristaledu.com/Api/public/api/save-fcm-token"),
+            baseUrl+'save-fcm-token'),
+          // "https://alfouz.cristaledu.com/Api/public/api/save-fcm-token"),
         headers: {
           "Authorization": "Bearer $loginToken",
           "Content-Type": "application/json",
@@ -107,6 +109,7 @@ class NotificationService {
         },
         body: jsonEncode({
           "fcm_token": token,
+          "Admno":AppData.admissionNo
         }),
       );
 
