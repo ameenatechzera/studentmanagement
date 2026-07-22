@@ -16,6 +16,7 @@ import 'package:studentmanagement/fetaures/home_screen/presentation/cubit/feed_c
 import 'package:studentmanagement/fetaures/home_screen/presentation/screens/main_screen.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/widgets/post_card_cristal.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/widgets/sidenavigation.dart';
+import 'package:studentmanagement/services/notification_service.dart';
 import 'package:studentmanagement/services/shared_preference_helper.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -61,7 +62,9 @@ class _HomeScreenState extends State<HomeScreen> {
     saveLoginStatusIfNeeded();
     print('save loginstatus success');
     _fetchFeeds(page: 1);
-
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      NotificationService.tryConsumeQueue(); // now navigator definitely exists
+    });
     _scrollController.addListener(() {
       if (_scrollController.position.pixels >=
               _scrollController.position.maxScrollExtent - 200 &&

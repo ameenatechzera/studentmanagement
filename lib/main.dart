@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:media_store_plus/media_store_plus.dart';
@@ -12,11 +13,16 @@ import 'package:studentmanagement/fetaures/home_screen/presentation/cubit/feed_c
 import 'package:studentmanagement/fetaures/marklist/presentation/cubit/marklist_cubit.dart';
 import 'package:studentmanagement/fetaures/materials/presentation/cubit/material_cubit.dart';
 import 'package:studentmanagement/fetaures/timetable/presentation/cubit/timetable_cubit.dart';
+import 'package:studentmanagement/services/notification_service.dart';
 import 'package:studentmanagement/services/service_locator.dart';
 import 'fetaures/authentication/presentation/bloc/logincubit/login_cubit.dart';
 import 'fetaures/fees/presentation/unPaidFee/un_paid_fee_cubit.dart';
 
 //late AppDatabase db;
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+// Global variable
+String? pendingNavigationType;
+String? pendingDiaryId;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   print("🚀 STEP 1: Flutter binding ready");
@@ -33,10 +39,18 @@ void main() async {
   // ✅ initialize Floor DB here
   // 1️⃣ INIT DB FIRST
   await DatabaseInit.init();
+  // 🔥 ADD THIS — must happen before any FirebaseMessaging usage
+  await Firebase.initializeApp(); // no options needed if native config files exist
+  print("🟢 STEP 1.5: Firebase initialized");
 
   print("🟢 STEP 2: DB initialized");
   await ServiceLocator.init();
   print("🟢 STEP 3: ServiceLocator ready");
+
+
+  // 🔥 ADD THIS — this was missing entirely
+  await NotificationService.init();
+  print("🟢 STEP 3.5: NotificationService ready");
 
   //final sharedPrefHelper = SharedPreferenceHelper();
   //db = await $FloorAppDatabase.databaseBuilder('app.db').build();
@@ -85,6 +99,7 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
+        navigatorKey: navigatorKey,
         debugShowCheckedModeBanner: false,
         title: 'Cristal',
         theme: ThemeData(
