@@ -34,13 +34,30 @@ final class AccYearSuccess extends FeesState {
 final class FeeUnpaid_Loading extends FeesState {}
 
 final class FeeSave_Loading extends FeesState {}
+final class FeeCollectionCheckLoading extends FeesState {}
 
 final class FeeUnPaid_Failure extends FeesState {
   final String error;
 
   FeeUnPaid_Failure(this.error);
 }
+final class LoginCheckFailure extends FeesState {
+  final String error;
 
+   LoginCheckFailure(this.error);
+
+  @override
+  List<Object> get props => [error];
+}
+
+final class LoginCheckSuccess extends FeesState {
+  final LoginResponseResult loginResponse;
+
+   LoginCheckSuccess(this.loginResponse);
+
+  @override
+  List<Object> get props => [loginResponse];
+}
 final class SaveFees_Failure extends FeesState {
   final String error;
 

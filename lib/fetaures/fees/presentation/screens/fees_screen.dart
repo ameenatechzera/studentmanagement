@@ -335,12 +335,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studentmanagement/core/appdata/appdata.dart';
+import 'package:studentmanagement/fetaures/authentication/domain/parameters/login_params.dart';
+import 'package:studentmanagement/fetaures/fees/domain/parameters/offlinePaymentSaveRequest.dart';
 import 'package:studentmanagement/fetaures/fees/domain/parameters/paidFees_request.dart';
 import 'package:studentmanagement/fetaures/fees/domain/parameters/paymentSaveRequest.dart';
 import 'package:studentmanagement/fetaures/fees/presentation/bloc/fees_cubit.dart';
 import 'package:studentmanagement/fetaures/fees/presentation/unPaidFee/un_paid_fee_cubit.dart';
 import 'package:studentmanagement/fetaures/fees/presentation/widgets/paidfee_widget.dart';
 import 'package:studentmanagement/fetaures/fees/presentation/widgets/pendingfee_widget.dart';
+import 'package:studentmanagement/services/shared_preference_helper.dart';
 import '../../domain/entities/accyearResult.dart';
 import '../../domain/entities/unpaid fee_result.dart' as unpaid;
 
@@ -546,59 +549,92 @@ class _FeesScreenState extends State<FeesScreen> {
 
   void _onPayPressed() {
     final selectedFeeList = _selectedFees.values.toList();
-    List<saveFeeDetails> saveDetails =
-        selectedFeeList
-            .expand(
-              (datum) => datum.details.map(
-                (detail) => saveFeeDetails(
-                  feeMonthId: datum.feeMonth,
-                  ledgerId: "12",
-                  dueAmount: int.tryParse(datum.totalBalance) ?? 0,
-                  paidAmount: int.tryParse(detail.amount) ?? 0,
-                  paidStatus: false,
-                  chequeNo: null,
-                  chequeDate: datum.dueDate,
-                  userId: "",
-                  feeAmount: int.tryParse(detail.amount) ?? 0,
-                  taxId: "",
-                  taxType: "",
-                  taxAmount: 0,
-                  floodCess: 0,
+    if (AppData.appType == 'Offline') {
+      List<OfflineDetail> saveOfflineDetails =
+          selectedFeeList
+              .expand(
+                (datum) => datum.details.map(
+                  (detail) => OfflineDetail(
+                    feemonthid: datum.feeMonthId.toString(),
+                    feemonth: datum.feeMonth,
+                    ledgerid: 12,
+                    ledgername: '',
+                    dueamount: detail.amount,
+                    paidamount: detail.amount,
+                  ),
                 ),
-              ),
-            )
-            .toList() ??
-        [];
-    print('saveDetails ${saveDetails.toString()}');
+              )
+              .toList() ??
+          [];
+      context.read<FeesCubit>().saveOfflineFeeDetails(
+        OfflineFeePayRequest(
+          admno: AppData.admissionNo!,
+          accyear: AppData.accYear!,
+          date: '2026-07-24',
+          totalamount: _selectedTotal.toStringAsFixed(2),
+          paidamount: _selectedTotal.toStringAsFixed(2),
+          transactionid: '',
+          status: 'Pending',
+          response: '',
+          details: saveOfflineDetails,
+          admissionId: AppData.admissionId!,
+        ),
+      );
+    } else {
+      List<saveFeeDetails> saveDetails =
+          selectedFeeList
+              .expand(
+                (datum) => datum.details.map(
+                  (detail) => saveFeeDetails(
+                    feeMonthId: datum.feeMonth,
+                    ledgerId: "12",
+                    dueAmount: int.tryParse(datum.totalBalance) ?? 0,
+                    paidAmount: int.tryParse(detail.amount) ?? 0,
+                    paidStatus: false,
+                    chequeNo: null,
+                    chequeDate: datum.dueDate,
+                    userId: "",
+                    feeAmount: int.tryParse(detail.amount) ?? 0,
+                    taxId: "",
+                    taxType: "",
+                    taxAmount: 0,
+                    floodCess: 0,
+                  ),
+                ),
+              )
+              .toList() ??
+          [];
+      print('saveDetails ${saveDetails.toString()}');
 
-    debugPrint('Selected fees count: ${selectedFeeList.length}');
-    debugPrint('Selected total: $_selectedTotal');
-    context.read<FeesCubit>().saveFeeDetails(
-      FeeSaveRequest(
-        voucherNo: 0,
-        invoiceNo: 0,
-        suffixPrefixId: '',
-        date: '',
-        admno: AppData.admissionNo!,
-        accYear: AppData.accYear!,
-        ledgerId: 0,
-        totalAmount: _selectedTotal,
-        paidAmount: _selectedTotal,
-        balance: 0,
-        discount: 0,
-        totalTax: 0,
-        totalFloodCess: 0,
-        status: true,
-        narration: '',
-        financialYearId: '',
-        canceled: false,
-        branchId: AppData.branchId!,
-        voucherType: "Fee Collection",
-        yearId: '',
-        createdUser: '',
-        details: saveDetails,
-      ),
-    );
+      debugPrint('Selected fees count: ${selectedFeeList.length}');
+      debugPrint('Selected total: $_selectedTotal');
+      context.read<FeesCubit>().saveFeeDetails(
+        FeeSaveRequest(
+          voucherNo: 0,
+          invoiceNo: 0,
+          suffixPrefixId: '',
+          date: '',
+          admno: AppData.admissionNo!,
+          accYear: AppData.accYear!,
+          ledgerId: 0,
+          totalAmount: _selectedTotal,
+          paidAmount: _selectedTotal,
+          balance: 0,
+          discount: 0,
+          totalTax: 0,
+          totalFloodCess: 0,
+          status: true,
+          narration: '',
+          financialYearId: '',
+          canceled: false,
+          branchId: AppData.branchId!,
+          voucherType: "Fee Collection",
+          yearId: '',
+          createdUser: '',
+          details: saveDetails,
+        ),
+      );
+    }
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -792,23 +828,63 @@ class _FeesScreenState extends State<FeesScreen> {
 
                       const SizedBox(width: 8),
 
-                      ElevatedButton(
-                        onPressed: _onPayPressed,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: selectedTabPurple,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 12,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        child: const Text(
-                          'Pay',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
+                      BlocConsumer<FeesCubit, FeesState>(
+                        listener: (context, state) async {
+                          if (state is LoginCheckSuccess) {
+                            print('LoginCheckSuccess IfState');
+                            AppData.feeCollectionStatus =
+                                state
+                                    .loginResponse
+                                    .student
+                                    ?.feeCollectionStatus ??
+                                false;
+                            if (AppData.feeCollectionStatus) {
+                              _onPayPressed();
+                            } else {
+                              print('LoginCheckSuccess Else');
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'You do not have permission to make fee payments',
+                                  ),
+                                ),
+                              );
+                            }
+                          }
+                          if(state is FeeSave_Success){
+                            Navigator.pop(context);
+                          }
+                        },
+                        builder: (context, state) {
+                          return ElevatedButton(
+                            // onPressed: _onPayPressed,
+                            onPressed: () {
+                              context
+                                  .read<FeesCubit>()
+                                  .loginCheckForFeeCollectionStatus(
+                                    LoginRequest(
+                                      admno: AppData.admissionNo!,
+                                      dob: AppData.dob!,
+                                    ),
+                                  );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: selectedTabPurple,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 24,
+                                vertical: 12,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            child: const Text(
+                              'Pay',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -835,6 +911,7 @@ class _FeesScreenState extends State<FeesScreen> {
 
         if (state is FeesUnPaidSuccess) {
           print('wwwwwwwwwwwwwwww${AppData.feeCollectionStatus}');
+
           if (state.feeUnPaidResult.data.isNotEmpty) {
             return PendingFee(
               feesUnpaidList: state.feeUnPaidResult,

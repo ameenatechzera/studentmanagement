@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -134,6 +135,7 @@ class _HomeScreenState extends State<StudentScreenN>
 
       // Refresh all in-memory student values.
       AppData.admissionNo = student.admno.toString();
+      AppData.admissionId = student.admissionId;
       AppData.studentName = student.name.toString();
       AppData.studentStdId = student.currentStudentStandardId.toString();
       AppData.studentDivId = student.currentStudentDivisionId.toString();
@@ -271,7 +273,7 @@ class _HomeScreenState extends State<StudentScreenN>
       checkAndFetchAttendance();
     }
   }
-
+  static MethodChannel _channel = MethodChannel('easebuzz');
   @override
   Widget build(BuildContext context) {
     return BlocListener<LoginCubit, LoginState>(
@@ -814,10 +816,24 @@ class _HomeScreenState extends State<StudentScreenN>
     required Color color,
   }) {
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
         print('label $label');
         if (label == "Fees") {
-          AppNavigator.pushSlide(context: context, page: FeesScreen());
+           AppNavigator.pushSlide(context: context, page: FeesScreen());
+
+
+            // String access_key = "62STKYKHVY";
+            // String pay_mode = "test";
+            // Object parameters =
+            // {
+            //   "access_key":access_key,
+            //   "pay_mode":pay_mode
+            // };
+            // final payment_response = await _channel.invokeMethod("payWithEasebuzz", parameters);
+            // print('payment_response $payment_response');
+            /* payment_response is the HashMap containing the response of the payment.
+You can parse it accordingly to handle response */
+
         }
         if (label == "Time Table") {
           AppNavigator.pushSlide(context: context, page: TimeTableScreen());

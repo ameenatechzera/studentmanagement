@@ -118,6 +118,11 @@ class ApiConstants {
     return '${baseUrl}save-paymentmaster';
   }
 
+  /// Returns the full URL for Fees / Save Fees
+  static String getOfflineFeesSaveServerPath(String baseUrl) {
+    return '${baseUrl}payment/store';
+  }
+
   static String getSaveLoginStatusPath(String baseUrl) {
     return '${baseUrl}app/student/login-history';
   }

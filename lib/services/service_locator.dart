@@ -40,6 +40,7 @@ import 'package:studentmanagement/fetaures/fees/domain/usecases/fetchAccYearUseC
 import 'package:studentmanagement/fetaures/fees/domain/usecases/fetchPaidFeesDetailsUseCase.dart';
 import 'package:studentmanagement/fetaures/fees/domain/usecases/fetchUnpaidFeeDetailsUseCase.dart';
 import 'package:studentmanagement/fetaures/fees/domain/usecases/saveFeePaymentUseCase.dart';
+import 'package:studentmanagement/fetaures/fees/domain/usecases/saveOfflineFeeDetailsUseCase.dart';
 import 'package:studentmanagement/fetaures/fees/presentation/bloc/fees_cubit.dart';
 import 'package:studentmanagement/fetaures/fees/presentation/unPaidFee/un_paid_fee_cubit.dart';
 import 'package:studentmanagement/fetaures/home_screen/data/datasources/feed_remote_data_source.dart';
@@ -153,7 +154,8 @@ class ServiceLocator {
         fetchPaidFeesDetailsUseCase: sl(),
         fetchAccYearListUseCase: sl(),
         fetchUnPaidFeesDetailsUseCase: sl(),
-        saveFeesDetailsUseCase: sl(),
+        saveFeesDetailsUseCase: sl(), saveOfflineFeesDetailsUseCase: sl(),
+        loginServerUseCase: sl(),
       ),
     );
 
@@ -189,6 +191,7 @@ class ServiceLocator {
     sl.registerLazySingleton(() => FetchFeedUseCase(sl()));
     sl.registerLazySingleton(() => FeedActionUseCase(sl()));
     sl.registerLazySingleton(() => SaveFeesDetailsUseCase(sl()));
+    sl.registerLazySingleton(() => SaveOfflineFeesDetailsUseCase(sl()));
     sl.registerLazySingleton(() => SaveDiaryStatusUseCase(sl()));
 
 

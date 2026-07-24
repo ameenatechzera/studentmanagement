@@ -55,11 +55,17 @@ class UnpaidFeeResult extends Equatable {
 
 class Datum extends Equatable {
   Datum({
+    required this.feeMonthId,
     required this.feeMonth,
     required this.dueDate,
     required this.totalBalance,
     required this.details,
   });
+
+
+
+  final int feeMonthId;
+  static const String feeMonthIdKey = "FeeMonthId";
 
   final String feeMonth;
   static const String feeMonthKey = "FeeMonth";
@@ -75,12 +81,14 @@ class Datum extends Equatable {
 
 
   Datum copyWith({
+    int? feeMonthId,
     String? feeMonth,
     String? dueDate,
     String? totalBalance,
     List<Detail>? details,
   }) {
     return Datum(
+      feeMonthId: feeMonthId ?? this.feeMonthId,
       feeMonth: feeMonth ?? this.feeMonth,
       dueDate: dueDate ?? this.dueDate,
       totalBalance: totalBalance ?? this.totalBalance,
@@ -90,6 +98,7 @@ class Datum extends Equatable {
 
   factory Datum.fromJson(Map<String, dynamic> json){
     return Datum(
+      feeMonthId:  json["FeeMonthId"] ?? "",
       feeMonth: json["FeeMonth"] ?? "",
       dueDate: json["DueDate"] ?? "",
       totalBalance: json["TotalBalance"] ?? "",
@@ -98,6 +107,7 @@ class Datum extends Equatable {
   }
 
   Map<String, dynamic> toJson() => {
+    "FeeMonthId": feeMonthId,
     "FeeMonth": feeMonth,
     "DueDate": dueDate,
     "TotalBalance": totalBalance,
@@ -106,12 +116,12 @@ class Datum extends Equatable {
 
   @override
   String toString(){
-    return "$feeMonth, $dueDate, $totalBalance, $details, ";
+    return " $feeMonthId, $feeMonth, $dueDate, $totalBalance, $details, ";
   }
 
   @override
   List<Object?> get props => [
-    feeMonth, dueDate, totalBalance, details, ];
+    feeMonthId , feeMonth, dueDate, totalBalance, details, ];
 }
 
 class Detail extends Equatable {

@@ -17,7 +17,7 @@ import 'package:studentmanagement/services/notification_service.dart';
 import 'package:studentmanagement/services/service_locator.dart';
 import 'fetaures/authentication/presentation/bloc/logincubit/login_cubit.dart';
 import 'fetaures/fees/presentation/unPaidFee/un_paid_fee_cubit.dart';
-
+import 'package:flutter/services.dart';
 //late AppDatabase db;
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 // Global variable
@@ -80,6 +80,7 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+  static MethodChannel _channel = MethodChannel('easebuzz');
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(

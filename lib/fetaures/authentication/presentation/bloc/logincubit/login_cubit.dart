@@ -60,6 +60,11 @@ class LoginCubit extends Cubit<LoginState> {
               '${loginResponse.student!.studentStandard}-${loginResponse.student!.studentDivision}'
                   .toString();
           AppData.profileUrl = loginResponse.student!.imageUrl.toString();
+          // await sharedPrefHelper.saveFeeCollectionStatus( loginResponse.student?.feeCollectionStatus ??
+          //     false);
+          AppData.feeCollectionStatus =
+              loginResponse.student?.feeCollectionStatus ??
+                  false;
           emit(LoginSuccess(loginResponse));
         },
       );
@@ -117,6 +122,7 @@ class LoginCubit extends Cubit<LoginState> {
               response.schoolDetails!.first.playStoreVersion!,
             );
             AppData.schoolName = response.schoolDetails!.first.schoolName!;
+            AppData.appType = response.schoolDetails!.first.applicationType!;
             emit(FetchSchoolSuccess(response));
           } else {
             emit(FetchSchoolSuccess(response));

@@ -456,6 +456,8 @@ class _Login_ScreenState extends State<Login_Screen> {
 
                     AppData.admissionNo = state.loginResponse.student!.admno
                         .toString();
+
+                    AppData.admissionId =state.loginResponse.student!.admissionId;
                     AppData.studentName = state.loginResponse.student!.name
                         .toString();
                     AppData.studentStdId = state
@@ -478,6 +480,9 @@ class _Login_ScreenState extends State<Login_Screen> {
                     AppData.feeCollectionStatus =
                         state.loginResponse.student?.feeCollectionStatus ??
                         false;
+                    await sharedPrefHelper.saveFeeCollectionStatus( state.loginResponse.student?.feeCollectionStatus ??
+                        false);
+
                     print('AppData.studentClass ${AppData.studentClass}');
                     print(
                       'profileUrl ${state.loginResponse.student!.imageUrl.toString()}',

@@ -139,6 +139,11 @@ class _MainSplashScreenState extends State<MainSplashScreen> {
 
     final loginResponse = await sharedPrefHelper.getLoginResponse();
     AppData.admissionNo = loginResponse?.student!.admno.toString();
+    AppData.dob = loginResponse?.student!.dob.toString();
+    AppData.feeCollectionStatus =
+        loginResponse?.student?.feeCollectionStatus ??
+            false;
+    AppData.admissionId = loginResponse?.student!.admissionId;
     AppData.studentName = loginResponse?.student!.name.toString();
     ;
     AppData.studentStdId = loginResponse?.student!.currentStudentStandardId

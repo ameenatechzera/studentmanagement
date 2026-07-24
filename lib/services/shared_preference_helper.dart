@@ -19,6 +19,7 @@ class SharedPreferenceHelper {
   static const String _schoolCodeKey = 'school_code';
   static const String _schoolNameKey = 'school_name';
   static const String _classWithDivisionKey = 'class_with_division';
+  static const String isFeeCollectionStatus = 'is_fee_collection_status';
 
   /// ------------------ SAVE FULL BRANCH DATA ------------------
   Future<void> saveBranchData(Map<String, dynamic> data) async {
@@ -46,6 +47,17 @@ class SharedPreferenceHelper {
   Future<bool> isSchoolRegistered() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(_isSchoolRegisteredKey) ?? false;
+  }
+
+  /// ------------------ SCHOOL Fee Collection Status ------------------
+  Future<void> saveFeeCollectionStatus(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(isFeeCollectionStatus, value);
+  }
+
+  Future<bool> getFeeCollectionStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(isFeeCollectionStatus) ?? false;
   }
   // static const String _vatStatusKey = 'vat_status';
   // static const String _vatTypeKey = 'vat_type';

@@ -4,6 +4,7 @@ class AppData {
   static String appVersion =
       '2.2'; //extra 1 not passing issue (formtype) fixed 05-02-2026
   static String? admissionNo;
+  static int? admissionId;
   static String? studentName;
   static String? studentStdId;
   static String? studentDivId;
@@ -12,6 +13,7 @@ class AppData {
   static String? profileUrl;
   static String? gender;
   static String? schoolName;
+  static String? appType;
   static String? profile64;
   // Simple global state manager
   static ValueNotifier<bool> showDeleteButtonNotifier = ValueNotifier(false);
