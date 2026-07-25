@@ -333,9 +333,12 @@
 // }
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:studentmanagement/core/appdata/appdata.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/parameters/login_params.dart';
+import 'package:studentmanagement/fetaures/fees/domain/parameters/feePayExistRequest.dart';
 import 'package:studentmanagement/fetaures/fees/domain/parameters/offlinePaymentSaveRequest.dart';
 import 'package:studentmanagement/fetaures/fees/domain/parameters/paidFees_request.dart';
 import 'package:studentmanagement/fetaures/fees/domain/parameters/paymentSaveRequest.dart';
@@ -343,6 +346,7 @@ import 'package:studentmanagement/fetaures/fees/presentation/bloc/fees_cubit.dar
 import 'package:studentmanagement/fetaures/fees/presentation/unPaidFee/un_paid_fee_cubit.dart';
 import 'package:studentmanagement/fetaures/fees/presentation/widgets/paidfee_widget.dart';
 import 'package:studentmanagement/fetaures/fees/presentation/widgets/pendingfee_widget.dart';
+import 'package:studentmanagement/services/easebuzz_service.dart';
 import 'package:studentmanagement/services/shared_preference_helper.dart';
 import '../../domain/entities/accyearResult.dart';
 import '../../domain/entities/unpaid fee_result.dart' as unpaid;
@@ -392,7 +396,7 @@ class _FeesScreenState extends State<FeesScreen> {
     );
   }
 
-  void _handleFeesState(BuildContext context, FeesState state) {
+  Future<void> _handleFeesState(BuildContext context, FeesState state) async {
     if (!mounted) return;
 
     if (state is AccYearsInitial) {
@@ -405,6 +409,8 @@ class _FeesScreenState extends State<FeesScreen> {
     }
 
     if (state is AccYearSuccess) {
+
+      AppData.schoolName = (await SharedPreferenceHelper().getSchoolName())!;
       final years = state.accYearResult.data;
 
       setState(() {
@@ -547,7 +553,7 @@ class _FeesScreenState extends State<FeesScreen> {
     });
   }
 
-  void _onPayPressed() {
+  void _onPayPressed(String trxnId, String response, String payStatus) {
     final selectedFeeList = _selectedFees.values.toList();
     if (AppData.appType == 'Offline') {
       List<OfflineDetail> saveOfflineDetails =
@@ -566,16 +572,19 @@ class _FeesScreenState extends State<FeesScreen> {
               )
               .toList() ??
           [];
+
+      String formattedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+      print('formattedDate $formattedDate');
       context.read<FeesCubit>().saveOfflineFeeDetails(
         OfflineFeePayRequest(
           admno: AppData.admissionNo!,
           accyear: AppData.accYear!,
-          date: '2026-07-24',
+          date: formattedDate,
           totalamount: _selectedTotal.toStringAsFixed(2),
           paidamount: _selectedTotal.toStringAsFixed(2),
-          transactionid: '',
-          status: 'Pending',
-          response: '',
+          transactionid: trxnId,
+          status: payStatus,
+          response: response,
           details: saveOfflineDetails,
           admissionId: AppData.admissionId!,
         ),
@@ -644,7 +653,7 @@ class _FeesScreenState extends State<FeesScreen> {
       ),
     );
   }
-
+  static MethodChannel _channel = MethodChannel('easebuzz');
   @override
   Widget build(BuildContext context) {
     return MultiBlocListener(
@@ -839,7 +848,7 @@ class _FeesScreenState extends State<FeesScreen> {
                                     ?.feeCollectionStatus ??
                                 false;
                             if (AppData.feeCollectionStatus) {
-                              _onPayPressed();
+                              //_onPayPressed();
                             } else {
                               print('LoginCheckSuccess Else');
                               ScaffoldMessenger.of(context).showSnackBar(
@@ -858,15 +867,49 @@ class _FeesScreenState extends State<FeesScreen> {
                         builder: (context, state) {
                           return ElevatedButton(
                             // onPressed: _onPayPressed,
-                            onPressed: () {
-                              context
-                                  .read<FeesCubit>()
-                                  .loginCheckForFeeCollectionStatus(
-                                    LoginRequest(
-                                      admno: AppData.admissionNo!,
-                                      dob: AppData.dob!,
-                                    ),
-                                  );
+                            onPressed: () async {
+                              //_onPayPressed();
+
+                              String st_txnId = '';
+                              final easebuzz = EasebuzzService();
+                               st_txnId = 'TXN${DateTime.now().millisecondsSinceEpoch}';
+                              try {
+                                final result = await easebuzz.getAccessKey(
+                                  txnid: st_txnId,
+                                  amount: '1.00',
+                                  productinfo: 'School Fee Payment',
+                                  firstname: 'cristal',
+                                  email: 'haris.rahman91@gmail.com',
+                                  phone: '8089001136',
+                                  surl: 'https://techzera.in/',
+                                  furl: 'https://techzera.in/',
+                                  admissionNo: AppData.admissionNo!,
+                                  std: AppData.studentClass!,
+                                  div: AppData.studentDivId!,
+                                  studName: AppData.studentName!,
+                                  schoolName: AppData.schoolName!,
+                                );
+
+                                if (result.success) {
+                                  print('Access key: ${result.accessKey}');
+                                  // pass this access_key into your native payWithEasebuzz channel call
+                                  String access_key = result.accessKey.toString();
+                                  String pay_mode = "production";
+                                  Object parameters =
+                                  {
+                                    "access_key":access_key,
+                                    "pay_mode":pay_mode
+                                  };
+                                  final payment_response = await _channel.invokeMethod("payWithEasebuzz", parameters);
+                                  print('payment_response $payment_response');
+                                  _onPayPressed(st_txnId,payment_response.toString(),'Success');
+                                } else {
+                                  _onPayPressed(st_txnId,result.errorDesc.toString(),'Failed');
+                                  print('Error: ${result.errorDesc}');
+                                }
+                              } catch (e) {
+                                print('Request error: $e');
+                              }
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: selectedTabPurple,
@@ -1065,61 +1108,6 @@ class _FeesScreenState extends State<FeesScreen> {
               }
             },
 
-            // builder: (context, state) {
-            //   if (accYears.isEmpty) return const SizedBox();
-
-            //   return PopupMenuButton<String>(
-            //     color: Colors.white,
-            //     offset: const Offset(0, 40),
-            //     onSelected: (value) {
-            //       setState(() {
-            //         _selectedAccYear = value;
-            //         _selectedIndexes.clear();
-            //         _selectedFees.clear();
-            //       });
-            //       Future.microtask(() {
-            //         context.read<FeesCubit>().fetchPaidFeesDetails(
-            //           PaidFeesRequest(
-            //             accyear: value,
-            //             admno: AppData.admissionNo!,
-            //           ),
-            //         );
-            //         context.read<UnPaidFeeCubit>().fetchUnPaidFeesDetails(
-            //           PaidFeesRequest(
-            //             accyear: value,
-            //             admno: AppData.admissionNo!,
-            //           ),
-            //         );
-            //       });
-            //     },
-            //     itemBuilder: (context) {
-            //       return accYears.map((datum) {
-            //         return PopupMenuItem<String>(
-            //           value: datum.accYear,
-            //           child: Text(datum.accYear),
-            //         );
-            //       }).toList();
-            //     },
-            //     child: Row(
-            //       mainAxisSize: MainAxisSize.min,
-            //       children: [
-            //         Text(
-            //           _selectedAccYear ?? accYears.first.accYear,
-            //           style: const TextStyle(
-            //             fontSize: 12,
-            //             fontWeight: FontWeight.w600,
-            //             color: Colors.white,
-            //           ),
-            //         ),
-            //         const Icon(
-            //           Icons.arrow_drop_down,
-            //           color: Colors.white,
-            //           size: 20,
-            //         ),
-            //       ],
-            //     ),
-            //   );
-            // },
             builder: (context, state) {
               return PopupMenuButton<String>(
                 color: Colors.white,

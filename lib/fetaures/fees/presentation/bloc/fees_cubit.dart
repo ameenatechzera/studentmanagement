@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:studentmanagement/core/appdata/appdata.dart';
+import 'package:studentmanagement/core/domain/entities/common_response_entity.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/entities/login_entity.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/parameters/login_params.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/usecases/login_usecase.dart';
@@ -8,9 +9,11 @@ import 'package:studentmanagement/fetaures/fees/domain/entities/accyearResult.da
 import 'package:studentmanagement/fetaures/fees/domain/entities/feeSaveResult.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/paid_fee_result.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/unpaid%20fee_result.dart';
+import 'package:studentmanagement/fetaures/fees/domain/parameters/feePayExistRequest.dart';
 import 'package:studentmanagement/fetaures/fees/domain/parameters/offlinePaymentSaveRequest.dart';
 import 'package:studentmanagement/fetaures/fees/domain/parameters/paidFees_request.dart';
 import 'package:studentmanagement/fetaures/fees/domain/parameters/paymentSaveRequest.dart';
+import 'package:studentmanagement/fetaures/fees/domain/usecases/checkFeePayExistUseCase.dart';
 import 'package:studentmanagement/fetaures/fees/domain/usecases/fetchAccYearUseCase.dart';
 import 'package:studentmanagement/fetaures/fees/domain/usecases/fetchPaidFeesDetailsUseCase.dart';
 import 'package:studentmanagement/fetaures/fees/domain/usecases/fetchUnpaidFeeDetailsUseCase.dart';
@@ -27,6 +30,7 @@ class FeesCubit extends Cubit<FeesState> {
   final SaveFeesDetailsUseCase _saveFeesDetailsUseCase;
   final SaveOfflineFeesDetailsUseCase _saveOfflineFeesDetailsUseCase;
   final LoginServerUseCase _loginUseCase;
+  final CheckFeeExistUseCase _checkFeeExistUseCase;
 
   FeesCubit({
     required LoginServerUseCase loginServerUseCase,
@@ -35,13 +39,39 @@ class FeesCubit extends Cubit<FeesState> {
     required FetchUnPaidFeesDetailsUseCase fetchUnPaidFeesDetailsUseCase,
     required SaveFeesDetailsUseCase saveFeesDetailsUseCase,
     required SaveOfflineFeesDetailsUseCase saveOfflineFeesDetailsUseCase,
+    required CheckFeeExistUseCase checkFeeExistUseCase,
   }) : _loginUseCase = loginServerUseCase,
         _fetchPaidFeesDetailsUseCase = fetchPaidFeesDetailsUseCase,
        _fetchAccYearListUseCase = fetchAccYearListUseCase,
        _fetchUnPaidFeesDetailsUseCase = fetchUnPaidFeesDetailsUseCase,
        _saveFeesDetailsUseCase = saveFeesDetailsUseCase,
         _saveOfflineFeesDetailsUseCase = saveOfflineFeesDetailsUseCase,
+        _checkFeeExistUseCase = checkFeeExistUseCase,
        super(FeesInitial());
+
+  Future<void> checkFeeExist(FeePaymentExistRequest request) async {
+    print('loginRequest ${request.toJson()}');
+    emit(FeeSaveCheckLoading());
+    try {
+      final result = await _checkFeeExistUseCase(request);
+
+      result.fold(
+            (failure) {
+          print('failure ${failure.message}');
+          emit(FeeCheckFailure(failure.message));
+        },
+            (response) async {
+
+          emit(CheckFeeStatusSuccess(response));
+        },
+      );
+    } catch (e, stacktrace) {
+      // Handle unexpected exceptions
+      print('❌ Exception during loginUser: $e');
+      print('Stacktrace: $stacktrace');
+      emit(FeeCheckFailure('An unexpected error occurred'));
+    }
+  }
 
   Future<void> loginCheckForFeeCollectionStatus(LoginRequest loginRequest) async {
     print('loginRequest ${loginRequest.toJson()}');

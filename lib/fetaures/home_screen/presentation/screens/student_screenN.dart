@@ -18,6 +18,7 @@ import 'package:studentmanagement/fetaures/earlygo/presentation/screens/earlygo_
 import 'package:studentmanagement/fetaures/authentication/data/models/account_details_model.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/entities/login_entity.dart';
 import 'package:studentmanagement/fetaures/classdiary/presentation/screens/alldiary_screen.dart';
+import 'package:studentmanagement/fetaures/fees/presentation/bloc/fees_cubit.dart';
 import 'package:studentmanagement/fetaures/fees/presentation/screens/fees_screen.dart';
 import 'package:studentmanagement/fetaures/home_screen/domain/parameters/fetchfeed_parameter.dart';
 import 'package:studentmanagement/fetaures/home_screen/presentation/cubit/feed_cubit.dart';
@@ -143,7 +144,7 @@ class _HomeScreenState extends State<StudentScreenN>
       AppData.gender = student.gender.toString();
       AppData.dob = student.dob.toString();
       AppData.studentClass =
-          '${student.studentStandard}-${student.studentDivision}';
+      '${student.studentStandard}-${student.studentDivision}';
       AppData.feeCollectionStatus = student.feeCollectionStatus ?? false;
       AppData.profileUrl = student.imageUrl.toString();
       AppData.profile64 = student.profile64.toString();
@@ -400,18 +401,18 @@ class _HomeScreenState extends State<StudentScreenN>
                   // ),
                   child: _isRefreshingProfile
                       ? const SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
-                          ),
-                        )
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
                       : const Icon(
-                          Icons.refresh,
-                          color: Colors.white,
-                          size: 20,
-                        ),
+                    Icons.refresh,
+                    color: Colors.white,
+                    size: 20,
+                  ),
                 ),
               ),
             ),
@@ -815,87 +816,143 @@ class _HomeScreenState extends State<StudentScreenN>
     required String label,
     required Color color,
   }) {
-    return GestureDetector(
-      onTap: () async {
-        print('label $label');
-        if (label == "Fees") {
-           AppNavigator.pushSlide(context: context, page: FeesScreen());
-
-
-            // String access_key = "62STKYKHVY";
-            // String pay_mode = "test";
-            // Object parameters =
-            // {
-            //   "access_key":access_key,
-            //   "pay_mode":pay_mode
-            // };
-            // final payment_response = await _channel.invokeMethod("payWithEasebuzz", parameters);
-            // print('payment_response $payment_response');
-            /* payment_response is the HashMap containing the response of the payment.
-You can parse it accordingly to handle response */
-
-        }
-        if (label == "Time Table") {
-          AppNavigator.pushSlide(context: context, page: TimeTableScreen());
-        }
-        if (label == "Class Diary") {
-          AppNavigator.pushSlide(context: context, page: AllClassDiaryScreen());
-        }
-        if (label == "Mark List") {
-          // MarkListStudent M = MarkListStudent(name: 'Haris', className: 'className', admissionNo: 'admissionNo', academicYear: 'academicYear');
-          AppNavigator.pushSlide(context: context, page: MarkListPage());
-          //AppNavigator.pushSlide(context: context, page: MarkListScreen(student: M, examTitle: '', subjects: [],));
-        }
-        if (label == "Material") {
-          AppNavigator.pushSlide(context: context, page: SubjectPage());
-        }
-        if (label == "Attendance") {
-          AppNavigator.pushSlide(context: context, page: AttendenceScreen());
-        }
-        if (label == "Academic Calendar") {
-          AppNavigator.pushSlide(
-            context: context,
-            page: AcademicCalendarScreen(),
-          );
-        }
-        if (label == "Early Go") {
-          AppNavigator.pushSlide(context: context, page: EarlyGoScreen());
-        }
-      },
-      child: Container(
-        height: 90,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.black,
-                borderRadius: BorderRadius.circular(10),
+    // Non-Fees tiles: simple tile with normal navigation on tap
+    if (label != "Fees") {
+      return GestureDetector(
+        onTap: () {
+          if (label == "Time Table") {
+            AppNavigator.pushSlide(context: context, page: TimeTableScreen());
+          }
+          if (label == "Class Diary") {
+            AppNavigator.pushSlide(context: context, page: AllClassDiaryScreen());
+          }
+          if (label == "Mark List") {
+            AppNavigator.pushSlide(context: context, page: MarkListPage());
+          }
+          if (label == "Material") {
+            AppNavigator.pushSlide(context: context, page: SubjectPage());
+          }
+          if (label == "Attendance") {
+            AppNavigator.pushSlide(context: context, page: AttendenceScreen());
+          }
+          if (label == "Academic Calendar") {
+            AppNavigator.pushSlide(
+              context: context,
+              page: AcademicCalendarScreen(),
+            );
+          }
+          if (label == "Early Go") {
+            AppNavigator.pushSlide(context: context, page: EarlyGoScreen());
+          }
+        },
+        child: Container(
+          height: 90,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(icon, color: Colors.white, size: 18),
               ),
-              child: Icon(icon, color: Colors.white, size: 18),
-            ),
-            const SizedBox(width: 10),
-            Flexible(
-              child: Text(
-                label,
-                style: const TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
+              const SizedBox(width: 10),
+              Flexible(
+                child: Text(
+                  label,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
+      );
+    }
+
+    // Fees tile: wired to the cubit via BlocConsumer
+    return BlocConsumer<FeesCubit, FeesState>(
+      listener: (context, state) async {
+        if (state is LoginCheckSuccess) {
+          AppData.feeCollectionStatus =
+              state.loginResponse.student?.feeCollectionStatus ??
+                  false;
+
+          await AppNavigator.pushSlide(context: context, page: FeesScreen());
+        } else if (state is LoginCheckFailure) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.error)),
+          );
+        }
+      },
+      builder: (context, state) {
+        final isLoading = state is FeeCollectionCheckLoading;
+
+        return GestureDetector(
+          onTap: isLoading
+              ? null
+              : () {
+            context.read<FeesCubit>().loginCheckForFeeCollectionStatus(
+              LoginRequest(
+                admno: AppData.admissionNo!,
+                dob: AppData.dob!,
+              ),
+            );
+          },
+          child: Container(
+            height: 90,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.black,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: isLoading
+                      ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
+                      : Icon(icon, color: Colors.white, size: 18),
+                  //child:Icon(icon, color: Colors.white, size: 18),
+                ),
+                const SizedBox(width: 10),
+                Flexible(
+                  child: Text(
+                    label,
+                    style: const TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
-
   // --- Bottom Nav ---
   Widget _buildBottomNav() {
     return Container(
@@ -973,3 +1030,4 @@ Future<void> loadAccounts() async {
   //   isLoading = false;
   // });
 }
+

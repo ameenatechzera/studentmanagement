@@ -153,6 +153,12 @@ class _MainSplashScreenState extends State<MainSplashScreen> {
         .toString();
     AppData.accYear = loginResponse?.student!.accYear.toString();
 
+    '${loginResponse?.student!.studentStandard}-${loginResponse?.student!.studentDivision}'
+        .toString();
+
+
+
+
     await Future.delayed(const Duration(seconds: 2));
 
     if (loginResponse != null) {

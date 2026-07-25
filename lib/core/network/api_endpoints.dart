@@ -131,4 +131,14 @@ class ApiConstants {
     return '${baseUrl}app/save-diary-readstatus';
   }
 
+  /// Returns Access key from easebuzz gateway
+  static String getEaseBuzzAccessKeyPath() {
+    return 'https://pay.easebuzz.in/payment/initiateLink';
+  }
+
+  //fee payment exist check
+  static String getFeePaymentExistPath(String baseUrl) {
+    return '${baseUrl}app/payments-check';
+  }
+
 }

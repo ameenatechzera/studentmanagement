@@ -36,6 +36,7 @@ import 'package:studentmanagement/fetaures/earlygo/presentation/cubit/earlygo_cu
 import 'package:studentmanagement/fetaures/fees/data/datasources/fees_remote_data_sources.dart';
 import 'package:studentmanagement/fetaures/fees/data/repositories/fees_repository_impl.dart';
 import 'package:studentmanagement/fetaures/fees/domain/repositories/fees_repository.dart';
+import 'package:studentmanagement/fetaures/fees/domain/usecases/checkFeePayExistUseCase.dart';
 import 'package:studentmanagement/fetaures/fees/domain/usecases/fetchAccYearUseCase.dart';
 import 'package:studentmanagement/fetaures/fees/domain/usecases/fetchPaidFeesDetailsUseCase.dart';
 import 'package:studentmanagement/fetaures/fees/domain/usecases/fetchUnpaidFeeDetailsUseCase.dart';
@@ -155,7 +156,7 @@ class ServiceLocator {
         fetchAccYearListUseCase: sl(),
         fetchUnPaidFeesDetailsUseCase: sl(),
         saveFeesDetailsUseCase: sl(), saveOfflineFeesDetailsUseCase: sl(),
-        loginServerUseCase: sl(),
+        loginServerUseCase: sl(), checkFeeExistUseCase: sl(),
       ),
     );
 
@@ -167,6 +168,8 @@ class ServiceLocator {
     /// UseCase
     sl.registerLazySingleton(() => FetchPaidFeesDetailsUseCase(sl()));
     sl.registerLazySingleton(() => FetchUnPaidFeesDetailsUseCase(sl()));
+    sl.registerLazySingleton(() => CheckFeeExistUseCase(sl()));
+
 
     /// Remote Data Source
     sl.registerLazySingleton<FeesRemoteDataSource>(

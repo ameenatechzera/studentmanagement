@@ -120,6 +120,7 @@ class RegisterCodePage extends StatelessWidget {
 
                     await pref.setAppStoreVersion(school.appStoreVersion!);
                     await pref.setPlayStoreVersion(school.playStoreVersion!);
+                    await pref.setSchoolName(school.schoolName!);
 
                     print("BaseURL saved: ${school.baseUrl}");
                     print("DB Name saved: ${school.dbName}");

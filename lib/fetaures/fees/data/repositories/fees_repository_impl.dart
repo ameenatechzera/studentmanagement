@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
+import 'package:studentmanagement/core/domain/entities/common_response_entity.dart';
 import 'package:studentmanagement/core/errors/exceptions.dart';
 import 'package:studentmanagement/core/errors/failure.dart';
 import 'package:studentmanagement/core/utils/typedef.dart';
@@ -8,6 +9,7 @@ import 'package:studentmanagement/fetaures/fees/domain/entities/accyearResult.da
 import 'package:studentmanagement/fetaures/fees/domain/entities/feeSaveResult.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/paid_fee_result.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/unpaid%20fee_result.dart';
+import 'package:studentmanagement/fetaures/fees/domain/parameters/feePayExistRequest.dart';
 import 'package:studentmanagement/fetaures/fees/domain/parameters/offlinePaymentSaveRequest.dart';
 import 'package:studentmanagement/fetaures/fees/domain/parameters/paidFees_request.dart';
 import 'package:studentmanagement/fetaures/fees/domain/parameters/paymentSaveRequest.dart';
@@ -74,6 +76,19 @@ class FeesRepositoryImpl implements FeesRepository {
   ResultFuture<FeeSaveResult> saveOfflineFeesDetails(OfflineFeePayRequest request) async {
     try {
       final result = await remoteDataSource.saveOfflineFeeDetails(request);
+
+      return Right(result);
+    } on ServerException catch (failure) {
+      return Left(ServerFailure(failure.errorMessageModel.statusMessage));
+    } on DioException catch (failure) {
+      return Left(ServerFailure(failure.message.toString()));
+    }
+  }
+
+  @override
+  ResultFuture<CommonResponseEntity> checkFeePayExistStatus(FeePaymentExistRequest request) async {
+    try {
+      final result = await remoteDataSource.checkFeePayExistStatus(request);
 
       return Right(result);
     } on ServerException catch (failure) {
