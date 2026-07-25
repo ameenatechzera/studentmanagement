@@ -50,7 +50,7 @@ class FeesCubit extends Cubit<FeesState> {
        super(FeesInitial());
 
   Future<void> checkFeeExist(FeePaymentExistRequest request) async {
-    print('loginRequest ${request.toJson()}');
+    print('FeePaymentExistRequest ${request.toJson()}');
     emit(FeeSaveCheckLoading());
     try {
       final result = await _checkFeeExistUseCase(request);

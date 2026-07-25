@@ -1,337 +1,3 @@
-// import 'package:flutter/material.dart';
-// import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:studentmanagement/core/appdata/appdata.dart';
-
-// import 'package:studentmanagement/fetaures/fees/domain/parameters/paidFees_request.dart';
-// import 'package:studentmanagement/fetaures/fees/presentation/bloc/fees_cubit.dart';
-// import 'package:studentmanagement/fetaures/fees/presentation/unPaidFee/un_paid_fee_cubit.dart';
-// import 'package:studentmanagement/fetaures/fees/presentation/widgets/paidfee_widget.dart';
-// import 'package:studentmanagement/fetaures/fees/presentation/widgets/pendingfee_widget.dart';
-
-// import '../../domain/entities/accyearResult.dart';
-// import '../../domain/entities/unpaid fee_result.dart' as unpaid;
-
-// final TextEditingController accYearController = TextEditingController();
-
-// class FeesScreen extends StatefulWidget {
-//   const FeesScreen({super.key});
-
-//   @override
-//   State<FeesScreen> createState() => _FeesScreenState();
-// }
-
-// class _FeesScreenState extends State<FeesScreen> {
-//   final Set<int> _selectedIndexes = {};
-//   final Map<int, unpaid.Datum> _selectedFees = {};
-//   @override
-//   void initState() {
-//     context.read<FeesCubit>().fetchAccYearList();
-
-//     super.initState();
-//   }
-
-//   final List<Datum> accYears = [];
-//   String? _selectedAccYear;
-//   double get _selectedTotal {
-//     return _selectedFees.values.fold(0.0, (sum, fee) {
-//       return sum + _parseAmount(fee.totalBalance);
-//     });
-//   }
-
-//   double _parseAmount(String value) {
-//     final cleanedValue = value.replaceAll(RegExp(r'[^0-9.]'), '');
-//     return double.tryParse(cleanedValue) ?? 0.0;
-//   }
-
-//   void _onFeeSelectionChanged(int index, unpaid.Datum fee, bool isSelected) {
-//     setState(() {
-//       if (isSelected) {
-//         _selectedIndexes.add(index);
-//         _selectedFees[index] = fee;
-//       } else {
-//         _selectedIndexes.remove(index);
-//         _selectedFees.remove(index);
-//       }
-//     });
-//   }
-
-//   void _clearSelectedFees() {
-//     setState(() {
-//       _selectedIndexes.clear();
-//       _selectedFees.clear();
-//     });
-//   }
-
-//   void _onPayPressed() {
-//     final selectedFeeList = _selectedFees.values.toList();
-
-//     debugPrint('Selected fees count: ${selectedFeeList.length}');
-//     debugPrint('Selected total: $_selectedTotal');
-
-//     ScaffoldMessenger.of(context).showSnackBar(
-//       SnackBar(
-//         content: Text(
-//           'Pay button clicked. Total: ${_selectedTotal.toStringAsFixed(2)}',
-//         ),
-//       ),
-//     );
-
-//     // TODO: Call payment API here.
-//     // You can pass selectedFeeList and _selectedTotal to your payment request.
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       backgroundColor: Colors.white,
-//       appBar: AppBar(
-//         backgroundColor: Colors.white,
-//         title: const Text("Fees"),
-//         actions: [
-//           BlocConsumer<FeesCubit, FeesState>(
-//             listener: (context, state) {
-//               if (state is AccYearSuccess) {
-//                 accYears.clear();
-//                 accYears.addAll(state.accYearResult.data);
-//                 context.read<FeesCubit>().fetchPaidFeesDetails(
-//                   PaidFeesRequest(
-//                     accyear: AppData.accYear!,
-//                     admno: AppData.admissionNo!,
-//                   ),
-//                 );
-//                 context.read<UnPaidFeeCubit>().fetchUnPaidFeesDetails(
-//                   PaidFeesRequest(
-//                     accyear: AppData.accYear!,
-//                     admno: AppData.admissionNo!,
-//                   ),
-//                 );
-//               }
-//             },
-//             builder: (context, state) {
-//               if (accYears.isNotEmpty) {
-//                 return PopupMenuButton<String>(
-//                   icon: Row(
-//                     mainAxisSize: MainAxisSize.min,
-//                     children: [
-//                       Text(
-//                         _selectedAccYear ?? accYears.first.accYear,
-//                         // ✅ uses state variable
-//                         style: const TextStyle(
-//                           fontSize: 13,
-//                           fontWeight: FontWeight.w600,
-//                           color: Colors.black,
-//                         ),
-//                       ),
-//                       const Icon(Icons.arrow_drop_down, color: Colors.black),
-//                     ],
-//                   ),
-//                   offset: const Offset(0, 50),
-//                   constraints: const BoxConstraints(
-//                     minWidth: 150,
-//                     maxWidth: 200,
-//                   ),
-//                   onSelected: (value) {
-//                     setState(() {
-//                       _selectedAccYear = value;
-//                       _selectedIndexes.clear();
-//                       _selectedFees.clear();
-//                     });
-
-//                     Future.microtask(() {
-//                       context.read<FeesCubit>().fetchPaidFeesDetails(
-//                         PaidFeesRequest(
-//                           accyear: value,
-//                           admno: AppData.admissionNo!,
-//                         ),
-//                       );
-//                       context.read<UnPaidFeeCubit>().fetchUnPaidFeesDetails(
-//                         PaidFeesRequest(
-//                           accyear: value,
-//                           admno: AppData.admissionNo!,
-//                         ),
-//                       );
-//                     });
-//                   },
-//                   itemBuilder: (context) {
-//                     return accYears.map((datum) {
-//                       return PopupMenuItem<String>(
-//                         value: datum.accYear,
-//                         child: Text(datum.accYear),
-//                       );
-//                     }).toList();
-//                   },
-//                 );
-//               }
-
-//               return const SizedBox();
-//             },
-//           ),
-//         ],
-//       ),
-//       body: SafeArea(
-//         child: SingleChildScrollView(
-//           padding: EdgeInsets.only(bottom: _selectedFees.isNotEmpty ? 100 : 20),
-//           child: Padding(
-//             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-//             child: Column(
-//               crossAxisAlignment: CrossAxisAlignment.start,
-//               children: [
-//                 // ================= PENDING =================
-//                 const SizedBox(height: 8),
-//                 const Text(
-//                   'Pending',
-//                   style: TextStyle(
-//                     fontWeight: FontWeight.bold,
-//                     color: Colors.red,
-//                     fontSize: 15,
-//                   ),
-//                 ),
-//                 const SizedBox(height: 8),
-
-//                 BlocConsumer<UnPaidFeeCubit, UnPaidFeeState>(
-//                   listener: (context, state) {},
-//                   builder: (context, state) {
-//                     if (state is FeeUnpaidInitial) {
-//                       return const SizedBox(
-//                         width: 24,
-//                         height: 24,
-//                         child: CircularProgressIndicator(strokeWidth: 2),
-//                       );
-//                     }
-//                     if (state is FeesUnPaidSuccess) {
-//                       if (state.feeUnPaidResult.data.isNotEmpty) {
-//                         return PendingFee(
-//                           feesUnpaidList: state.feeUnPaidResult,
-//                           selectedIndexes: _selectedIndexes,
-//                           onSelectionChanged: _onFeeSelectionChanged,
-//                         );
-//                       } else {
-//                         return Container();
-//                       }
-//                     }
-//                     if (state is FeeUnPaidFailure) {
-//                       return Center(child: Text(state.error));
-//                     }
-//                     return Container();
-//                   },
-//                 ),
-
-//                 const SizedBox(height: 20),
-
-//                 // ================= PAID =================
-//                 const Text(
-//                   'Paid',
-//                   style: TextStyle(
-//                     fontWeight: FontWeight.bold,
-//                     color: Colors.green,
-//                     fontSize: 15,
-//                   ),
-//                 ),
-//                 const SizedBox(height: 8),
-//                 BlocConsumer<FeesCubit, FeesState>(
-//                   listener: (context, state) {},
-//                   builder: (context, state) {
-//                     if (state is FeesInitial) {
-//                       return const SizedBox(
-//                         width: 24,
-//                         height: 24,
-//                         child: CircularProgressIndicator(strokeWidth: 2),
-//                       );
-//                     }
-//                     if (state is FeesPaidSuccess) {
-//                       return PaidFee(feePaidResult: state.feePaidResult);
-//                     } else {
-//                       return Container();
-//                     }
-//                   },
-//                 ),
-//               ],
-//             ),
-//           ),
-//         ),
-//       ),
-//       bottomNavigationBar: _selectedFees.isNotEmpty
-//           ? SafeArea(
-//               child: Container(
-//                 padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
-//                 decoration: BoxDecoration(
-//                   color: Colors.white,
-//                   boxShadow: [
-//                     BoxShadow(
-//                       color: Colors.black.withOpacity(0.08),
-//                       blurRadius: 12,
-//                       offset: const Offset(0, -4),
-//                     ),
-//                   ],
-//                 ),
-//                 child: Row(
-//                   children: [
-//                     Expanded(
-//                       child: Column(
-//                         mainAxisSize: MainAxisSize.min,
-//                         crossAxisAlignment: CrossAxisAlignment.start,
-//                         children: [
-//                           Text(
-//                             '${_selectedFees.length} fee selected',
-//                             style: const TextStyle(
-//                               fontSize: 13,
-//                               color: Colors.grey,
-//                               fontWeight: FontWeight.w500,
-//                             ),
-//                           ),
-//                           const SizedBox(height: 4),
-//                           Text(
-//                             'Total: ${_selectedTotal.toStringAsFixed(2)}',
-//                             style: const TextStyle(
-//                               fontSize: 17,
-//                               fontWeight: FontWeight.bold,
-//                               color: Colors.black,
-//                             ),
-//                           ),
-//                         ],
-//                       ),
-//                     ),
-
-//                     TextButton(
-//                       onPressed: _clearSelectedFees,
-//                       child: const Text(
-//                         'Clear',
-//                         style: TextStyle(
-//                           color: Colors.red,
-//                           fontWeight: FontWeight.w600,
-//                         ),
-//                       ),
-//                     ),
-
-//                     const SizedBox(width: 8),
-
-//                     ElevatedButton(
-//                       onPressed: _onPayPressed,
-//                       style: ElevatedButton.styleFrom(
-//                         backgroundColor: const Color(0xFF807FD8),
-//                         foregroundColor: Colors.white,
-//                         padding: const EdgeInsets.symmetric(
-//                           horizontal: 24,
-//                           vertical: 12,
-//                         ),
-//                         shape: RoundedRectangleBorder(
-//                           borderRadius: BorderRadius.circular(10),
-//                         ),
-//                       ),
-//                       child: const Text(
-//                         'Pay',
-//                         style: TextStyle(fontWeight: FontWeight.bold),
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//             )
-//           : null,
-//     );
-//   }
-// }
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -361,8 +27,13 @@ class FeesScreen extends StatefulWidget {
 }
 
 class _FeesScreenState extends State<FeesScreen> {
-  final Set<int> _selectedIndexes = {};
-  final Map<int, unpaid.Datum> _selectedFees = {};
+  // feeIndex -> set of selected detail indices within that fee card
+  final Map<int, Set<int>> _selectedDetails = {};
+
+  // Cache of the last successfully loaded unpaid fee list, so we can look up
+  // Datum/detail objects by index from callbacks and payload builders without
+  // needing to read bloc state again.
+  List<unpaid.Datum> _unpaidFeesCache = [];
 
   final List<Datum> accYears = [];
 
@@ -378,8 +49,6 @@ class _FeesScreenState extends State<FeesScreen> {
   void initState() {
     super.initState();
 
-    // Wait until the first frame is painted. This guarantees that the initial
-    // circular indicators are visible before the academic-year API starts.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       context.read<FeesCubit>().fetchAccYearList();
@@ -409,7 +78,6 @@ class _FeesScreenState extends State<FeesScreen> {
     }
 
     if (state is AccYearSuccess) {
-
       AppData.schoolName = (await SharedPreferenceHelper().getSchoolName())!;
       final years = state.accYearResult.data;
 
@@ -428,7 +96,7 @@ class _FeesScreenState extends State<FeesScreen> {
           final appYear = AppData.accYear;
           final hasAppYear =
               appYear != null &&
-              accYears.any((item) => item.accYear == appYear);
+                  accYears.any((item) => item.accYear == appYear);
 
           _selectedAccYear = hasAppYear ? appYear : accYears.first.accYear;
 
@@ -452,7 +120,6 @@ class _FeesScreenState extends State<FeesScreen> {
       return;
     }
 
-    // Your current paid-fee API uses FeesInitial as its loading state.
     if (state is FeesInitial) {
       if (!_isPaidLoading) {
         setState(() {
@@ -475,8 +142,6 @@ class _FeesScreenState extends State<FeesScreen> {
       setState(() {
         _isPaidLoading = false;
 
-        // fetchAccYearList() currently emits FeesPaidFailure from its catch
-        // block. Stop all initial loaders in that exceptional case as well.
         if (_isAccYearLoading) {
           _isAccYearLoading = false;
           _isPendingLoading = false;
@@ -497,7 +162,21 @@ class _FeesScreenState extends State<FeesScreen> {
       return;
     }
 
-    if (state is FeesUnPaidSuccess || state is FeeUnPaidFailure) {
+    if (state is FeesUnPaidSuccess) {
+      // Refresh the cache whenever a new unpaid list arrives, and drop any
+      // stale selections that no longer correspond to valid indices
+      // (e.g. after switching academic year).
+      setState(() {
+        _unpaidFeesCache = state.feeUnPaidResult.data;
+        _selectedDetails.removeWhere(
+              (feeIndex, _) => feeIndex >= _unpaidFeesCache.length,
+        );
+        _isPendingLoading = false;
+      });
+      return;
+    }
+
+    if (state is FeeUnPaidFailure) {
       if (_isPendingLoading) {
         setState(() {
           _isPendingLoading = false;
@@ -522,56 +201,92 @@ class _FeesScreenState extends State<FeesScreen> {
       ),
     );
   }
-
   double get _selectedTotal {
-    return _selectedFees.values.fold(0.0, (sum, fee) {
-      return sum + _parseAmount(fee.totalBalance);
+    double total = 0.0;
+    _selectedDetails.forEach((feeIndex, detailIndexes) {
+      if (feeIndex >= _unpaidFeesCache.length) return;
+      final fee = _unpaidFeesCache[feeIndex];
+      for (final detailIndex in detailIndexes) {
+        if (detailIndex >= fee.details.length) continue;
+        final rawAmount = fee.details[detailIndex].amount;
+        final parsed = _parseAmount(rawAmount);
+        debugPrint('feeIndex=$feeIndex detailIndex=$detailIndex rawAmount="$rawAmount" parsed=$parsed');
+        total += parsed;
+      }
     });
+    debugPrint('selectedTotal=$total');
+    return total;
   }
+  int get _selectedFeeCardCount => _selectedDetails.length;
 
   double _parseAmount(String value) {
     final cleanedValue = value.replaceAll(RegExp(r'[^0-9.]'), '');
     return double.tryParse(cleanedValue) ?? 0.0;
   }
 
-  void _onFeeSelectionChanged(int index, unpaid.Datum fee, bool isSelected) {
+  void _onFeeSelectionChanged(
+      int feeIndex,
+      int? detailIndex,
+      unpaid.Datum fee,
+      bool isSelected,
+      ) {
     setState(() {
-      if (isSelected) {
-        _selectedIndexes.add(index);
-        _selectedFees[index] = fee;
+      final currentSet = _selectedDetails.putIfAbsent(feeIndex, () => <int>{});
+
+      if (detailIndex == null) {
+        // header checkbox -> select/clear every line in this card
+        if (isSelected) {
+          currentSet
+            ..clear()
+            ..addAll(List.generate(fee.details.length, (i) => i));
+        } else {
+          currentSet.clear();
+        }
       } else {
-        _selectedIndexes.remove(index);
-        _selectedFees.remove(index);
+        if (isSelected) {
+          currentSet.add(detailIndex);
+        } else {
+          currentSet.remove(detailIndex);
+        }
+      }
+
+      if (currentSet.isEmpty) {
+        _selectedDetails.remove(feeIndex);
       }
     });
   }
 
   void _clearSelectedFees() {
     setState(() {
-      _selectedIndexes.clear();
-      _selectedFees.clear();
+      _selectedDetails.clear();
     });
   }
 
   void _onPayPressed(String trxnId, String response, String payStatus) {
-    final selectedFeeList = _selectedFees.values.toList();
+    // Build a flat list of (fee, detail) pairs for everything currently selected
+    final selectedPairs = <MapEntry<unpaid.Datum, unpaid.Detail>>[];
+    _selectedDetails.forEach((feeIndex, detailIndexes) {
+      if (feeIndex >= _unpaidFeesCache.length) return;
+      final fee = _unpaidFeesCache[feeIndex];
+      for (final detailIndex in detailIndexes) {
+        if (detailIndex >= fee.details.length) continue;
+        selectedPairs.add(MapEntry(fee, fee.details[detailIndex]));
+      }
+    });
+
     if (AppData.appType == 'Offline') {
-      List<OfflineDetail> saveOfflineDetails =
-          selectedFeeList
-              .expand(
-                (datum) => datum.details.map(
-                  (detail) => OfflineDetail(
-                    feemonthid: datum.feeMonthId.toString(),
-                    feemonth: datum.feeMonth,
-                    ledgerid: 12,
-                    ledgername: '',
-                    dueamount: detail.amount,
-                    paidamount: detail.amount,
-                  ),
-                ),
-              )
-              .toList() ??
-          [];
+      List<OfflineDetail> saveOfflineDetails = selectedPairs.map((entry) {
+        final fee = entry.key;
+        final detail = entry.value;
+        return OfflineDetail(
+          feemonthid: fee.feeMonthId.toString(),
+          feemonth: fee.feeMonth,
+          ledgerid: 12,
+          ledgername: detail.ledgerName,
+          dueamount: detail.amount,
+          paidamount: detail.amount,
+        );
+      }).toList();
 
       String formattedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
       print('formattedDate $formattedDate');
@@ -590,32 +305,29 @@ class _FeesScreenState extends State<FeesScreen> {
         ),
       );
     } else {
-      List<saveFeeDetails> saveDetails =
-          selectedFeeList
-              .expand(
-                (datum) => datum.details.map(
-                  (detail) => saveFeeDetails(
-                    feeMonthId: datum.feeMonth,
-                    ledgerId: "12",
-                    dueAmount: int.tryParse(datum.totalBalance) ?? 0,
-                    paidAmount: int.tryParse(detail.amount) ?? 0,
-                    paidStatus: false,
-                    chequeNo: null,
-                    chequeDate: datum.dueDate,
-                    userId: "",
-                    feeAmount: int.tryParse(detail.amount) ?? 0,
-                    taxId: "",
-                    taxType: "",
-                    taxAmount: 0,
-                    floodCess: 0,
-                  ),
-                ),
-              )
-              .toList() ??
-          [];
+      List<saveFeeDetails> saveDetails = selectedPairs.map((entry) {
+        final fee = entry.key;
+        final detail = entry.value;
+        return saveFeeDetails(
+          feeMonthId: fee.feeMonth,
+          ledgerId: "12",
+          dueAmount: int.tryParse(fee.totalBalance) ?? 0,
+          paidAmount: int.tryParse(detail.amount) ?? 0,
+          paidStatus: false,
+          chequeNo: null,
+          chequeDate: fee.dueDate,
+          userId: "",
+          feeAmount: int.tryParse(detail.amount) ?? 0,
+          taxId: "",
+          taxType: "",
+          taxAmount: 0,
+          floodCess: 0,
+        );
+      }).toList();
+
       print('saveDetails ${saveDetails.toString()}');
 
-      debugPrint('Selected fees count: ${selectedFeeList.length}');
+      debugPrint('Selected detail lines count: ${selectedPairs.length}');
       debugPrint('Selected total: $_selectedTotal');
       context.read<FeesCubit>().saveFeeDetails(
         FeeSaveRequest(
@@ -653,7 +365,9 @@ class _FeesScreenState extends State<FeesScreen> {
       ),
     );
   }
+
   static MethodChannel _channel = MethodChannel('easebuzz');
+
   @override
   Widget build(BuildContext context) {
     return MultiBlocListener(
@@ -664,17 +378,14 @@ class _FeesScreenState extends State<FeesScreen> {
         ),
       ],
       child: Scaffold(
-        //backgroundColor: Colors.white,
         backgroundColor: const Color(0xFFF7F5FF),
-
         body: Column(
           children: [
             _headerSection(),
-
             Expanded(
               child: SingleChildScrollView(
                 padding: EdgeInsets.only(
-                  bottom: _selectedFees.isNotEmpty ? 100 : 20,
+                  bottom: _selectedDetails.isNotEmpty ? 100 : 20,
                 ),
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
@@ -693,9 +404,7 @@ class _FeesScreenState extends State<FeesScreen> {
                         const SizedBox(height: 10),
                         _pendingFeeSection(),
                       ],
-
                       if (_selectedTabIndex == 1) ...[_pendingFeeSection()],
-
                       if (_selectedTabIndex == 2) ...[_paidFeeSection()],
                     ],
                   ),
@@ -704,240 +413,210 @@ class _FeesScreenState extends State<FeesScreen> {
             ),
           ],
         ),
-
-        //                 BlocConsumer<UnPaidFeeCubit, UnPaidFeeState>(
-        //                   listener: (context, state) {},
-        //                   builder: (context, state) {
-        //                     if (state is FeeUnpaidInitial) {
-        //                       return const Center(
-        //                         child: Padding(
-        //                           padding: EdgeInsets.all(24),
-        //                           child: CircularProgressIndicator(
-        //                             strokeWidth: 2,
-        //                           ),
-        //                         ),
-        //                       );
-        //                     }
-
-        //                     if (state is FeesUnPaidSuccess) {
-        //                       if (state.feeUnPaidResult.data.isNotEmpty) {
-        //                         return PendingFee(
-        //                           feesUnpaidList: state.feeUnPaidResult,
-        //                           selectedIndexes: _selectedIndexes,
-        //                           onSelectionChanged: _onFeeSelectionChanged,
-        //                         );
-        //                       } else {
-        //                         return const SizedBox();
-        //                       }
-        //                     }
-
-        //                     if (state is FeeUnPaidFailure) {
-        //                       return Center(child: Text(state.error));
-        //                     }
-
-        //                     return const SizedBox();
-        //                   },
-        //                 ),
-        //               ],
-
-        //               // if (_selectedTabIndex == 0) const SizedBox(height: 20),
-
-        //               // if (_selectedTabIndex == 0 || _selectedTabIndex == 2) ...[
-        //               //   const Text(
-        //               //     'Paid',
-        //               //     style: TextStyle(
-        //               //       fontWeight: FontWeight.bold,
-        //               //       color: Colors.green,
-        //               //       fontSize: 15,
-        //               //     ),
-        //               //   ),
-        //               //   const SizedBox(height: 8),
-
-        //               //   BlocConsumer<FeesCubit, FeesState>(
-        //               //     listener: (context, state) {},
-        //               //     builder: (context, state) {
-        //               //       if (state is FeesInitial) {
-        //               //         return const Center(
-        //               //           child: Padding(
-        //               //             padding: EdgeInsets.all(24),
-        //               //             child: CircularProgressIndicator(
-        //               //               strokeWidth: 2,
-        //               //             ),
-        //               //           ),
-        //               //         );
-        //               //       }
-
-        //               //       if (state is FeesPaidSuccess) {
-        //               //         return PaidFee(feePaidResult: state.feePaidResult);
-        //               //       }
-
-        //               //       return const SizedBox();
-        //               //     },
-        //               //   ),
-        //               // ],
-        //             ],
-        //           ),
-        //         ),
-        //       ),
-        //     ),
-        //   ],
-        // ),
-        bottomNavigationBar: _selectedFees.isNotEmpty && _selectedTabIndex != 2
+        bottomNavigationBar:
+        _selectedDetails.isNotEmpty && _selectedTabIndex != 2
             ? SafeArea(
-                child: Container(
-                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.08),
-                        blurRadius: 12,
-                        offset: const Offset(0, -4),
-                      ),
-                    ],
-                  ),
-                  child: Row(
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.08),
+                  blurRadius: 12,
+                  offset: const Offset(0, -4),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '${_selectedFees.length} fee selected',
-                              style: const TextStyle(
-                                fontSize: 13,
-                                color: Colors.grey,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Total: ${_selectedTotal.toStringAsFixed(2)}',
-                              style: const TextStyle(
-                                fontSize: 17,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ],
+                      Text(
+                        '$_selectedFeeCardCount fee selected',
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
-
-                      TextButton(
-                        onPressed: _clearSelectedFees,
-                        child: const Text(
-                          'Clear',
-                          style: TextStyle(
-                            color: Colors.red,
-                            fontWeight: FontWeight.w600,
-                          ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Total: ${_selectedTotal.toStringAsFixed(2)}',
+                        style: const TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
                         ),
-                      ),
-
-                      const SizedBox(width: 8),
-
-                      BlocConsumer<FeesCubit, FeesState>(
-                        listener: (context, state) async {
-                          if (state is LoginCheckSuccess) {
-                            print('LoginCheckSuccess IfState');
-                            AppData.feeCollectionStatus =
-                                state
-                                    .loginResponse
-                                    .student
-                                    ?.feeCollectionStatus ??
-                                false;
-                            if (AppData.feeCollectionStatus) {
-                              //_onPayPressed();
-                            } else {
-                              print('LoginCheckSuccess Else');
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    'You do not have permission to make fee payments',
-                                  ),
-                                ),
-                              );
-                            }
-                          }
-                          if(state is FeeSave_Success){
-                            Navigator.pop(context);
-                          }
-                        },
-                        builder: (context, state) {
-                          return ElevatedButton(
-                            // onPressed: _onPayPressed,
-                            onPressed: () async {
-                              //_onPayPressed();
-
-                              String st_txnId = '';
-                              final easebuzz = EasebuzzService();
-                               st_txnId = 'TXN${DateTime.now().millisecondsSinceEpoch}';
-                              try {
-                                final result = await easebuzz.getAccessKey(
-                                  txnid: st_txnId,
-                                  amount: '1.00',
-                                  productinfo: 'School Fee Payment',
-                                  firstname: 'cristal',
-                                  email: 'haris.rahman91@gmail.com',
-                                  phone: '8089001136',
-                                  surl: 'https://techzera.in/',
-                                  furl: 'https://techzera.in/',
-                                  admissionNo: AppData.admissionNo!,
-                                  std: AppData.studentClass!,
-                                  div: AppData.studentDivId!,
-                                  studName: AppData.studentName!,
-                                  schoolName: AppData.schoolName!,
-                                );
-
-                                if (result.success) {
-                                  print('Access key: ${result.accessKey}');
-                                  // pass this access_key into your native payWithEasebuzz channel call
-                                  String access_key = result.accessKey.toString();
-                                  String pay_mode = "production";
-                                  Object parameters =
-                                  {
-                                    "access_key":access_key,
-                                    "pay_mode":pay_mode
-                                  };
-                                  final payment_response = await _channel.invokeMethod("payWithEasebuzz", parameters);
-                                  print('payment_response $payment_response');
-                                  _onPayPressed(st_txnId,payment_response.toString(),'Success');
-                                } else {
-                                  _onPayPressed(st_txnId,result.errorDesc.toString(),'Failed');
-                                  print('Error: ${result.errorDesc}');
-                                }
-                              } catch (e) {
-                                print('Request error: $e');
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: selectedTabPurple,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 24,
-                                vertical: 12,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                            child: const Text(
-                              'Pay',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                          );
-                        },
                       ),
                     ],
                   ),
                 ),
-              )
+                TextButton(
+                  onPressed: _clearSelectedFees,
+                  child: const Text(
+                    'Clear',
+                    style: TextStyle(
+                      color: Colors.red,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                BlocConsumer<FeesCubit, FeesState>(
+                  listener: (context, state) async {
+                    if(state is CheckFeeStatusSuccess){
+                      String st_txnId =
+                          'TXN${DateTime.now().millisecondsSinceEpoch}';
+                      final easebuzz = EasebuzzService();
+                      try {
+                        final result = await easebuzz.getAccessKey(
+                          txnid: st_txnId,
+                          amount: _selectedTotal.toStringAsFixed(2),
+                          productinfo: 'School Fee Payment',
+                          firstname: 'cristal',
+                          email: 'haris.rahman91@gmail.com',
+                          phone: '8089001136',
+                          surl: 'https://techzera.in/',
+                          furl: 'https://techzera.in/',
+                          admissionNo: AppData.admissionNo!,
+                          std: AppData.studentClass!,
+                          div: AppData.studentDivId!,
+                          studName: AppData.studentName!,
+                          schoolName: AppData.schoolName!,
+                        );
+
+                        if (result.success) {
+                          print('Access key: ${result.accessKey}');
+                          String access_key =
+                          result.accessKey.toString();
+                          String pay_mode = "production";
+                          Object parameters = {
+                            "access_key": access_key,
+                            "pay_mode": pay_mode,
+                          };
+                          final payment_response = await _channel
+                              .invokeMethod(
+                            "payWithEasebuzz",
+                            parameters,
+                          );
+                          print('payment_response $payment_response');
+                          _onPayPressed(
+                            st_txnId,
+                            payment_response.toString(),
+                            'Success',
+                          );
+                        } else {
+                          _onPayPressed(
+                            st_txnId,
+                            result.errorDesc.toString(),
+                            'Failed',
+                          );
+                          print('Error: ${result.errorDesc}');
+                        }
+                      } catch (e) {
+                        print('Request error: $e');
+                      }
+                    }
+                    if (state is LoginCheckSuccess) {
+                      print('LoginCheckSuccess IfState');
+                      AppData.feeCollectionStatus =
+                          state
+                              .loginResponse
+                              .student
+                              ?.feeCollectionStatus ??
+                              false;
+                      if (AppData.feeCollectionStatus) {
+                        //_onPayPressed();
+                      } else {
+                        print('LoginCheckSuccess Else');
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'You do not have permission to make fee payments',
+                            ),
+                          ),
+                        );
+                      }
+                    }
+                    if (state is FeeSave_Success) {
+                      Navigator.pop(context);
+                    }
+                  },
+                  builder: (context, state) {
+                    return ElevatedButton(
+                      onPressed: () async {
+                        final feemonthPayload = _buildFeemonthPayload();
+
+                        context.read<FeesCubit>().checkFeeExist(
+                          FeePaymentExistRequest(
+                            admno: AppData.admissionNo!,
+                             accyear: '', feemonths: feemonthPayload,
+                          ),
+                        );
+
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: selectedTabPurple,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 12,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: const Text(
+                        'Pay',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        )
             : null,
       ),
     );
   }
+  List<Feemonth> _buildFeemonthPayload() {
+    final List<Feemonth> payload = [];
 
+    _selectedDetails.forEach((feeIndex, detailIndexes) {
+      if (feeIndex >= _unpaidFeesCache.length) return;
+      final fee = _unpaidFeesCache[feeIndex];
+
+      final List<Ledger> ledgers = [];
+      for (final detailIndex in detailIndexes) {
+        if (detailIndex >= fee.details.length) continue;
+        final detail = fee.details[detailIndex];
+
+        ledgers.add(
+          Ledger(
+            ledgerid: detail.ledgerId, // see note below
+            paidamount: int.tryParse(detail.amount) ?? 0,
+          ),
+        );
+      }
+
+      if (ledgers.isNotEmpty) {
+        payload.add(
+          Feemonth(
+            feemonthid: fee.feeMonthId,
+            ledgers: ledgers,
+          ),
+        );
+      }
+    });
+
+    return payload;
+  }
   Widget _pendingFeeSection() {
     return BlocConsumer<UnPaidFeeCubit, UnPaidFeeState>(
       listener: (context, state) {},
@@ -945,12 +624,6 @@ class _FeesScreenState extends State<FeesScreen> {
         if (_isAccYearLoading || _isPendingLoading) {
           return _sectionLoader();
         }
-        // if (state is FeeUnpaidInitial || state is FeeUnpaid_Loading) {
-        //   return Padding(
-        //     padding: EdgeInsets.only(left: 24, right: 24),
-        //     child: CircularProgressIndicator(strokeWidth: 2),
-        //   );
-        // }
 
         if (state is FeesUnPaidSuccess) {
           print('wwwwwwwwwwwwwwww${AppData.feeCollectionStatus}');
@@ -958,7 +631,7 @@ class _FeesScreenState extends State<FeesScreen> {
           if (state.feeUnPaidResult.data.isNotEmpty) {
             return PendingFee(
               feesUnpaidList: state.feeUnPaidResult,
-              selectedIndexes: _selectedIndexes,
+              selectedDetails: _selectedDetails,
               onSelectionChanged: _onFeeSelectionChanged,
               feeCollectionStatus: AppData.feeCollectionStatus,
             );
@@ -986,14 +659,6 @@ class _FeesScreenState extends State<FeesScreen> {
         if (_isAccYearLoading || _isPaidLoading) {
           return _sectionLoader();
         }
-        // if (state is FeesInitial || state is FeesPaidLoading) {
-        //   return const Center(
-        //     child: Padding(
-        //       padding: EdgeInsets.only(left: 24, right: 24),
-        //       child: CircularProgressIndicator(strokeWidth: 2),
-        //     ),
-        //   );
-        // }
 
         if (state is FeesPaidSuccess) {
           return PaidFee(feePaidResult: state.feePaidResult);
@@ -1010,21 +675,12 @@ class _FeesScreenState extends State<FeesScreen> {
       decoration: BoxDecoration(
         gradient: _selectedTabIndex == 0
             ? const LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Color(0xFF6E6CFF), Color(0xFFC4C3FF)],
-              )
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xFF6E6CFF), Color(0xFFC4C3FF)],
+        )
             : null,
         color: _selectedTabIndex == 0 ? null : Colors.white,
-
-        // gradient: LinearGradient(
-        //   begin: Alignment.topCenter,
-        //   end: Alignment.bottomCenter,
-        //   colors: [
-        //     Color(0xFF6E6CFF), // Top
-        //     Color(0xFFC4C3FF), // Bottom
-        //   ],
-        // ),
       ),
       child: SafeArea(
         bottom: false,
@@ -1038,14 +694,10 @@ class _FeesScreenState extends State<FeesScreen> {
           child: Column(
             children: [
               _appBarDesign(),
-
               const SizedBox(height: 22),
-
               _tabBarDesign(),
-
               if (_selectedTabIndex == 0) ...[
                 const SizedBox(height: 22),
-
                 _summaryCard(),
               ],
             ],
@@ -1069,9 +721,7 @@ class _FeesScreenState extends State<FeesScreen> {
               size: 22,
             ),
           ),
-
           const SizedBox(width: 16),
-
           Expanded(
             child: Text(
               'Fees',
@@ -1082,7 +732,6 @@ class _FeesScreenState extends State<FeesScreen> {
               ),
             ),
           ),
-
           BlocConsumer<FeesCubit, FeesState>(
             listener: (context, state) {
               if (state is AccYearSuccess) {
@@ -1107,7 +756,6 @@ class _FeesScreenState extends State<FeesScreen> {
                 );
               }
             },
-
             builder: (context, state) {
               return PopupMenuButton<String>(
                 color: Colors.white,
@@ -1116,8 +764,7 @@ class _FeesScreenState extends State<FeesScreen> {
                 onSelected: (value) {
                   setState(() {
                     _selectedAccYear = value;
-                    _selectedIndexes.clear();
-                    _selectedFees.clear();
+                    _selectedDetails.clear();
                   });
 
                   context.read<FeesCubit>().fetchPaidFeesDetails(
@@ -1137,10 +784,10 @@ class _FeesScreenState extends State<FeesScreen> {
                 itemBuilder: (context) => accYears
                     .map(
                       (datum) => PopupMenuItem<String>(
-                        value: datum.accYear,
-                        child: Text(datum.accYear),
-                      ),
-                    )
+                    value: datum.accYear,
+                    child: Text(datum.accYear),
+                  ),
+                )
                     .toList(),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -1234,16 +881,19 @@ class _FeesScreenState extends State<FeesScreen> {
 
             if (unpaidState is FeesUnPaidSuccess) {
               totalPending = unpaidState.feeUnPaidResult.data.fold(0.0, (
-                sum,
-                fee,
-              ) {
+                  sum,
+                  fee,
+                  ) {
                 return sum + _parseAmount(fee.totalBalance);
               });
             }
 
             return Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 18),
+              padding: const EdgeInsets.symmetric(
+                vertical: 30,
+                horizontal: 18,
+              ),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(26),
@@ -1256,20 +906,20 @@ class _FeesScreenState extends State<FeesScreen> {
                       subtitle: '(This Year)',
                       amount: _formatAmount(totalPaid),
                       isLoading: _isAccYearLoading || _isPaidLoading,
-                      // currency: 'AED',
                       color: Colors.green,
                     ),
                   ),
-
-                  Container(width: 1, height: 82, color: Colors.grey.shade300),
-
+                  Container(
+                    width: 1,
+                    height: 82,
+                    color: Colors.grey.shade300,
+                  ),
                   Expanded(
                     child: _summaryItem(
                       title: 'Pending',
                       subtitle: '(This Year)',
                       amount: _formatAmount(totalPending),
                       isLoading: _isAccYearLoading || _isPendingLoading,
-                      // currency: 'AED',
                       color: Colors.red,
                     ),
                   ),
@@ -1287,7 +937,6 @@ class _FeesScreenState extends State<FeesScreen> {
     required String subtitle,
     required String amount,
     required bool isLoading,
-    //required String currency,
     required Color color,
   }) {
     return Column(
@@ -1310,45 +959,29 @@ class _FeesScreenState extends State<FeesScreen> {
           ),
         ),
         const SizedBox(height: 16),
-        // Text(
-        //   amount,
-        //   style: TextStyle(
-        //     fontSize: 25,
-        //     color: color,
-        //     fontWeight: FontWeight.w900,
-        //   ),
-        // ),
         SizedBox(
           height: 30,
           child: Center(
             child: isLoading
                 ? SizedBox(
-                    width: 22,
-                    height: 22,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2.5,
-                      color: color,
-                    ),
-                  )
+              width: 22,
+              height: 22,
+              child: CircularProgressIndicator(
+                strokeWidth: 2.5,
+                color: color,
+              ),
+            )
                 : Text(
-                    amount,
-                    style: TextStyle(
-                      fontSize: 25,
-                      color: color,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
+              amount,
+              style: TextStyle(
+                fontSize: 25,
+                color: color,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
           ),
         ),
         const SizedBox(height: 5),
-        // Text(
-        //   currency,
-        //   style: TextStyle(
-        //     fontSize: 15,
-        //     color: color,
-        //     fontWeight: FontWeight.w700,
-        //   ),
-        // ),
       ],
     );
   }
@@ -1357,7 +990,6 @@ class _FeesScreenState extends State<FeesScreen> {
     if (value % 1 == 0) {
       return value.toStringAsFixed(0);
     }
-
     return value.toStringAsFixed(2);
   }
 }
