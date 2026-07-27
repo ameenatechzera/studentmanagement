@@ -107,13 +107,13 @@ class Ledger extends Equatable {
   final int ledgerid;
   static const String ledgeridKey = "ledgerid";
 
-  final int paidamount;
+  final String paidamount;
   static const String paidamountKey = "paidamount";
 
 
   Ledger copyWith({
     int? ledgerid,
-    int? paidamount,
+    String? paidamount,
   }) {
     return Ledger(
       ledgerid: ledgerid ?? this.ledgerid,
@@ -124,7 +124,7 @@ class Ledger extends Equatable {
   factory Ledger.fromJson(Map<String, dynamic> json){
     return Ledger(
       ledgerid: json["ledgerid"] ?? 0,
-      paidamount: json["paidamount"] ?? 0,
+      paidamount: json["paidamount"] ?? "",
     );
   }
 

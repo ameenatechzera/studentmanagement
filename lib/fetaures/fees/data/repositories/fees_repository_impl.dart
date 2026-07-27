@@ -6,6 +6,7 @@ import 'package:studentmanagement/core/errors/failure.dart';
 import 'package:studentmanagement/core/utils/typedef.dart';
 import 'package:studentmanagement/fetaures/fees/data/datasources/fees_remote_data_sources.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/accyearResult.dart';
+import 'package:studentmanagement/fetaures/fees/domain/entities/feeExistCheckResult.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/feeSaveResult.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/paid_fee_result.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/unpaid%20fee_result.dart';
@@ -86,7 +87,7 @@ class FeesRepositoryImpl implements FeesRepository {
   }
 
   @override
-  ResultFuture<CommonResponseEntity> checkFeePayExistStatus(FeePaymentExistRequest request) async {
+  ResultFuture<FeePaymentExistResult> checkFeePayExistStatus(FeePaymentExistRequest request) async {
     try {
       final result = await remoteDataSource.checkFeePayExistStatus(request);
 

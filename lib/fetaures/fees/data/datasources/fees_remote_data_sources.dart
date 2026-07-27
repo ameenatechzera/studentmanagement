@@ -6,7 +6,9 @@ import 'package:studentmanagement/core/errors/exceptions.dart';
 import 'package:studentmanagement/core/network/api_endpoints.dart';
 import 'package:studentmanagement/core/network/apihelper.dart';
 import 'package:studentmanagement/fetaures/fees/data/models/accYearListModel.dart';
+import 'package:studentmanagement/fetaures/fees/data/models/checkFeeExistResultModel.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/accyearResult.dart';
+import 'package:studentmanagement/fetaures/fees/domain/entities/feeExistCheckResult.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/feeSaveResult.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/paid_fee_result.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/unpaid%20fee_result.dart';
@@ -22,7 +24,7 @@ abstract class FeesRemoteDataSource {
   Future<AccYearResult> fetchAccYearsList();
   Future<FeeSaveResult> saveFeeDetails(FeeSaveRequest request);
   Future<FeeSaveResult> saveOfflineFeeDetails(OfflineFeePayRequest request);
-  Future<CommonResponseEntity> checkFeePayExistStatus(FeePaymentExistRequest request);
+  Future<FeePaymentExistResult> checkFeePayExistStatus(FeePaymentExistRequest request);
 
 
 
@@ -215,7 +217,7 @@ class FeesRemoteDataSourceImpl implements FeesRemoteDataSource {
   }
 
   @override
-  Future<CommonResponseEntity> checkFeePayExistStatus(FeePaymentExistRequest request) async {
+  Future<FeePaymentExistResult> checkFeePayExistStatus(FeePaymentExistRequest request) async {
     final baseUrl = await SharedPreferenceHelper().getBaseUrl();
 
     if (baseUrl == null || baseUrl.isEmpty) {}
@@ -236,7 +238,7 @@ class FeesRemoteDataSourceImpl implements FeesRemoteDataSource {
     print('Status Code: ${response.statusCode}');
     print('Response Data fetched pending: ${response.data}');
     if (response.statusCode == 200) {
-      return CommonResponseModel.fromJson(response.data);
+      return CheckFeeExistResultModel.fromJson(response.data);
     } else {
       throw ServerException(
         errorMessageModel: ErrorMessageModel.fromJson(response.data),

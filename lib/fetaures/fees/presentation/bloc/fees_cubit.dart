@@ -6,6 +6,7 @@ import 'package:studentmanagement/fetaures/authentication/domain/entities/login_
 import 'package:studentmanagement/fetaures/authentication/domain/parameters/login_params.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/usecases/login_usecase.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/accyearResult.dart';
+import 'package:studentmanagement/fetaures/fees/domain/entities/feeExistCheckResult.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/feeSaveResult.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/paid_fee_result.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/unpaid%20fee_result.dart';

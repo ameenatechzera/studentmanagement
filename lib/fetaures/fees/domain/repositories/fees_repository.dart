@@ -1,6 +1,7 @@
 import 'package:studentmanagement/core/domain/entities/common_response_entity.dart';
 import 'package:studentmanagement/core/utils/typedef.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/accyearResult.dart';
+import 'package:studentmanagement/fetaures/fees/domain/entities/feeExistCheckResult.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/feeSaveResult.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/paid_fee_result.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/unpaid%20fee_result.dart';
@@ -15,6 +16,6 @@ abstract class FeesRepository {
   ResultFuture<AccYearResult> fetchAccYearsList();
   ResultFuture<FeeSaveResult> saveFeesDetails(FeeSaveRequest request);
   ResultFuture<FeeSaveResult> saveOfflineFeesDetails(OfflineFeePayRequest request);
-  ResultFuture<CommonResponseEntity> checkFeePayExistStatus(FeePaymentExistRequest request);
+  ResultFuture<FeePaymentExistResult> checkFeePayExistStatus(FeePaymentExistRequest request);
 
 }

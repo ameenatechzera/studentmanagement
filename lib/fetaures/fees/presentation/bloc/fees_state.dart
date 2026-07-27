@@ -70,7 +70,7 @@ final class LoginCheckSuccess extends FeesState {
 }
 
 final class CheckFeeStatusSuccess extends FeesState {
-  final CommonResponseEntity response;
+  final FeePaymentExistResult response;
 
   CheckFeeStatusSuccess(this.response);
 

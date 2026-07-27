@@ -8,8 +8,13 @@ import 'package:studentmanagement/fetaures/fees/domain/entities/easebuzzAccessKe
 class EasebuzzService {
   // Use your real merchant key & salt (keep the salt on your backend ideally,
   // never ship it in a public client app if you can avoid it).
+  //Live
   static const String merchantKey = '62STKYKHVY';
   static const String salt = 'F61WEY3OFB';
+
+  //Test
+  // static const String merchantKey = '8HKJ36CVO';
+  // static const String salt = 'ZLV45EKM2';
 
   // static const String _testUrl =
   //     'https://testpay.easebuzz.in/payment/initiateLink';
