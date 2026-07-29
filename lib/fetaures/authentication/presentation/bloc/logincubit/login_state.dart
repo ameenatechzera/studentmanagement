@@ -11,6 +11,8 @@ final class LoginInitial extends LoginState {}
 
 final class LoginLoading extends LoginState {}
 
+final class FetchGatewayDetailsInitial extends LoginState {}
+
 final class DeviceRegisterLoading extends LoginState {}
 
 final class LoginSuccess extends LoginState {
@@ -89,4 +91,15 @@ class LoginStatusFailure extends LoginState {
   final String message;
 
   const LoginStatusFailure(this.message);
+}
+final class FetchPaymentGatewayDetailsFailure extends LoginState {
+  final String error;
+
+  FetchPaymentGatewayDetailsFailure(this.error);
+}
+
+final class FetchPaymentGatewayDetailsSuccess extends LoginState {
+  final FeePaymentGatewayDetails gatewayDetails;
+
+  FetchPaymentGatewayDetailsSuccess(this.gatewayDetails);
 }

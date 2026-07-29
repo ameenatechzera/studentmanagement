@@ -140,5 +140,14 @@ class ApiConstants {
   static String getFeePaymentExistPath(String baseUrl) {
     return '${baseUrl}app/payments-check';
   }
+  //Fee Processing list
+  static String getFeeProcessingListPath(String baseUrl) {
+    return '${baseUrl}app/payment-gateway-status-check';
+  }
+
+  //Payment Gateway Details
+  static String getPaymentGatewayDetailsPath(String baseUrl) {
+    return '${baseUrl}app/payment-gateway-data/1';
+  }
 
 }

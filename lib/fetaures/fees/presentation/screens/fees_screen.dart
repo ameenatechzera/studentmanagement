@@ -35,6 +35,11 @@ class _FeesScreenState extends State<FeesScreen> {
   // needing to read bloc state again.
   List<unpaid.Datum> _unpaidFeesCache = [];
 
+  // NEW: composite keys "<feeMonthId>_<ledgerId>" for ledger lines that are
+  // already under fee-payment processing and must be blocked from selection.
+  Set<String> _processingKeys = {};
+  bool _isProcessingLoading = true;
+
   final List<Datum> accYears = [];
 
   int _selectedTabIndex = 0;
@@ -57,6 +62,10 @@ class _FeesScreenState extends State<FeesScreen> {
   }
 
   void _fetchFeesForYear(String accYear) {
+    setState(() {
+      _isProcessingLoading = true;
+    });
+
     context.read<FeesCubit>().fetchPaidFeesDetails(
       PaidFeesRequest(accyear: accYear, admno: AppData.admissionNo!),
     );
@@ -64,6 +73,37 @@ class _FeesScreenState extends State<FeesScreen> {
     context.read<UnPaidFeeCubit>().fetchUnPaidFeesDetails(
       PaidFeesRequest(accyear: accYear, admno: AppData.admissionNo!),
     );
+
+    // NEW: fetch ledgers already under fee-payment processing for this year
+    context.read<FeesCubit>().fetchProcessingFeeDetails(
+      PaidFeesRequest(accyear: accYear, admno: AppData.admissionNo!),
+    );
+  }
+
+  // NEW: build "<feeMonthId>_<ledgerId>" keys from the processing result and
+  // drop any current selections that just became blocked.
+  void _applyProcessingResult(dynamic feeProcessingResult) {
+    final Set<String> keys = {};
+    for (final datum in feeProcessingResult.data) {
+      for (final feemonth in datum.feemonths) {
+        for (final detail in feemonth.details) {
+          keys.add('${feemonth.feemonthId}_${detail.ledgerId}');
+        }
+      }
+    }
+
+    _processingKeys = keys;
+
+    _selectedDetails.forEach((feeIndex, detailIndexes) {
+      if (feeIndex >= _unpaidFeesCache.length) return;
+      final fee = _unpaidFeesCache[feeIndex];
+      detailIndexes.removeWhere((detailIndex) {
+        if (detailIndex >= fee.details.length) return false;
+        final key = '${fee.feeMonthId}_${fee.details[detailIndex].ledgerId}';
+        return _processingKeys.contains(key);
+      });
+    });
+    _selectedDetails.removeWhere((_, set) => set.isEmpty);
   }
 
   Future<void> _handleFeesState(BuildContext context, FeesState state) async {
@@ -93,11 +133,12 @@ class _FeesScreenState extends State<FeesScreen> {
           _selectedAccYear = null;
           _isPendingLoading = false;
           _isPaidLoading = false;
+          _isProcessingLoading = false;
         } else {
           final appYear = AppData.accYear;
           final hasAppYear =
               appYear != null &&
-              accYears.any((item) => item.accYear == appYear);
+                  accYears.any((item) => item.accYear == appYear);
 
           _selectedAccYear = hasAppYear ? appYear : accYears.first.accYear;
 
@@ -117,6 +158,7 @@ class _FeesScreenState extends State<FeesScreen> {
         _isAccYearLoading = false;
         _isPendingLoading = false;
         _isPaidLoading = false;
+        _isProcessingLoading = false;
       });
       return;
     }
@@ -148,6 +190,24 @@ class _FeesScreenState extends State<FeesScreen> {
           _isPendingLoading = false;
         }
       });
+      return;
+    }
+
+    // NEW: ledgers-under-processing result
+    if (state is FeeProcessingFeeSuccess) {
+      print('FeeProcessingFeeSuccess ${state.feeProcessingFeeResult.data}');
+      setState(() {
+        _applyProcessingResult(state.feeProcessingFeeResult);
+        _isProcessingLoading = false;
+      });
+      return;
+    }
+
+    if (state is FeeProcessingFeeListFailure) {
+      setState(() {
+        _isProcessingLoading = false;
+      });
+      return;
     }
   }
 
@@ -170,7 +230,7 @@ class _FeesScreenState extends State<FeesScreen> {
       setState(() {
         _unpaidFeesCache = state.feeUnPaidResult.data;
         _selectedDetails.removeWhere(
-          (feeIndex, _) => feeIndex >= _unpaidFeesCache.length,
+              (feeIndex, _) => feeIndex >= _unpaidFeesCache.length,
         );
         _isPendingLoading = false;
       });
@@ -229,25 +289,44 @@ class _FeesScreenState extends State<FeesScreen> {
     return double.tryParse(cleanedValue) ?? 0.0;
   }
 
+  // NEW: is this fee-month/ledger pair already under payment processing?
+  bool _isLedgerProcessing(dynamic feeMonthId, dynamic ledgerId) {
+    return _processingKeys.contains('${feeMonthId}_$ledgerId');
+  }
+
   void _onFeeSelectionChanged(
-    int feeIndex,
-    int? detailIndex,
-    unpaid.Datum fee,
-    bool isSelected,
-  ) {
+      int feeIndex,
+      int? detailIndex,
+      unpaid.Datum fee,
+      bool isSelected,
+      ) {
     setState(() {
       final currentSet = _selectedDetails.putIfAbsent(feeIndex, () => <int>{});
 
       if (detailIndex == null) {
-        // header checkbox -> select/clear every line in this card
+        // header checkbox -> select/clear every SELECTABLE line in this card
         if (isSelected) {
           currentSet
             ..clear()
-            ..addAll(List.generate(fee.details.length, (i) => i));
+            ..addAll(
+              List.generate(fee.details.length, (i) => i).where(
+                    (i) => !_isLedgerProcessing(
+                  fee.feeMonthId,
+                  fee.details[i].ledgerId,
+                ),
+              ),
+            );
         } else {
           currentSet.clear();
         }
       } else {
+        // Safety net: never let a processing ledger get selected, even if
+        // called directly and bypassing the disabled checkbox.
+        if (isSelected &&
+            _isLedgerProcessing(fee.feeMonthId, fee.details[detailIndex].ledgerId)) {
+          return;
+        }
+
         if (isSelected) {
           currentSet.add(detailIndex);
         } else {
@@ -288,10 +367,10 @@ class _FeesScreenState extends State<FeesScreen> {
           feemonth: fee.feeMonth,
           ledgerid: detail.ledgerId,
           ledgername: detail.ledgerName,
-          // dueamount: detail.amount,
-          // paidamount: detail.amount,
-          dueamount: "1",
-          paidamount: "1",
+          dueamount: detail.amount,
+          paidamount: detail.amount,
+          // dueamount: "0.10",
+          // paidamount: "0.10",
         );
       }).toList();
 
@@ -302,10 +381,10 @@ class _FeesScreenState extends State<FeesScreen> {
           admno: AppData.admissionNo!,
           accyear: AppData.accYear!,
           date: formattedDate,
-          // totalamount: _selectedTotal.toStringAsFixed(2),
-          // paidamount: _selectedTotal.toStringAsFixed(2),
-          totalamount: "1",
-          paidamount: "1",
+          totalamount: _selectedTotal.toStringAsFixed(2),
+          paidamount: _selectedTotal.toStringAsFixed(2),
+          // totalamount: "0.10",
+          // paidamount: "0.10",
           transactionid: trxnId,
           status: payStatus,
           response: response,
@@ -423,235 +502,239 @@ class _FeesScreenState extends State<FeesScreen> {
           ],
         ),
         bottomNavigationBar:
-            _selectedDetails.isNotEmpty && _selectedTabIndex != 2
+        _selectedDetails.isNotEmpty && _selectedTabIndex != 2
             ? SafeArea(
-                child: Container(
-                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.08),
-                        blurRadius: 12,
-                        offset: const Offset(0, -4),
-                      ),
-                    ],
-                  ),
-                  child: Row(
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.08),
+                  blurRadius: 12,
+                  offset: const Offset(0, -4),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '$_selectedFeeCardCount fee selected',
-                              style: const TextStyle(
-                                fontSize: 13,
-                                color: Colors.grey,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Total: ${_selectedTotal.toStringAsFixed(2)}',
-                              style: const TextStyle(
-                                fontSize: 17,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ],
+                      Text(
+                        '$_selectedFeeCardCount fee selected',
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
-                      TextButton(
-                        onPressed: _clearSelectedFees,
-                        child: const Text(
-                          'Clear',
-                          style: TextStyle(
-                            color: Colors.red,
-                            fontWeight: FontWeight.w600,
-                          ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Total: ${_selectedTotal.toStringAsFixed(2)}',
+                        style: const TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
                         ),
-                      ),
-                      const SizedBox(width: 8),
-                      BlocConsumer<FeesCubit, FeesState>(
-                        listener: (context, state) async {
-                          if (state is CheckFeeStatusSuccess) {
-                            print(
-                              'CheckFeeStatusSuccess ${state.response.status}',
-                            );
-
-                            if (state.response.status == false) {
-                              final failedEntries = state.response.data
-                                  .where((d) => d.status == false)
-                                  .toList();
-
-                              showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return AlertDialog(
-                                    title: const Text("Payment Issue"),
-                                    content: SizedBox(
-                                      width: double.maxFinite,
-                                      child: ConstrainedBox(
-                                        constraints: BoxConstraints(
-                                          maxHeight:
-                                              MediaQuery.of(
-                                                context,
-                                              ).size.height *
-                                              0.5,
-                                        ),
-                                        child: SingleChildScrollView(
-                                          child: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              // Top-level message, shown because top-level status is false
-                                              Text(state.response.message),
-                                              const SizedBox(height: 12),
-                                              // Ledger info from data items whose own status is also false
-                                              ...failedEntries.map(
-                                                (d) => Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                        bottom: 8.0,
-                                                      ),
-                                                  child: Text(
-                                                    "Ledger: ${d.ledgerName ?? '-'}\nPaid Amount: ${d.paidAmount}",
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () =>
-                                            Navigator.of(context).pop(),
-                                        child: const Text("OK"),
-                                      ),
-                                    ],
-                                  );
-                                },
-                              );
-                            } else {
-                              String st_txnId =
-                                  'TXN${DateTime.now().millisecondsSinceEpoch}';
-                              final easebuzz = EasebuzzService();
-                              try {
-                                final result = await easebuzz.getAccessKey(
-                                  txnid: st_txnId,
-                                  // amount: _selectedTotal.toStringAsFixed(2),
-                                  amount: "1",
-                                  productinfo: 'School Fee Payment',
-                                  firstname: 'cristal',
-                                  email: 'haris.rahman91@gmail.com',
-                                  phone: '8089001136',
-                                  surl: 'https://techzera.in/',
-                                  furl: 'https://techzera.in/',
-                                  admissionNo: AppData.admissionNo!,
-                                  std: AppData.studentClass!,
-                                  div: AppData.studentDivId!,
-                                  studName: AppData.studentName!,
-                                  schoolName: AppData.schoolName!,
-                                );
-
-                                if (result.success) {
-                                  print('Access key: ${result.accessKey}');
-                                  String access_key = result.accessKey
-                                      .toString();
-                                  String pay_mode = "production";
-                                  Object parameters = {
-                                    "access_key": access_key,
-                                    "pay_mode": pay_mode,
-                                  };
-                                  // final payment_response = await _channel
-                                  //     .invokeMethod(
-                                  //   "payWithEasebuzz",
-                                  //   parameters,
-                                  // );
-                                  final payment_response = await _channel
-                                      .invokeMethod(
-                                        "payWithEasebuzz",
-                                        parameters,
-                                      );
-                                  print('payment_response $payment_response');
-
-                                  // invokeMethod usually returns a Map<Object?, Object?> from platform channels,
-                                  // so cast it safely first
-                                  final Map<dynamic, dynamic> responseMap =
-                                      payment_response is Map
-                                      ? payment_response
-                                      : {};
-
-                                  _onPayPressed(
-                                    st_txnId,
-                                    payment_response.toString(),
-                                    responseMap['result']?.toString() ?? '',
-                                  );
-                                } else {
-                                  print('Failed_case');
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text('${result.errorDesc}'),
-                                    ),
-                                  );
-                                  // _onPayPressed(
-                                  //   st_txnId,
-                                  //   result.errorDesc.toString(),
-                                  //   'Failed',
-                                  // );
-                                  print('Error: ${result.errorDesc}');
-                                }
-                              } catch (e) {
-                                print('Request error: $e');
-                              }
-                            }
-                          }
-
-                          if (state is FeeSave_Success) {
-                            Navigator.pop(context);
-                          }
-                        },
-                        builder: (context, state) {
-                          return ElevatedButton(
-                            onPressed: () async {
-                              final feemonthPayload = _buildFeemonthPayload();
-
-                              context.read<FeesCubit>().checkFeeExist(
-                                FeePaymentExistRequest(
-                                  admno: AppData.admissionNo!,
-                                  accyear: AppData.accYear!,
-                                  feemonths: feemonthPayload,
-                                ),
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: selectedTabPurple,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 24,
-                                vertical: 12,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                            child: const Text(
-                              'Pay',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                          );
-                        },
                       ),
                     ],
                   ),
                 ),
-              )
+                TextButton(
+                  onPressed: _clearSelectedFees,
+                  child: const Text(
+                    'Clear',
+                    style: TextStyle(
+                      color: Colors.red,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                BlocConsumer<FeesCubit, FeesState>(
+                  listener: (context, state) async {
+                    if (state is CheckFeeStatusSuccess) {
+                      print(
+                        'CheckFeeStatusSuccess ${state.response.status}',
+                      );
+
+                      if (state.response.status == false) {
+                        final failedEntries = state.response.data
+                            .where((d) => d.status == false)
+                            .toList();
+
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: const Text("Payment Issue"),
+                              content: SizedBox(
+                                width: double.maxFinite,
+                                child: ConstrainedBox(
+                                  constraints: BoxConstraints(
+                                    maxHeight:
+                                    MediaQuery.of(
+                                      context,
+                                    ).size.height *
+                                        0.5,
+                                  ),
+                                  child: SingleChildScrollView(
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                      children: [
+                                        // Top-level message, shown because top-level status is false
+                                        Text(state.response.message),
+                                        const SizedBox(height: 12),
+                                        // Ledger info from data items whose own status is also false
+                                        ...failedEntries.map(
+                                              (d) => Padding(
+                                            padding:
+                                            const EdgeInsets.only(
+                                              bottom: 8.0,
+                                            ),
+                                            child: Text(
+                                              "Ledger: ${d.ledgerName ?? '-'}\nPaid Amount: ${d.paidAmount}",
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () =>
+                                      Navigator.of(context).pop(),
+                                  child: const Text("OK"),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      } else {
+                       // print('emailId ${AppData.emailId}');
+                        String st_txnId =
+                            'TXN${DateTime.now().millisecondsSinceEpoch}';
+                        print('Schoolcode ${AppData.schoolCode}');
+
+                        final easebuzz = EasebuzzService();
+                        try {
+                          final result = await easebuzz.getAccessKey(
+                            txnid: st_txnId,
+                            amount: _selectedTotal.toStringAsFixed(2),
+                            //amount: '0.10',
+                            productinfo: 'School Fee Payment',
+                            firstname: 'cristal',
+                            email: (AppData.emailId?.trim().isNotEmpty ?? false)
+                                ? AppData.emailId!
+                                : 'haristechzera@gmail.com',
+                            phone: AppData.mobileNo!,
+                            surl: 'https://techzera.in/',
+                            furl: 'https://techzera.in/',
+                            admissionNo: AppData.admissionNo!,
+                            std: AppData.studentClass!,
+                            div: AppData.studentDivId!,
+                            studName: AppData.studentName!,
+                            schoolName: AppData.schoolName!,
+                          );
+
+                          if (result.success) {
+                            print('Access key: ${result.accessKey}');
+                            String access_key = result.accessKey
+                                .toString();
+                            String pay_mode = "production";
+                            Object parameters = {
+                              "access_key": access_key,
+                              "pay_mode": pay_mode,
+                            };
+
+                            final payment_response = await _channel
+                                .invokeMethod(
+                              "payWithEasebuzz",
+                              parameters,
+                            );
+                            print('payment_response $payment_response');
+
+                            // invokeMethod usually returns a Map<Object?, Object?> from platform channels,
+                            // so cast it safely first
+                            final Map<dynamic, dynamic> responseMap =
+                            payment_response is Map
+                                ? payment_response
+                                : {};
+                            print('responseMap ${ responseMap['result']?.toString()}');
+                            if( responseMap['result']?.toString().trim()!='user_cancelled'){
+                              _onPayPressed(
+                                st_txnId,
+                                payment_response.toString(),
+                                responseMap['result']?.toString().trim() ?? '',
+                              );
+                            }
+
+                          } else {
+                            print('Failed_case');
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('${result.errorDesc}'),
+                              ),
+                            );
+                            // _onPayPressed(
+                            //   st_txnId,
+                            //   result.errorDesc.toString(),
+                            //   'Failed',
+                            // );
+                            print('Error: ${result.errorDesc}');
+                          }
+                        } catch (e) {
+                          print('Request error: $e');
+                        }
+                      }
+                    }
+
+                    if (state is FeeSave_Success) {
+                      Navigator.pop(context);
+                    }
+                  },
+                  builder: (context, state) {
+                    return ElevatedButton(
+                      onPressed: () async {
+                        final feemonthPayload = _buildFeemonthPayload();
+
+                        context.read<FeesCubit>().checkFeeExist(
+                          FeePaymentExistRequest(
+                            admno: AppData.admissionNo!,
+                            accyear: AppData.accYear!,
+                            feemonths: feemonthPayload,
+                          ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: selectedTabPurple,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 12,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: const Text(
+                        'Pay',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        )
             : null,
       ),
     );
@@ -690,7 +773,7 @@ class _FeesScreenState extends State<FeesScreen> {
     return BlocConsumer<UnPaidFeeCubit, UnPaidFeeState>(
       listener: (context, state) {},
       builder: (context, state) {
-        if (_isAccYearLoading || _isPendingLoading) {
+        if (_isAccYearLoading || _isPendingLoading || _isProcessingLoading) {
           return _sectionLoader();
         }
 
@@ -703,6 +786,7 @@ class _FeesScreenState extends State<FeesScreen> {
               selectedDetails: _selectedDetails,
               onSelectionChanged: _onFeeSelectionChanged,
               feeCollectionStatus: AppData.feeCollectionStatus,
+              processingKeys: _processingKeys, // NEW
             );
           } else {
             return const Padding(
@@ -744,10 +828,10 @@ class _FeesScreenState extends State<FeesScreen> {
       decoration: BoxDecoration(
         gradient: _selectedTabIndex == 0
             ? const LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Color(0xFF6E6CFF), Color(0xFFC4C3FF)],
-              )
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xFF6E6CFF), Color(0xFFC4C3FF)],
+        )
             : null,
         color: _selectedTabIndex == 0 ? null : Colors.white,
       ),
@@ -823,6 +907,14 @@ class _FeesScreenState extends State<FeesScreen> {
                     admno: AppData.admissionNo!,
                   ),
                 );
+
+                // NEW: keep processing-ledger list in sync here too
+                context.read<FeesCubit>().fetchProcessingFeeDetails(
+                  PaidFeesRequest(
+                    accyear: _selectedAccYear!,
+                    admno: AppData.admissionNo!,
+                  ),
+                );
               }
             },
             builder: (context, state) {
@@ -849,14 +941,22 @@ class _FeesScreenState extends State<FeesScreen> {
                       admno: AppData.admissionNo!,
                     ),
                   );
+
+                  // NEW: refresh processing-ledger list on year switch
+                  context.read<FeesCubit>().fetchProcessingFeeDetails(
+                    PaidFeesRequest(
+                      accyear: value,
+                      admno: AppData.admissionNo!,
+                    ),
+                  );
                 },
                 itemBuilder: (context) => accYears
                     .map(
                       (datum) => PopupMenuItem<String>(
-                        value: datum.accYear,
-                        child: Text(datum.accYear),
-                      ),
-                    )
+                    value: datum.accYear,
+                    child: Text(datum.accYear),
+                  ),
+                )
                     .toList(),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -948,9 +1048,9 @@ class _FeesScreenState extends State<FeesScreen> {
 
             if (unpaidState is FeesUnPaidSuccess) {
               totalPending = unpaidState.feeUnPaidResult.data.fold(0.0, (
-                sum,
-                fee,
-              ) {
+                  sum,
+                  fee,
+                  ) {
                 return sum + _parseAmount(fee.totalBalance);
               });
             }
@@ -1027,21 +1127,21 @@ class _FeesScreenState extends State<FeesScreen> {
           child: Center(
             child: isLoading
                 ? SizedBox(
-                    width: 22,
-                    height: 22,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2.5,
-                      color: color,
-                    ),
-                  )
+              width: 22,
+              height: 22,
+              child: CircularProgressIndicator(
+                strokeWidth: 2.5,
+                color: color,
+              ),
+            )
                 : Text(
-                    amount,
-                    style: TextStyle(
-                      fontSize: 25,
-                      color: color,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
+              amount,
+              style: TextStyle(
+                fontSize: 25,
+                color: color,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
           ),
         ),
         const SizedBox(height: 5),

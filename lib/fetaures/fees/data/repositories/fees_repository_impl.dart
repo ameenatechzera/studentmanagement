@@ -7,8 +7,10 @@ import 'package:studentmanagement/core/utils/typedef.dart';
 import 'package:studentmanagement/fetaures/fees/data/datasources/fees_remote_data_sources.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/accyearResult.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/feeExistCheckResult.dart';
+import 'package:studentmanagement/fetaures/fees/domain/entities/feeProcessingResult.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/feeSaveResult.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/paid_fee_result.dart';
+import 'package:studentmanagement/fetaures/fees/domain/entities/paymentGatewayDetails.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/unpaid%20fee_result.dart';
 import 'package:studentmanagement/fetaures/fees/domain/parameters/feePayExistRequest.dart';
 import 'package:studentmanagement/fetaures/fees/domain/parameters/offlinePaymentSaveRequest.dart';
@@ -90,6 +92,32 @@ class FeesRepositoryImpl implements FeesRepository {
   ResultFuture<FeePaymentExistResult> checkFeePayExistStatus(FeePaymentExistRequest request) async {
     try {
       final result = await remoteDataSource.checkFeePayExistStatus(request);
+
+      return Right(result);
+    } on ServerException catch (failure) {
+      return Left(ServerFailure(failure.errorMessageModel.statusMessage));
+    } on DioException catch (failure) {
+      return Left(ServerFailure(failure.message.toString()));
+    }
+  }
+
+  @override
+  ResultFuture<FeeProcessingResult> fetchPaidFeeProcessing(PaidFeesRequest request) async {
+    try {
+      final result = await remoteDataSource.fetchProcessingFeeList(request);
+
+      return Right(result);
+    } on ServerException catch (failure) {
+      return Left(ServerFailure(failure.errorMessageModel.statusMessage));
+    } on DioException catch (failure) {
+      return Left(ServerFailure(failure.message.toString()));
+    }
+  }
+
+  @override
+  ResultFuture<FeePaymentGatewayDetails> fetchPaymentGatewayDetails() async {
+    try {
+      final result = await remoteDataSource.fetchPaymentGatewayDetails();
 
       return Right(result);
     } on ServerException catch (failure) {

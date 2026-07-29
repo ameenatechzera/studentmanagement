@@ -1,8 +1,8 @@
-
 package com.techzera.studentmanagement
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import com.google.gson.Gson
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -30,9 +30,12 @@ class MainActivity : FlutterActivity() {
             .setMethodCallHandler { call, result ->
                 channel_result = result
                 if (call.method == "payWithEasebuzz") {
+                    Toast.makeText(this, "payWithEasebuzz called", Toast.LENGTH_SHORT).show()
                     if (start_payment) {
                         start_payment = false
                         startPayment(call.arguments)
+                    } else {
+                        Toast.makeText(this, "Payment already in progress, ignoring", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
@@ -40,6 +43,8 @@ class MainActivity : FlutterActivity() {
 
     private fun startPayment(arguments: Any) {
         try {
+            Toast.makeText(this, "Building payment intent...", Toast.LENGTH_SHORT).show()
+
             val gson = Gson()
             val parameters = JSONObject(gson.toJson(arguments))
             val intentProceed = Intent(activity, PWECouponsActivity::class.java)
@@ -56,9 +61,13 @@ class MainActivity : FlutterActivity() {
                     intentProceed.putExtra(key, value)
                 }
             }
+
+            Toast.makeText(this, "Launching Easebuzz activity", Toast.LENGTH_SHORT).show()
             startActivityForResult(intentProceed, PWEStaticDataModel.PWE_REQUEST_CODE)
         } catch (e: Exception) {
             start_payment = true
+            Toast.makeText(this, "Payment start failed: ${e.message}", Toast.LENGTH_LONG).show()
+
             val error_map: MutableMap<String, Any> = HashMap()
             val error_desc_map: MutableMap<String, Any> = HashMap()
             val error_desc = "exception occured:" + e.message
@@ -66,13 +75,15 @@ class MainActivity : FlutterActivity() {
             error_desc_map["error_msg"] = error_desc
             error_map["result"] = PWEStaticDataModel.TXN_FAILED_CODE
             error_map["payment_response"] = error_desc_map
-            channel_result!!.success(error_map)
+            channel_result?.success(error_map)
         }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == PWEStaticDataModel.PWE_REQUEST_CODE) {
             start_payment = true
+            Toast.makeText(this, "Returned from Easebuzz activity", Toast.LENGTH_SHORT).show()
+
             val response = JSONObject()
             val error_map: MutableMap<String, Any> = HashMap()
 
@@ -83,8 +94,10 @@ class MainActivity : FlutterActivity() {
                     val obj = JSONObject(payment_response)
                     response.put("result", result)
                     response.put("payment_response", obj)
-                    channel_result!!.success(JsonConverter.convertToMap(response))
+                    channel_result?.success(JsonConverter.convertToMap(response))
                 } catch (e: Exception) {
+                    Toast.makeText(this, "Result parse failed: ${e.message}", Toast.LENGTH_LONG).show()
+
                     val error_desc_map: MutableMap<String, Any> = HashMap()
                     // Used the below code for target API 30
                     error_desc_map["error"] = result.toString()
@@ -92,16 +105,18 @@ class MainActivity : FlutterActivity() {
                     error_map["result"] = result.toString()
                     // End code for target API 30
                     error_map["payment_response"] = error_desc_map
-                    channel_result!!.success(error_map)
+                    channel_result?.success(error_map)
                 }
             } else {
+                Toast.makeText(this, "Empty payment response from Easebuzz", Toast.LENGTH_LONG).show()
+
                 val error_desc_map: MutableMap<String, Any> = HashMap()
                 val error_desc = "Empty payment response"
                 error_desc_map["error"] = "Empty error"
                 error_desc_map["error_msg"] = error_desc
                 error_map["result"] = "payment_failed"
                 error_map["payment_response"] = error_desc_map
-                channel_result!!.success(error_map)
+                channel_result?.success(error_map)
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data)

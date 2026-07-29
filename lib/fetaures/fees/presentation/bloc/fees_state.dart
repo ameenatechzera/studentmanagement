@@ -7,6 +7,7 @@ final class FeesInitial extends FeesState {}
 
 final class AccYearsInitial extends FeesState {}
 
+
 final class FeesPaidFailure extends FeesState {
   final String error;
 
@@ -32,6 +33,8 @@ final class AccYearSuccess extends FeesState {
 }
 
 final class FeeUnpaid_Loading extends FeesState {}
+
+final class FeeProcessingFeeListLoading extends FeesState {}
 
 final class FeeSave_Loading extends FeesState {}
 final class FeeCollectionCheckLoading extends FeesState {}
@@ -97,3 +100,13 @@ final class FeeSave_Success extends FeesState {
 }
 
 final class FeesPaidLoading extends FeesState {}
+final class FeeProcessingFeeListFailure extends FeesState {
+  final String error;
+
+  FeeProcessingFeeListFailure(this.error);
+}
+final class FeeProcessingFeeSuccess extends FeesState {
+  final FeeProcessingResult feeProcessingFeeResult;
+
+  FeeProcessingFeeSuccess(this.feeProcessingFeeResult);
+}

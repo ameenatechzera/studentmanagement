@@ -7,10 +7,14 @@ import 'package:studentmanagement/core/network/api_endpoints.dart';
 import 'package:studentmanagement/core/network/apihelper.dart';
 import 'package:studentmanagement/fetaures/fees/data/models/accYearListModel.dart';
 import 'package:studentmanagement/fetaures/fees/data/models/checkFeeExistResultModel.dart';
+import 'package:studentmanagement/fetaures/fees/data/models/feeProcessingModel.dart';
+import 'package:studentmanagement/fetaures/fees/data/models/paymentGatewayResultModel.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/accyearResult.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/feeExistCheckResult.dart';
+import 'package:studentmanagement/fetaures/fees/domain/entities/feeProcessingResult.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/feeSaveResult.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/paid_fee_result.dart';
+import 'package:studentmanagement/fetaures/fees/domain/entities/paymentGatewayDetails.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/unpaid%20fee_result.dart';
 import 'package:studentmanagement/fetaures/fees/domain/parameters/feePayExistRequest.dart';
 import 'package:studentmanagement/fetaures/fees/domain/parameters/offlinePaymentSaveRequest.dart';
@@ -25,6 +29,9 @@ abstract class FeesRemoteDataSource {
   Future<FeeSaveResult> saveFeeDetails(FeeSaveRequest request);
   Future<FeeSaveResult> saveOfflineFeeDetails(OfflineFeePayRequest request);
   Future<FeePaymentExistResult> checkFeePayExistStatus(FeePaymentExistRequest request);
+  Future<FeeProcessingResult> fetchProcessingFeeList(PaidFeesRequest request);
+  Future<FeePaymentGatewayDetails> fetchPaymentGatewayDetails();
+
 
 
 
@@ -239,6 +246,67 @@ class FeesRemoteDataSourceImpl implements FeesRemoteDataSource {
     print('Response Data fetched pending: ${response.data}');
     if (response.statusCode == 200) {
       return CheckFeeExistResultModel.fromJson(response.data);
+    } else {
+      throw ServerException(
+        errorMessageModel: ErrorMessageModel.fromJson(response.data),
+      );
+    }
+  }
+
+  @override
+  Future<FeeProcessingResult> fetchProcessingFeeList(PaidFeesRequest request) async {
+    final baseUrl = await SharedPreferenceHelper().getBaseUrl();
+
+    if (baseUrl == null || baseUrl.isEmpty) {}
+
+    final url = ApiConstants.getFeeProcessingListPath(baseUrl!);
+    // final token = await SharedPreferenceHelper().getToken() ?? "";
+    print('Register URL: $url');
+    // print(' token: $token');
+    print('Request Body: ${request.toJson()}');
+    final options = await ApiHelper.getAuthOptions(withToken: true);
+
+    final response = await dio.post(
+      ApiConstants.getFeeProcessingListPath(baseUrl),
+      options: options,
+      data: request.toJson(),
+    );
+    print(response.data);
+    print('Status Code: ${response.statusCode}');
+    print('Response Data fetched pending: ${response.data}');
+    if (response.statusCode == 200) {
+      return FeeProcessingModel.fromJson(response.data);
+    } else {
+      throw ServerException(
+        errorMessageModel: ErrorMessageModel.fromJson(response.data),
+      );
+    }
+  }
+
+  @override
+  Future<FeePaymentGatewayDetails> fetchPaymentGatewayDetails() async {
+    final baseUrl = await SharedPreferenceHelper().getBaseUrl();
+
+    if (baseUrl == null || baseUrl.isEmpty) {}
+
+    final url = ApiConstants.getPaymentGatewayDetailsPath(baseUrl!);
+    // final token = await SharedPreferenceHelper().getToken() ?? "";
+    print('AccYear URL: $url');
+    // print(' token: $token');
+
+
+    final options = await ApiHelper.getAuthOptions(withToken: true);
+
+    final response = await dio.get(
+      ApiConstants.getPaymentGatewayDetailsPath(baseUrl),
+      options: options,
+
+    );
+    print(response.data);
+    print('Status Code: ${response.statusCode}');
+    print('Response Data fetched pending: ${response.data}');
+    if (response.statusCode == 200) {
+      return FeePaymentGatewayDetailsModel.fromJson(response.data);
     } else {
       throw ServerException(
         errorMessageModel: ErrorMessageModel.fromJson(response.data),

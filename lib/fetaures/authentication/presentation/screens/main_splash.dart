@@ -138,6 +138,10 @@ class _MainSplashScreenState extends State<MainSplashScreen> {
     final sharedPrefHelper = SharedPreferenceHelper();
 
     final loginResponse = await sharedPrefHelper.getLoginResponse();
+    AppData.merchantKey = await sharedPrefHelper.getMerchantKey();
+    AppData.schoolCode = await SharedPreferenceHelper()
+        .getSchoolCode();
+    AppData.saltKey = await sharedPrefHelper.getSaltKey();
     AppData.admissionNo = loginResponse?.student!.admno.toString();
     AppData.dob = loginResponse?.student!.dob.toString();
     AppData.feeCollectionStatus =
@@ -145,7 +149,8 @@ class _MainSplashScreenState extends State<MainSplashScreen> {
             false;
     AppData.admissionId = loginResponse?.student!.admissionId;
     AppData.studentName = loginResponse?.student!.name.toString();
-    ;
+    AppData.mobileNo = loginResponse?.student!.mobile.toString();
+    AppData.emailId = loginResponse?.student!.email.toString();
     AppData.studentStdId = loginResponse?.student!.currentStudentStandardId
         .toString();
     ;

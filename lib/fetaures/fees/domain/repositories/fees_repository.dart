@@ -2,8 +2,10 @@ import 'package:studentmanagement/core/domain/entities/common_response_entity.da
 import 'package:studentmanagement/core/utils/typedef.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/accyearResult.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/feeExistCheckResult.dart';
+import 'package:studentmanagement/fetaures/fees/domain/entities/feeProcessingResult.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/feeSaveResult.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/paid_fee_result.dart';
+import 'package:studentmanagement/fetaures/fees/domain/entities/paymentGatewayDetails.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/unpaid%20fee_result.dart';
 import 'package:studentmanagement/fetaures/fees/domain/parameters/feePayExistRequest.dart';
 import 'package:studentmanagement/fetaures/fees/domain/parameters/offlinePaymentSaveRequest.dart';
@@ -17,5 +19,7 @@ abstract class FeesRepository {
   ResultFuture<FeeSaveResult> saveFeesDetails(FeeSaveRequest request);
   ResultFuture<FeeSaveResult> saveOfflineFeesDetails(OfflineFeePayRequest request);
   ResultFuture<FeePaymentExistResult> checkFeePayExistStatus(FeePaymentExistRequest request);
+  ResultFuture<FeeProcessingResult> fetchPaidFeeProcessing(PaidFeesRequest request);
+  ResultFuture<FeePaymentGatewayDetails> fetchPaymentGatewayDetails();
 
 }

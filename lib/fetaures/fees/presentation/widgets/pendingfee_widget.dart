@@ -8,6 +8,12 @@ class PendingFee extends StatelessWidget {
   UnpaidFeeResult feesUnpaidList;
   final Map<int, Set<int>> selectedDetails; // feeIndex -> selected detail indices
   final bool feeCollectionStatus;
+
+  // Composite keys "<feeMonthId>_<ledgerId>" identifying ledger lines that
+  // are already under fee-payment processing and must be blocked from
+  // re-selection. Built and passed in from FeesScreen.
+  final Set<String> processingKeys;
+
   final void Function(int feeIndex, int? detailIndex, Datum fee, bool isSelected)
   onSelectionChanged;
 
@@ -17,6 +23,7 @@ class PendingFee extends StatelessWidget {
     required this.selectedDetails,
     required this.onSelectionChanged,
     required this.feeCollectionStatus,
+    required this.processingKeys,
   });
 
   @override
@@ -55,6 +62,7 @@ class PendingFee extends StatelessWidget {
               selectedDetailIndexes: selectedDetails[index] ?? const <int>{},
               onSelectionChanged: onSelectionChanged,
               feeCollectionStatus: feeCollectionStatus,
+              processingKeys: processingKeys,
             ),
           );
         },
@@ -72,6 +80,7 @@ class _ExpandableFeeCard extends StatefulWidget {
   final bool dueDateStatus;
   final Set<int> selectedDetailIndexes; // which lines in THIS card are selected
   final bool feeCollectionStatus;
+  final Set<String> processingKeys;
   final void Function(int feeIndex, int? detailIndex, Datum fee, bool isSelected)
   onSelectionChanged;
 
@@ -83,6 +92,7 @@ class _ExpandableFeeCard extends StatefulWidget {
     required this.selectedDetailIndexes,
     required this.onSelectionChanged,
     required this.feeCollectionStatus,
+    required this.processingKeys,
   });
 
   @override
@@ -94,12 +104,28 @@ bool dueDateStatus = false;
 class _ExpandableFeeCardState extends State<_ExpandableFeeCard> {
   bool _isExpanded = false;
 
+  // Match on feeMonthId + ledgerId together, since the same ledger id can
+  // legitimately appear under a different (non-blocked) fee month.
+  bool _isBlocked(dynamic ledgerId) => widget.processingKeys.contains(
+    '${widget.fee.feeMonthId}_$ledgerId',
+  );
+
   @override
   Widget build(BuildContext context) {
     final totalDetails = widget.fee.details.length;
+
+    // Only lines that are NOT already under processing count toward the
+    // header's "select all" / "fully selected" state.
+    final selectableIndexes = List.generate(totalDetails, (i) => i)
+        .where((i) => !_isBlocked(widget.fee.details[i].ledgerId))
+        .toList();
+    final allLinesBlocked = selectableIndexes.isEmpty;
+
     final selectedCount = widget.selectedDetailIndexes.length;
-    final isFullySelected = totalDetails > 0 && selectedCount == totalDetails;
-    final isPartiallySelected = selectedCount > 0 && selectedCount < totalDetails;
+    final isFullySelected =
+        selectableIndexes.isNotEmpty && selectedCount == selectableIndexes.length;
+    final isPartiallySelected =
+        selectedCount > 0 && selectedCount < selectableIndexes.length;
     final hasAnySelection = selectedCount > 0;
 
     return Container(
@@ -157,9 +183,14 @@ class _ExpandableFeeCardState extends State<_ExpandableFeeCard> {
                               ? true
                               : (isPartiallySelected ? null : false),
                           activeColor: const Color(0xFF807FD8),
-                          onChanged: (value) {
-                            // Tapping toggles between "select all" and "clear all",
-                            // regardless of whether it was fully or partially checked.
+                          // Disabled entirely if every line in this card is
+                          // already under payment processing.
+                          onChanged: allLinesBlocked
+                              ? null
+                              : (value) {
+                            // Tapping toggles between "select all" and
+                            // "clear all", regardless of whether it was
+                            // fully or partially checked.
                             final selectAll = !isFullySelected;
                             widget.onSelectionChanged(
                               widget.index,
@@ -196,13 +227,41 @@ class _ExpandableFeeCardState extends State<_ExpandableFeeCard> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              widget.fee.feeMonth,
-                              softWrap: true,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    widget.fee.feeMonth,
+                                    softWrap: true,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                if (allLinesBlocked) ...[
+                                  const SizedBox(width: 8),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 3,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFFFF3CD),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: const Text(
+                                      'Processing',
+                                      style: TextStyle(
+                                        fontSize: 9,
+                                        fontWeight: FontWeight.w700,
+                                        color: Color(0xFF8A6D3B),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ],
                             ),
                             const SizedBox(height: 10),
                             LayoutBuilder(
@@ -304,16 +363,17 @@ class _ExpandableFeeCardState extends State<_ExpandableFeeCard> {
                       final detail = entry.value;
                       final isLineSelected =
                       widget.selectedDetailIndexes.contains(detailIndex);
+                      final isBlocked = _isBlocked(detail.ledgerId);
 
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 6),
                         child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center, // was .start
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             /// LEDGER NAME
                             Expanded(
                               child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center, // was .start
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   if (widget.feeCollectionStatus)
                                     SizedBox(
@@ -325,7 +385,12 @@ class _ExpandableFeeCardState extends State<_ExpandableFeeCard> {
                                         materialTapTargetSize:
                                         MaterialTapTargetSize.shrinkWrap,
                                         visualDensity: VisualDensity.compact,
-                                        onChanged: (value) {
+                                        // Disabled: this ledger already has a
+                                        // fee payment in progress for this
+                                        // fee month.
+                                        onChanged: isBlocked
+                                            ? null
+                                            : (value) {
                                           widget.onSelectionChanged(
                                             widget.index,
                                             detailIndex,
@@ -339,9 +404,10 @@ class _ExpandableFeeCardState extends State<_ExpandableFeeCard> {
                                   Container(
                                     width: 8,
                                     height: 8,
-                                    // no more manual top margin needed now that everything centers
-                                    decoration: const BoxDecoration(
-                                      color: Color(0xFF807FD8),
+                                    decoration: BoxDecoration(
+                                      color: isBlocked
+                                          ? Colors.grey
+                                          : const Color(0xFF807FD8),
                                       shape: BoxShape.circle,
                                     ),
                                   ),
@@ -350,12 +416,36 @@ class _ExpandableFeeCardState extends State<_ExpandableFeeCard> {
                                     child: Text(
                                       detail.ledgerName,
                                       softWrap: true,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 13,
                                         fontWeight: FontWeight.w500,
+                                        color: isBlocked
+                                            ? Colors.grey
+                                            : Colors.black,
                                       ),
                                     ),
                                   ),
+                                  if (isBlocked) ...[
+                                    const SizedBox(width: 6),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 6,
+                                        vertical: 2,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFFFFF3CD),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: const Text(
+                                        'Processing',
+                                        style: TextStyle(
+                                          fontSize: 9,
+                                          color: Color(0xFF8A6D3B),
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ],
                               ),
                             ),
@@ -370,10 +460,10 @@ class _ExpandableFeeCardState extends State<_ExpandableFeeCard> {
                                 detail.amount,
                                 softWrap: true,
                                 textAlign: TextAlign.right,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w600,
-                                  color: Colors.red,
+                                  color: isBlocked ? Colors.grey : Colors.red,
                                 ),
                               ),
                             ),

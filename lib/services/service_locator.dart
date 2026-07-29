@@ -38,7 +38,9 @@ import 'package:studentmanagement/fetaures/fees/data/repositories/fees_repositor
 import 'package:studentmanagement/fetaures/fees/domain/repositories/fees_repository.dart';
 import 'package:studentmanagement/fetaures/fees/domain/usecases/checkFeePayExistUseCase.dart';
 import 'package:studentmanagement/fetaures/fees/domain/usecases/fetchAccYearUseCase.dart';
+import 'package:studentmanagement/fetaures/fees/domain/usecases/fetchFeeProcessingListUseCase.dart';
 import 'package:studentmanagement/fetaures/fees/domain/usecases/fetchPaidFeesDetailsUseCase.dart';
+import 'package:studentmanagement/fetaures/fees/domain/usecases/fetchPaymentGatewayDetailsUseCase.dart';
 import 'package:studentmanagement/fetaures/fees/domain/usecases/fetchUnpaidFeeDetailsUseCase.dart';
 import 'package:studentmanagement/fetaures/fees/domain/usecases/saveFeePaymentUseCase.dart';
 import 'package:studentmanagement/fetaures/fees/domain/usecases/saveOfflineFeeDetailsUseCase.dart';
@@ -97,7 +99,7 @@ class ServiceLocator {
         checkDeviceRegisterStatusUseCase: sl(),
         fetchSchoolUseCase: sl(),
         getBranchUseCase: sl(),
-        loginStatusUseCase: sl(),
+        loginStatusUseCase: sl(), fetchPaymentGatewayDetailsUseCase: sl(),
       ),
     );
     // usecase
@@ -156,7 +158,7 @@ class ServiceLocator {
         fetchAccYearListUseCase: sl(),
         fetchUnPaidFeesDetailsUseCase: sl(),
         saveFeesDetailsUseCase: sl(), saveOfflineFeesDetailsUseCase: sl(),
-        loginServerUseCase: sl(), checkFeeExistUseCase: sl(),
+        loginServerUseCase: sl(), checkFeeExistUseCase: sl(), feeProcessingListUseCase: sl(),
       ),
     );
 
@@ -169,6 +171,10 @@ class ServiceLocator {
     sl.registerLazySingleton(() => FetchPaidFeesDetailsUseCase(sl()));
     sl.registerLazySingleton(() => FetchUnPaidFeesDetailsUseCase(sl()));
     sl.registerLazySingleton(() => CheckFeeExistUseCase(sl()));
+    sl.registerLazySingleton(() => FetchPaidFeeProcessingListUseCase(sl()));
+    sl.registerLazySingleton(() => FetchPaymentGatewayDetailsUseCase(sl()));
+
+
 
 
     /// Remote Data Source

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:studentmanagement/core/appdata/appdata.dart';
 import 'package:studentmanagement/core/config/colors.dart';
 import 'package:studentmanagement/core/navigation/app_navigator.dart';
 import 'package:studentmanagement/fetaures/authentication/data/models/getbranch_model.dart';
@@ -114,6 +115,7 @@ class RegisterCodePage extends StatelessWidget {
                     await pref.setSchoolCode(
                       schoolCodeController.text.toString() ?? "",
                     );
+                    AppData.schoolCode = schoolCodeController.text.trim().trim();
 
                     /// ✅ SAVE DB NAME
                     await pref.setDatabaseName(school.dbName ?? '');

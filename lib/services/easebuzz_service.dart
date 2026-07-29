@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
+import 'package:studentmanagement/core/appdata/appdata.dart';
 import 'package:studentmanagement/core/network/api_endpoints.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/easebuzzAccessKeyResponse.dart';
 
@@ -11,6 +12,13 @@ class EasebuzzService {
   //Live
   static const String merchantKey = '62STKYKHVY';
   static const String salt = 'F61WEY3OFB';
+
+
+  // static String get merchantKey =>
+  //     AppData.merchantKey ?? "";
+  //
+  // static String get salt =>
+  //     AppData.saltKey ?? "";
 
   //Test
   // static const String merchantKey = '8HKJ36CVO';

@@ -7,8 +7,10 @@ import 'package:studentmanagement/fetaures/authentication/domain/parameters/logi
 import 'package:studentmanagement/fetaures/authentication/domain/usecases/login_usecase.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/accyearResult.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/feeExistCheckResult.dart';
+import 'package:studentmanagement/fetaures/fees/domain/entities/feeProcessingResult.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/feeSaveResult.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/paid_fee_result.dart';
+import 'package:studentmanagement/fetaures/fees/domain/entities/paymentGatewayDetails.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/unpaid%20fee_result.dart';
 import 'package:studentmanagement/fetaures/fees/domain/parameters/feePayExistRequest.dart';
 import 'package:studentmanagement/fetaures/fees/domain/parameters/offlinePaymentSaveRequest.dart';
@@ -16,7 +18,9 @@ import 'package:studentmanagement/fetaures/fees/domain/parameters/paidFees_reque
 import 'package:studentmanagement/fetaures/fees/domain/parameters/paymentSaveRequest.dart';
 import 'package:studentmanagement/fetaures/fees/domain/usecases/checkFeePayExistUseCase.dart';
 import 'package:studentmanagement/fetaures/fees/domain/usecases/fetchAccYearUseCase.dart';
+import 'package:studentmanagement/fetaures/fees/domain/usecases/fetchFeeProcessingListUseCase.dart';
 import 'package:studentmanagement/fetaures/fees/domain/usecases/fetchPaidFeesDetailsUseCase.dart';
+import 'package:studentmanagement/fetaures/fees/domain/usecases/fetchPaymentGatewayDetailsUseCase.dart';
 import 'package:studentmanagement/fetaures/fees/domain/usecases/fetchUnpaidFeeDetailsUseCase.dart';
 import 'package:studentmanagement/fetaures/fees/domain/usecases/saveFeePaymentUseCase.dart';
 import 'package:studentmanagement/fetaures/fees/domain/usecases/saveOfflineFeeDetailsUseCase.dart';
@@ -32,6 +36,8 @@ class FeesCubit extends Cubit<FeesState> {
   final SaveOfflineFeesDetailsUseCase _saveOfflineFeesDetailsUseCase;
   final LoginServerUseCase _loginUseCase;
   final CheckFeeExistUseCase _checkFeeExistUseCase;
+  final FetchPaidFeeProcessingListUseCase _feeProcessingListUseCase;
+
 
   FeesCubit({
     required LoginServerUseCase loginServerUseCase,
@@ -41,6 +47,7 @@ class FeesCubit extends Cubit<FeesState> {
     required SaveFeesDetailsUseCase saveFeesDetailsUseCase,
     required SaveOfflineFeesDetailsUseCase saveOfflineFeesDetailsUseCase,
     required CheckFeeExistUseCase checkFeeExistUseCase,
+    required FetchPaidFeeProcessingListUseCase feeProcessingListUseCase,
   }) : _loginUseCase = loginServerUseCase,
         _fetchPaidFeesDetailsUseCase = fetchPaidFeesDetailsUseCase,
        _fetchAccYearListUseCase = fetchAccYearListUseCase,
@@ -48,6 +55,8 @@ class FeesCubit extends Cubit<FeesState> {
        _saveFeesDetailsUseCase = saveFeesDetailsUseCase,
         _saveOfflineFeesDetailsUseCase = saveOfflineFeesDetailsUseCase,
         _checkFeeExistUseCase = checkFeeExistUseCase,
+        _feeProcessingListUseCase = feeProcessingListUseCase,
+
        super(FeesInitial());
 
   Future<void> checkFeeExist(FeePaymentExistRequest request) async {
@@ -217,4 +226,28 @@ class FeesCubit extends Cubit<FeesState> {
       emit(SaveFees_Failure('An unexpected error occurred'));
     }
   }
+
+  Future<void> fetchProcessingFeeDetails(PaidFeesRequest request) async {
+    print('PaidFeesRequest ${request.toJson()}');
+    emit(FeeProcessingFeeListLoading());
+    try {
+      final result = await _feeProcessingListUseCase(request);
+
+      result.fold(
+            (failure) {
+          emit(FeeProcessingFeeListFailure(failure.message));
+        },
+            (response) {
+          emit(FeeProcessingFeeSuccess(response));
+        },
+      );
+    } catch (e, stacktrace) {
+      // Handle unexpected exceptions
+      print('❌ Exception during loginUser: $e');
+      print('Stacktrace: $stacktrace');
+      emit(FeeProcessingFeeListFailure('An unexpected error occurred'));
+    }
+  }
+
+
 }
