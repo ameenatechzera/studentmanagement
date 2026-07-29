@@ -143,7 +143,7 @@ class _Login_ScreenState extends State<Login_Screen> {
     });
   }
 
-  late final LoginResponseResult loginResponseData;
+  LoginResponseResult? loginResponseData;
 
   @override
   Widget build(BuildContext context) {
@@ -447,6 +447,7 @@ class _Login_ScreenState extends State<Login_Screen> {
               BlocConsumer<LoginCubit, LoginState>(
                 listener: (context, state) async {
                   if (state is FetchPaymentGatewayDetailsSuccess) {
+                    print('FetchPaymentGatewayDetailsSuccess');
                     final sharedPrefHelper = SharedPreferenceHelper();
 
                     await sharedPrefHelper.setMerchantKey(state.gatewayDetails.data.first.merchantKey);
@@ -469,7 +470,7 @@ class _Login_ScreenState extends State<Login_Screen> {
                     );
                     AppNavigator.pushAndRemoveUntilSlide(
                       context: context,
-                      page: MainScreen(loginResponse: loginResponseData),
+                      page: MainScreen(loginResponse: loginResponseData!),
                       predicate: (route) => false,
                     );
                   }

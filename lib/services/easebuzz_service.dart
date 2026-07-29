@@ -10,15 +10,15 @@ class EasebuzzService {
   // Use your real merchant key & salt (keep the salt on your backend ideally,
   // never ship it in a public client app if you can avoid it).
   //Live
-  static const String merchantKey = '62STKYKHVY';
-  static const String salt = 'F61WEY3OFB';
+  // static const String merchantKey = '62STKYKHVY';
+  // static const String salt = 'F61WEY3OFB';
 
 
-  // static String get merchantKey =>
-  //     AppData.merchantKey ?? "";
-  //
-  // static String get salt =>
-  //     AppData.saltKey ?? "";
+  static String get merchantKey =>
+      AppData.merchantKey ?? "";
+
+  static String get salt =>
+      AppData.saltKey ?? "";
 
   //Test
   // static const String merchantKey = '8HKJ36CVO';

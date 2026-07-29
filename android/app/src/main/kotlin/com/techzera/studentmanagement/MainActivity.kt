@@ -30,7 +30,7 @@ class MainActivity : FlutterActivity() {
             .setMethodCallHandler { call, result ->
                 channel_result = result
                 if (call.method == "payWithEasebuzz") {
-                    Toast.makeText(this, "payWithEasebuzz called", Toast.LENGTH_SHORT).show()
+                    //Toast.makeText(this, "payWithEasebuzz called", Toast.LENGTH_SHORT).show()
                     if (start_payment) {
                         start_payment = false
                         startPayment(call.arguments)
@@ -43,7 +43,7 @@ class MainActivity : FlutterActivity() {
 
     private fun startPayment(arguments: Any) {
         try {
-            Toast.makeText(this, "Building payment intent...", Toast.LENGTH_SHORT).show()
+//            Toast.makeText(this, "Building payment intent...", Toast.LENGTH_SHORT).show()
 
             val gson = Gson()
             val parameters = JSONObject(gson.toJson(arguments))
@@ -61,12 +61,10 @@ class MainActivity : FlutterActivity() {
                     intentProceed.putExtra(key, value)
                 }
             }
-
-            Toast.makeText(this, "Launching Easebuzz activity", Toast.LENGTH_SHORT).show()
             startActivityForResult(intentProceed, PWEStaticDataModel.PWE_REQUEST_CODE)
         } catch (e: Exception) {
             start_payment = true
-            Toast.makeText(this, "Payment start failed: ${e.message}", Toast.LENGTH_LONG).show()
+//            Toast.makeText(this, "Payment start failed: ${e.message}", Toast.LENGTH_LONG).show()
 
             val error_map: MutableMap<String, Any> = HashMap()
             val error_desc_map: MutableMap<String, Any> = HashMap()
@@ -82,7 +80,7 @@ class MainActivity : FlutterActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == PWEStaticDataModel.PWE_REQUEST_CODE) {
             start_payment = true
-            Toast.makeText(this, "Returned from Easebuzz activity", Toast.LENGTH_SHORT).show()
+//            Toast.makeText(this, "Returned from Easebuzz activity", Toast.LENGTH_SHORT).show()
 
             val response = JSONObject()
             val error_map: MutableMap<String, Any> = HashMap()
@@ -96,7 +94,7 @@ class MainActivity : FlutterActivity() {
                     response.put("payment_response", obj)
                     channel_result?.success(JsonConverter.convertToMap(response))
                 } catch (e: Exception) {
-                    Toast.makeText(this, "Result parse failed: ${e.message}", Toast.LENGTH_LONG).show()
+//                    Toast.makeText(this, "Result parse failed: ${e.message}", Toast.LENGTH_LONG).show()
 
                     val error_desc_map: MutableMap<String, Any> = HashMap()
                     // Used the below code for target API 30
@@ -108,7 +106,7 @@ class MainActivity : FlutterActivity() {
                     channel_result?.success(error_map)
                 }
             } else {
-                Toast.makeText(this, "Empty payment response from Easebuzz", Toast.LENGTH_LONG).show()
+//                Toast.makeText(this, "Empty payment response from Easebuzz", Toast.LENGTH_LONG).show()
 
                 val error_desc_map: MutableMap<String, Any> = HashMap()
                 val error_desc = "Empty payment response"

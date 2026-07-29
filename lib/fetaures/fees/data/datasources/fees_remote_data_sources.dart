@@ -303,7 +303,7 @@ class FeesRemoteDataSourceImpl implements FeesRemoteDataSource {
 
     );
     print(response.data);
-    print('Status Code: ${response.statusCode}');
+    print('StatusGateway Code: ${response.statusCode}');
     print('Response Data fetched pending: ${response.data}');
     if (response.statusCode == 200) {
       return FeePaymentGatewayDetailsModel.fromJson(response.data);

@@ -51,6 +51,7 @@ class _FeesScreenState extends State<FeesScreen> {
   static const Color unselectedTabColor = Color(0xFFF0EFFB);
   double totalPaid = 0.0;
   double totalPending = 0.0;
+
   @override
   void initState() {
     super.initState();
@@ -455,7 +456,7 @@ class _FeesScreenState extends State<FeesScreen> {
   }
 
   static MethodChannel _channel = MethodChannel('easebuzz');
-
+  bool _isPayLoading = false;
   @override
   Widget build(BuildContext context) {
     return MultiBlocListener(
@@ -556,12 +557,29 @@ class _FeesScreenState extends State<FeesScreen> {
                 const SizedBox(width: 8),
                 BlocConsumer<FeesCubit, FeesState>(
                   listener: (context, state) async {
-                    if (state is CheckFeeStatusSuccess) {
-                      print(
-                        'CheckFeeStatusSuccess ${state.response.status}',
+                    if (state is FeeSaveCheckLoading) {
+                      // checkFeeExist just started — loader already shown via onPressed,
+                      // this just keeps it in sync in case the state stream starts here.
+                      if (!_isPayLoading) {
+                        setState(() => _isPayLoading = true);
+                      }
+                      return;
+                    }
+
+                    if (state is FeeCheckFailure) {
+                      setState(() => _isPayLoading = false);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(state.error)),
                       );
+                      return;
+                    }
+
+                    if (state is CheckFeeStatusSuccess) {
+                      print('CheckFeeStatusSuccess ${state.response.status}');
 
                       if (state.response.status == false) {
+                        setState(() => _isPayLoading = false);
+
                         final failedEntries = state.response.data
                             .where((d) => d.status == false)
                             .toList();
@@ -575,17 +593,12 @@ class _FeesScreenState extends State<FeesScreen> {
                                 width: double.maxFinite,
                                 child: ConstrainedBox(
                                   constraints: BoxConstraints(
-                                    maxHeight:
-                                    MediaQuery.of(
-                                      context,
-                                    ).size.height *
-                                        0.5,
+                                    maxHeight: MediaQuery.of(context).size.height * 0.5,
                                   ),
                                   child: SingleChildScrollView(
                                     child: Column(
                                       mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         // Top-level message, shown because top-level status is false
                                         Text(state.response.message),
@@ -593,10 +606,7 @@ class _FeesScreenState extends State<FeesScreen> {
                                         // Ledger info from data items whose own status is also false
                                         ...failedEntries.map(
                                               (d) => Padding(
-                                            padding:
-                                            const EdgeInsets.only(
-                                              bottom: 8.0,
-                                            ),
+                                            padding: const EdgeInsets.only(bottom: 8.0),
                                             child: Text(
                                               "Ledger: ${d.ledgerName ?? '-'}\nPaid Amount: ${d.paidAmount}",
                                             ),
@@ -609,8 +619,7 @@ class _FeesScreenState extends State<FeesScreen> {
                               ),
                               actions: [
                                 TextButton(
-                                  onPressed: () =>
-                                      Navigator.of(context).pop(),
+                                  onPressed: () => Navigator.of(context).pop(),
                                   child: const Text("OK"),
                                 ),
                               ],
@@ -618,9 +627,8 @@ class _FeesScreenState extends State<FeesScreen> {
                           },
                         );
                       } else {
-                       // print('emailId ${AppData.emailId}');
-                        String st_txnId =
-                            'TXN${DateTime.now().millisecondsSinceEpoch}';
+                        // print('emailId ${AppData.emailId}');
+                        String st_txnId = 'TXN${DateTime.now().millisecondsSinceEpoch}';
                         print('Schoolcode ${AppData.schoolCode}');
 
                         final easebuzz = EasebuzzService();
@@ -646,16 +654,14 @@ class _FeesScreenState extends State<FeesScreen> {
 
                           if (result.success) {
                             print('Access key: ${result.accessKey}');
-                            String access_key = result.accessKey
-                                .toString();
+                            String access_key = result.accessKey.toString();
                             String pay_mode = "production";
                             Object parameters = {
                               "access_key": access_key,
                               "pay_mode": pay_mode,
                             };
 
-                            final payment_response = await _channel
-                                .invokeMethod(
+                            final payment_response = await _channel.invokeMethod(
                               "payWithEasebuzz",
                               parameters,
                             );
@@ -664,45 +670,59 @@ class _FeesScreenState extends State<FeesScreen> {
                             // invokeMethod usually returns a Map<Object?, Object?> from platform channels,
                             // so cast it safely first
                             final Map<dynamic, dynamic> responseMap =
-                            payment_response is Map
-                                ? payment_response
-                                : {};
-                            print('responseMap ${ responseMap['result']?.toString()}');
-                            if( responseMap['result']?.toString().trim()!='user_cancelled'){
+                            payment_response is Map ? payment_response : {};
+                            print('responseMap ${responseMap['result']?.toString()}');
+
+                            if (responseMap['result']?.toString().trim() != 'user_cancelled') {
                               _onPayPressed(
                                 st_txnId,
                                 payment_response.toString(),
                                 responseMap['result']?.toString().trim() ?? '',
                               );
+                              // NOTE: loader stays true here — _onPayPressed triggers
+                              // saveFeeDetails/saveOfflineFeeDetails, and the loader is
+                              // cleared below once FeeSave_Success or SaveFees_Failure fires.
+                            } else {
+                              // user cancelled — stop the loader, nothing more happening
+                              setState(() => _isPayLoading = false);
                             }
-
                           } else {
                             print('Failed_case');
+                            setState(() => _isPayLoading = false);
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('${result.errorDesc}'),
-                              ),
+                              SnackBar(content: Text('${result.errorDesc}')),
                             );
-                            // _onPayPressed(
-                            //   st_txnId,
-                            //   result.errorDesc.toString(),
-                            //   'Failed',
-                            // );
                             print('Error: ${result.errorDesc}');
                           }
                         } catch (e) {
+                          setState(() => _isPayLoading = false);
                           print('Request error: $e');
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Payment error: $e')),
+                          );
                         }
                       }
                     }
 
                     if (state is FeeSave_Success) {
+                      setState(() => _isPayLoading = false);
                       Navigator.pop(context);
+                    }
+
+                    if (state is SaveFees_Failure) {
+                      setState(() => _isPayLoading = false);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(state.error)),
+                      );
                     }
                   },
                   builder: (context, state) {
                     return ElevatedButton(
-                      onPressed: () async {
+                      onPressed: _isPayLoading
+                          ? null // disabled while a payment flow is already running
+                          : () async {
+                        setState(() => _isPayLoading = true);
+
                         final feemonthPayload = _buildFeemonthPayload();
 
                         context.read<FeesCubit>().checkFeeExist(
@@ -716,15 +736,22 @@ class _FeesScreenState extends State<FeesScreen> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: selectedTabPurple,
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 24,
-                          vertical: 12,
-                        ),
+                        disabledBackgroundColor: selectedTabPurple.withOpacity(0.6),
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      child: const Text(
+                      child: _isPayLoading
+                          ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.5,
+                          color: Colors.white,
+                        ),
+                      )
+                          : const Text(
                         'Pay',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
