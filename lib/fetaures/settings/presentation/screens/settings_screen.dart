@@ -71,7 +71,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       return;
     }
 
-    // Add https:// when API returns only "example.com"
+    // Add https:// when API returns only "techzera.com"
     final String normalizedWebsite =
         rawWebsite.startsWith(RegExp(r'https?://', caseSensitive: false))
         ? rawWebsite
@@ -1382,6 +1382,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                             /// 🔥 Clear AppData (VERY IMPORTANT)
                             AppData.admissionNo = null;
+                            AppData.admissionId = null;
                             AppData.studentName = null;
                             AppData.studentStdId = null;
                             AppData.studentDivId = null;

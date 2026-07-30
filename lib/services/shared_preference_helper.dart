@@ -10,6 +10,8 @@ final ValueNotifier<int> itemTapBehaviorNotifier = ValueNotifier<int>(1);
 class SharedPreferenceHelper {
   static const String _baseUrlKey = 'base_url';
   static const String _tokenKey = 'auth_token';
+  static const String _merchantKey = 'merchant_key';
+  static const String _saltKey = 'salt_key';
   static const String _databaseNameKey = 'database_name';
   static const String _loginDataKey = 'login_data';
   static const String _isSchoolRegisteredKey = 'is_school_registered';
@@ -19,6 +21,7 @@ class SharedPreferenceHelper {
   static const String _schoolCodeKey = 'school_code';
   static const String _schoolNameKey = 'school_name';
   static const String _classWithDivisionKey = 'class_with_division';
+  static const String isFeeCollectionStatus = 'is_fee_collection_status';
 
   /// ------------------ SAVE FULL BRANCH DATA ------------------
   Future<void> saveBranchData(Map<String, dynamic> data) async {
@@ -46,6 +49,17 @@ class SharedPreferenceHelper {
   Future<bool> isSchoolRegistered() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(_isSchoolRegisteredKey) ?? false;
+  }
+
+  /// ------------------ SCHOOL Fee Collection Status ------------------
+  Future<void> saveFeeCollectionStatus(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(isFeeCollectionStatus, value);
+  }
+
+  Future<bool> getFeeCollectionStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(isFeeCollectionStatus) ?? false;
   }
   // static const String _vatStatusKey = 'vat_status';
   // static const String _vatTypeKey = 'vat_type';
@@ -119,6 +133,26 @@ class SharedPreferenceHelper {
     return prefs.getString(_tokenKey);
   }
 
+  /// ------------------ Gateway MerchantKey ------------------
+  Future<void> setMerchantKey(String mkey) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_merchantKey, mkey);
+  }
+
+  Future<String?> getMerchantKey() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_merchantKey);
+  }
+  /// ------------------ Gateway SaltKey ------------------
+  Future<void> setSaltKey(String token) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_saltKey, token);
+  }
+
+  Future<String?> getSaltKey() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_saltKey);
+  }
   /// ------------------ Class And Division ------------------
   Future<void> saveClassAndDivision(String classWithDivision) async {
     final prefs = await SharedPreferences.getInstance();

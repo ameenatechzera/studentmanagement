@@ -91,6 +91,9 @@
 //     );
 //   }
 // }
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:studentmanagement/core/appdata/appdata.dart';
 import 'package:studentmanagement/fetaures/authentication/presentation/screens/second_splash.dart';
@@ -135,15 +138,31 @@ class _MainSplashScreenState extends State<MainSplashScreen> {
     final sharedPrefHelper = SharedPreferenceHelper();
 
     final loginResponse = await sharedPrefHelper.getLoginResponse();
+    AppData.merchantKey = await sharedPrefHelper.getMerchantKey();
+    AppData.schoolCode = await SharedPreferenceHelper()
+        .getSchoolCode();
+    AppData.saltKey = await sharedPrefHelper.getSaltKey();
     AppData.admissionNo = loginResponse?.student!.admno.toString();
+    AppData.dob = loginResponse?.student!.dob.toString();
+    AppData.feeCollectionStatus =
+        loginResponse?.student?.feeCollectionStatus ??
+            false;
+    AppData.admissionId = loginResponse?.student!.admissionId;
     AppData.studentName = loginResponse?.student!.name.toString();
-    ;
+    AppData.mobileNo = loginResponse?.student!.mobile.toString();
+    AppData.emailId = loginResponse?.student!.email.toString();
     AppData.studentStdId = loginResponse?.student!.currentStudentStandardId
         .toString();
     ;
     AppData.studentDivId = loginResponse?.student!.currentStudentDivisionId
         .toString();
     AppData.accYear = loginResponse?.student!.accYear.toString();
+
+    '${loginResponse?.student!.studentStandard}-${loginResponse?.student!.studentDivision}'
+        .toString();
+
+
+
 
     await Future.delayed(const Duration(seconds: 2));
 
@@ -163,21 +182,46 @@ class _MainSplashScreenState extends State<MainSplashScreen> {
   }
 
   /// 🔥 COMMON LOGO (API or fallback)
+  // Widget buildLogo(double height) {
+  //   return logo != null && logo!.isNotEmpty
+  //       ? Image.network(
+  //           logo ?? '',
+  //           height: height,
+  //           fit: BoxFit.contain,
+  //           errorBuilder: (_, __, ___) => Image.asset(
+  //             'assets/images/cristal_horizontal.png', // fallback
+  //             height: height,
+  //           ),
+  //         )
+  //       : Image.asset(
+  //           'assets/images/cristal_horizontal.png', // fallback
+  //           height: height,
+  //         );
+  // }
   Widget buildLogo(double height) {
-    return logo != null && logo!.isNotEmpty
-        ? Image.network(
-            logo ?? '',
-            height: height,
-            fit: BoxFit.contain,
-            errorBuilder: (_, __, ___) => Image.asset(
-              'assets/images/cristal_horizontal.png', // fallback
-              height: height,
-            ),
-          )
+    Uint8List? bytes;
+    if (logo != null && logo!.isNotEmpty) {
+      try {
+        bytes = base64Decode(logo!);
+      } catch (_) {
+        bytes = null;
+      }
+    }
+
+    return bytes != null
+        ? Image.memory(
+      bytes,
+      height: height,
+      fit: BoxFit.contain,
+      errorBuilder: (_, __, ___) => Image.asset(
+        'assets/images/cristal_horizontal.png', // fallback
+        height: height,
+      ),
+    )
         : Image.asset(
-            'assets/images/cristal_horizontal.png', // fallback
-            height: height,
-          );
+      'assets/images/cristal_horizontal.png', // fallback
+      height: height,
+    );
   }
 
   @override

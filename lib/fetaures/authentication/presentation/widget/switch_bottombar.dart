@@ -162,6 +162,8 @@ class _SwitchAccountBottomSheetState extends State<SwitchAccountBottomSheet> {
                       );
                       AppData.admissionNo = state.loginResponse.student!.admno
                           .toString();
+                      AppData.admissionId = state.loginResponse.student!.admissionId;
+                      AppData.dob = state.loginResponse.student!.dob;
                       AppData.studentName = state.loginResponse.student!.name
                           .toString();
                       AppData.studentStdId = state
@@ -177,6 +179,8 @@ class _SwitchAccountBottomSheetState extends State<SwitchAccountBottomSheet> {
                       AppData.accYear = state.loginResponse.student!.accYear
                           .toString();
                       print('AppData.accYear ${AppData.accYear}');
+                      await sharedPrefHelper.saveFeeCollectionStatus( state.loginResponse.student?.feeCollectionStatus ??
+                          false);
                       await SharedPreferenceHelper.saveNewAccount(
                         AccountDetails(
                           admissionNo: state.loginResponse.student!.admno

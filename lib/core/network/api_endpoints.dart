@@ -118,7 +118,36 @@ class ApiConstants {
     return '${baseUrl}save-paymentmaster';
   }
 
+  /// Returns the full URL for Fees / Save Fees
+  static String getOfflineFeesSaveServerPath(String baseUrl) {
+    return '${baseUrl}payment/store';
+  }
+
   static String getSaveLoginStatusPath(String baseUrl) {
     return '${baseUrl}app/student/login-history';
   }
+  /// save diary status
+  static String getDiaryStatusSavePath(String baseUrl) {
+    return '${baseUrl}app/save-diary-readstatus';
+  }
+
+  /// Returns Access key from easebuzz gateway
+  static String getEaseBuzzAccessKeyPath() {
+    return 'https://pay.easebuzz.in/payment/initiateLink';
+  }
+
+  //fee payment exist check
+  static String getFeePaymentExistPath(String baseUrl) {
+    return '${baseUrl}app/payments-check';
+  }
+  //Fee Processing list
+  static String getFeeProcessingListPath(String baseUrl) {
+    return '${baseUrl}app/payment-gateway-status-check';
+  }
+
+  //Payment Gateway Details
+  static String getPaymentGatewayDetailsPath(String baseUrl) {
+    return '${baseUrl}app/payment-gateway-data/1';
+  }
+
 }

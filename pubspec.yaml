@@ -10,7 +10,8 @@ publish_to: 'none'
 #version: 1.0.7+8 #fourth update playstore 12-06-2026
 #version: 1.0.8+9 #fourth update playstore 23-06-2026
 #version: 1.0.9+10 #fourth update playstore 27-06-2026
-version: 1.0.10+11 #fourth update play store 01-07-2026
+#version: 1.0.10+11 #fourth update play store 01-07-2026
+version: 1.0.10+17 #fourth update play store 29-07-2026
 environment:
   sdk: ^3.10.4
 
@@ -52,7 +53,7 @@ dependencies:
   android_intent_plus: ^5.2.1
   webview_flutter_android: ^3.16.0
   emoji_picker_flutter: ^4.3.0
-  photo_manager: ^3.0.0
+#  photo_manager: ^3.0.0
   image_picker: ^1.2.2
   record: ^6.1.2
   audioplayers: ^6.5.1
@@ -63,6 +64,7 @@ dependencies:
   simple_ticket_widget: ^1.0.1
   video_player: ^2.11.1
   internet_connection_checker_plus: ^2.7.2
+  crypto: ^3.0.7
 dev_dependencies:
   flutter_test:
     sdk: flutter

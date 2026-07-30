@@ -15,6 +15,9 @@ import 'package:studentmanagement/fetaures/authentication/domain/usecases/getbra
 import 'package:studentmanagement/fetaures/authentication/domain/usecases/getschool_usecase.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/usecases/login_status_usecase.dart';
 import 'package:studentmanagement/fetaures/authentication/domain/usecases/login_usecase.dart';
+import 'package:studentmanagement/fetaures/fees/domain/entities/paymentGatewayDetails.dart';
+import 'package:studentmanagement/fetaures/fees/domain/usecases/fetchPaymentGatewayDetailsUseCase.dart';
+import 'package:studentmanagement/fetaures/home_screen/domain/parameters/fetchfeed_parameter.dart';
 import 'package:studentmanagement/services/shared_preference_helper.dart';
 
 part 'login_state.dart';
@@ -25,19 +28,43 @@ class LoginCubit extends Cubit<LoginState> {
   final FetchSchoolUseCase _fetchSchoolUseCase;
   final GetBranchUseCase _getBranchUseCase;
   final LoginStatusUseCase _loginStatusUseCase;
+  final FetchPaymentGatewayDetailsUseCase _fetchPaymentGatewayDetailsUseCase;
   LoginCubit({
     required LoginServerUseCase loginServerUseCase,
     required CheckDeviceRegisterStatusUseCase checkDeviceRegisterStatusUseCase,
     required FetchSchoolUseCase fetchSchoolUseCase,
     required GetBranchUseCase getBranchUseCase,
     required LoginStatusUseCase loginStatusUseCase,
+    required FetchPaymentGatewayDetailsUseCase fetchPaymentGatewayDetailsUseCase
   }) : _loginUseCase = loginServerUseCase,
        _checkDeviceRegisterStatusUseCase = checkDeviceRegisterStatusUseCase,
        _fetchSchoolUseCase = fetchSchoolUseCase,
        _getBranchUseCase = getBranchUseCase,
        _loginStatusUseCase = loginStatusUseCase,
+        _fetchPaymentGatewayDetailsUseCase = fetchPaymentGatewayDetailsUseCase,
        super(LoginInitial());
 
+  Future<void> fetchPaymentGatewayDetails() async {
+
+    emit(FetchGatewayDetailsInitial());
+    try {
+      final result = await _fetchPaymentGatewayDetailsUseCase();
+
+      result.fold(
+            (failure) {
+          emit(FetchPaymentGatewayDetailsFailure(failure.message));
+        },
+            (payGatewayDetailsResponse) {
+          emit(FetchPaymentGatewayDetailsSuccess(payGatewayDetailsResponse));
+        },
+      );
+    } catch (e, stacktrace) {
+      // Handle unexpected exceptions
+      print('❌ Exception during FetchPaymentGatewayDetails: $e');
+      print('Stacktrace: $stacktrace');
+      emit(FetchPaymentGatewayDetailsFailure('An unexpected error occurred'));
+    }
+  }
   Future<void> loginUser(LoginRequest loginRequest) async {
     print('loginRequest ${loginRequest.toJson()}');
     emit(LoginLoading());
@@ -60,6 +87,11 @@ class LoginCubit extends Cubit<LoginState> {
               '${loginResponse.student!.studentStandard}-${loginResponse.student!.studentDivision}'
                   .toString();
           AppData.profileUrl = loginResponse.student!.imageUrl.toString();
+          // await sharedPrefHelper.saveFeeCollectionStatus( loginResponse.student?.feeCollectionStatus ??
+          //     false);
+          AppData.feeCollectionStatus =
+              loginResponse.student?.feeCollectionStatus ??
+                  false;
           emit(LoginSuccess(loginResponse));
         },
       );
@@ -117,6 +149,7 @@ class LoginCubit extends Cubit<LoginState> {
               response.schoolDetails!.first.playStoreVersion!,
             );
             AppData.schoolName = response.schoolDetails!.first.schoolName!;
+            AppData.appType = response.schoolDetails!.first.applicationType!;
             emit(FetchSchoolSuccess(response));
           } else {
             emit(FetchSchoolSuccess(response));

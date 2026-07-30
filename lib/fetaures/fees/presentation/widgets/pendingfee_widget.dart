@@ -6,15 +6,24 @@ import '../../domain/entities/unpaid fee_result.dart';
 
 class PendingFee extends StatelessWidget {
   UnpaidFeeResult feesUnpaidList;
-  final Set<int> selectedIndexes;
+  final Map<int, Set<int>> selectedDetails; // feeIndex -> selected detail indices
   final bool feeCollectionStatus;
-  final void Function(int index, Datum fee, bool isSelected) onSelectionChanged;
+
+  // Composite keys "<feeMonthId>_<ledgerId>" identifying ledger lines that
+  // are already under fee-payment processing and must be blocked from
+  // re-selection. Built and passed in from FeesScreen.
+  final Set<String> processingKeys;
+
+  final void Function(int feeIndex, int? detailIndex, Datum fee, bool isSelected)
+  onSelectionChanged;
+
   PendingFee({
     super.key,
     required this.feesUnpaidList,
-    required this.selectedIndexes,
+    required this.selectedDetails,
     required this.onSelectionChanged,
     required this.feeCollectionStatus,
+    required this.processingKeys,
   });
 
   @override
@@ -41,13 +50,8 @@ class PendingFee extends StatelessWidget {
             DateTime.now().day,
           );
 
-          if (dueDate.isBefore(todayOnly)) {
-            dueDateStatus = true;
-            print('dueDateStatus $dueDateStatus');
-          } else {
-            dueDateStatus = false;
-          }
-          print('dueDateStatusElse $dueDateStatus');
+          dueDateStatus = dueDate.isBefore(todayOnly);
+
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             child: _ExpandableFeeCard(
@@ -55,9 +59,10 @@ class PendingFee extends StatelessWidget {
               fee: fee,
               formatedDate: formatedDate,
               dueDateStatus: dueDateStatus,
-              isSelected: selectedIndexes.contains(index),
+              selectedDetailIndexes: selectedDetails[index] ?? const <int>{},
               onSelectionChanged: onSelectionChanged,
               feeCollectionStatus: feeCollectionStatus,
+              processingKeys: processingKeys,
             ),
           );
         },
@@ -73,18 +78,21 @@ class _ExpandableFeeCard extends StatefulWidget {
   final Datum fee;
   final String formatedDate;
   final bool dueDateStatus;
-  final bool isSelected;
+  final Set<int> selectedDetailIndexes; // which lines in THIS card are selected
   final bool feeCollectionStatus;
-  final void Function(int index, Datum fee, bool isSelected) onSelectionChanged;
+  final Set<String> processingKeys;
+  final void Function(int feeIndex, int? detailIndex, Datum fee, bool isSelected)
+  onSelectionChanged;
 
   const _ExpandableFeeCard({
     required this.index,
     required this.fee,
     required this.formatedDate,
     required this.dueDateStatus,
-    required this.isSelected,
+    required this.selectedDetailIndexes,
     required this.onSelectionChanged,
     required this.feeCollectionStatus,
+    required this.processingKeys,
   });
 
   @override
@@ -95,19 +103,40 @@ bool dueDateStatus = false;
 
 class _ExpandableFeeCardState extends State<_ExpandableFeeCard> {
   bool _isExpanded = false;
-  //bool _isSelected = false;
+
+  // Match on feeMonthId + ledgerId together, since the same ledger id can
+  // legitimately appear under a different (non-blocked) fee month.
+  bool _isBlocked(dynamic ledgerId) => widget.processingKeys.contains(
+    '${widget.fee.feeMonthId}_$ledgerId',
+  );
 
   @override
   Widget build(BuildContext context) {
+    final totalDetails = widget.fee.details.length;
+
+    // Only lines that are NOT already under processing count toward the
+    // header's "select all" / "fully selected" state.
+    final selectableIndexes = List.generate(totalDetails, (i) => i)
+        .where((i) => !_isBlocked(widget.fee.details[i].ledgerId))
+        .toList();
+    final allLinesBlocked = selectableIndexes.isEmpty;
+
+    final selectedCount = widget.selectedDetailIndexes.length;
+    final isFullySelected =
+        selectableIndexes.isNotEmpty && selectedCount == selectableIndexes.length;
+    final isPartiallySelected =
+        selectedCount > 0 && selectedCount < selectableIndexes.length;
+    final hasAnySelection = selectedCount > 0;
+
     return Container(
       decoration: BoxDecoration(
-        color: widget.isSelected ? const Color(0xFFF3F0FF) : Colors.white,
+        color: hasAnySelection ? const Color(0xFFF3F0FF) : Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: widget.isSelected
+          color: hasAnySelection
               ? const Color(0xFF807FD8)
               : const Color(0xFFE8EAF1),
-          width: widget.isSelected ? 1.5 : 1,
+          width: hasAnySelection ? 1.5 : 1,
         ),
         boxShadow: [
           BoxShadow(
@@ -148,13 +177,26 @@ class _ExpandableFeeCardState extends State<_ExpandableFeeCard> {
                     children: [
                       if (widget.feeCollectionStatus)
                         Checkbox(
-                          value: widget.isSelected,
+                          tristate: true,
+                          // true = all selected, null = some selected, false = none
+                          value: isFullySelected
+                              ? true
+                              : (isPartiallySelected ? null : false),
                           activeColor: const Color(0xFF807FD8),
-                          onChanged: (value) {
+                          // Disabled entirely if every line in this card is
+                          // already under payment processing.
+                          onChanged: allLinesBlocked
+                              ? null
+                              : (value) {
+                            // Tapping toggles between "select all" and
+                            // "clear all", regardless of whether it was
+                            // fully or partially checked.
+                            final selectAll = !isFullySelected;
                             widget.onSelectionChanged(
                               widget.index,
+                              null, // null => whole-card toggle
                               widget.fee,
-                              value ?? false,
+                              selectAll,
                             );
                           },
                         ),
@@ -185,37 +227,43 @@ class _ExpandableFeeCardState extends State<_ExpandableFeeCard> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            /// FEE MONTH
-                            Text(
-                              widget.fee.feeMonth,
-                              softWrap: true,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    widget.fee.feeMonth,
+                                    softWrap: true,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                if (allLinesBlocked) ...[
+                                  const SizedBox(width: 8),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 3,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFFFF3CD),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: const Text(
+                                      'Processing',
+                                      style: TextStyle(
+                                        fontSize: 9,
+                                        fontWeight: FontWeight.w700,
+                                        color: Color(0xFF8A6D3B),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ],
                             ),
-
                             const SizedBox(height: 10),
-                            // Row(
-                            //   children: [
-                            //     SvgPicture.asset(
-                            //       'assets/icons/Group (5).svg',
-                            //       // width: 10,
-                            //       // height: 20,
-                            //     ),
-                            //     const SizedBox(width: 8),
-                            //     const Text(
-                            //       'Pending Fee',
-                            //       softWrap: true,
-                            //       style: TextStyle(
-                            //         fontSize: 14,
-                            //         fontWeight: FontWeight.w600,
-                            //         color: Colors.black,
-                            //       ),
-                            //     ),
-                            //   ],
-                            // ),
-                            // const SizedBox(height: 10),
                             LayoutBuilder(
                               builder: (context, constraints) {
                                 return ConstrainedBox(
@@ -234,7 +282,7 @@ class _ExpandableFeeCardState extends State<_ExpandableFeeCard> {
                                     child: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      CrossAxisAlignment.start,
                                       children: [
                                         const Padding(
                                           padding: EdgeInsets.only(top: 2),
@@ -262,45 +310,6 @@ class _ExpandableFeeCardState extends State<_ExpandableFeeCard> {
                                 );
                               },
                             ),
-                            // Container(
-                            //   padding: const EdgeInsets.symmetric(
-                            //     horizontal: 10,
-                            //     vertical: 6,
-                            //   ),
-                            //   decoration: BoxDecoration(
-                            //     color: const Color(0xFFFFEAEA),
-                            //     borderRadius: BorderRadius.circular(20),
-                            //   ),
-                            //   child: Row(
-                            //     mainAxisSize: MainAxisSize.min,
-                            //     children: [
-                            //       const Icon(
-                            //         Icons.calendar_today_outlined,
-                            //         size: 12,
-                            //         color: Colors.red,
-                            //       ),
-                            //       const SizedBox(width: 4),
-                            //       Text(
-                            //         'Last Date On ${widget.formatedDate}dddddddddddddddddddddddddddd',
-                            //         style: const TextStyle(
-                            //           fontSize: 11,
-                            //           fontWeight: FontWeight.w500,
-                            //           color: Colors.red,
-                            //         ),
-                            //       ),
-                            //     ],
-                            //   ),
-                            // ),
-                            // /// DUE DATE
-                            // if (dueDateStatus)
-                            //   Text(
-                            //     widget.formatedDate,
-                            //     style: const TextStyle(
-                            //       fontSize: 13,
-                            //       color: Colors.red,
-                            //       fontWeight: FontWeight.w600,
-                            //     ),
-                            //   ),
                           ],
                         ),
                       ),
@@ -314,20 +323,6 @@ class _ExpandableFeeCardState extends State<_ExpandableFeeCard> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            // Text(
-                            //   widget.fee.totalBalance,
-                            //   style: const TextStyle(
-                            //     fontSize: 16,
-                            //     fontWeight: FontWeight.w600,
-                            //   ),
-                            // ),
-                            // Icon(
-                            //   _isExpanded
-                            //       ? Icons.keyboard_arrow_up
-                            //       : Icons.keyboard_arrow_down,
-                            //   color: const Color(0xFF807FD8),
-                            // ),
-                            //const SizedBox(height: 4),
                             Text(
                               widget.fee.totalBalance,
                               softWrap: true,
@@ -337,40 +332,7 @@ class _ExpandableFeeCardState extends State<_ExpandableFeeCard> {
                               ),
                             ),
                             const SizedBox(height: 4),
-
-                            // SizedBox(
-                            //   height: 34,
-                            //   child: ElevatedButton(
-                            //     onPressed: () {
-                            //       // TODO: Pay action
-                            //     },
-                            //     style: ElevatedButton.styleFrom(
-                            //       backgroundColor: const Color(0xFF807FD8),
-                            //       foregroundColor: Colors.white,
-                            //       elevation: 0,
-                            //       padding: const EdgeInsets.symmetric(
-                            //         horizontal: 20,
-                            //       ),
-                            //       shape: RoundedRectangleBorder(
-                            //         borderRadius: BorderRadius.circular(20),
-                            //       ),
-                            //     ),
-                            //     child: const Text(
-                            //       'Pay',
-                            //       style: TextStyle(
-                            //         fontSize: 13,
-                            //         fontWeight: FontWeight.w600,
-                            //       ),
-                            //     ),
-                            //   ),
-                            // ),
                             const SizedBox(height: 4),
-                            // Icon(
-                            //   _isExpanded
-                            //       ? Icons.keyboard_arrow_up
-                            //       : Icons.keyboard_arrow_down,
-                            //   color: const Color(0xFF807FD8),
-                            // ),
                             SizedBox(
                               width: 60,
                               child: Center(
@@ -396,24 +358,56 @@ class _ExpandableFeeCardState extends State<_ExpandableFeeCard> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
                   child: Column(
-                    children: widget.fee.details.map((detail) {
+                    children: widget.fee.details.asMap().entries.map((entry) {
+                      final detailIndex = entry.key;
+                      final detail = entry.value;
+                      final isLineSelected =
+                      widget.selectedDetailIndexes.contains(detailIndex);
+                      final isBlocked = _isBlocked(detail.ledgerId);
+
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 6),
                         child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             /// LEDGER NAME
                             Expanded(
                               child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
+                                  if (widget.feeCollectionStatus)
+                                    SizedBox(
+                                      width: 22,
+                                      height: 22,
+                                      child: Checkbox(
+                                        value: isLineSelected,
+                                        activeColor: const Color(0xFF807FD8),
+                                        materialTapTargetSize:
+                                        MaterialTapTargetSize.shrinkWrap,
+                                        visualDensity: VisualDensity.compact,
+                                        // Disabled: this ledger already has a
+                                        // fee payment in progress for this
+                                        // fee month.
+                                        onChanged: isBlocked
+                                            ? null
+                                            : (value) {
+                                          widget.onSelectionChanged(
+                                            widget.index,
+                                            detailIndex,
+                                            widget.fee,
+                                            value ?? false,
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  if (widget.feeCollectionStatus) const SizedBox(width: 8),
                                   Container(
                                     width: 8,
                                     height: 8,
-                                    margin: const EdgeInsets.only(top: 5),
-                                    decoration: const BoxDecoration(
-                                      color: Color(0xFF807FD8),
+                                    decoration: BoxDecoration(
+                                      color: isBlocked
+                                          ? Colors.grey
+                                          : const Color(0xFF807FD8),
                                       shape: BoxShape.circle,
                                     ),
                                   ),
@@ -422,12 +416,36 @@ class _ExpandableFeeCardState extends State<_ExpandableFeeCard> {
                                     child: Text(
                                       detail.ledgerName,
                                       softWrap: true,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 13,
                                         fontWeight: FontWeight.w500,
+                                        color: isBlocked
+                                            ? Colors.grey
+                                            : Colors.black,
                                       ),
                                     ),
                                   ),
+                                  if (isBlocked) ...[
+                                    const SizedBox(width: 6),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 6,
+                                        vertical: 2,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFFFFF3CD),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: const Text(
+                                        'Processing',
+                                        style: TextStyle(
+                                          fontSize: 9,
+                                          color: Color(0xFF8A6D3B),
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ],
                               ),
                             ),
@@ -441,10 +459,11 @@ class _ExpandableFeeCardState extends State<_ExpandableFeeCard> {
                               child: Text(
                                 detail.amount,
                                 softWrap: true,
-                                style: const TextStyle(
+                                textAlign: TextAlign.right,
+                                style: TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w600,
-                                  color: Colors.red,
+                                  color: isBlocked ? Colors.grey : Colors.red,
                                 ),
                               ),
                             ),

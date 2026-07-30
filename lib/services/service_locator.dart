@@ -25,6 +25,7 @@ import 'package:studentmanagement/fetaures/classdiary/data/datasources/diary_rem
 import 'package:studentmanagement/fetaures/classdiary/data/repositories/diary_repository_impl.dart';
 import 'package:studentmanagement/fetaures/classdiary/domain/repositories/diary_repository.dart';
 import 'package:studentmanagement/fetaures/classdiary/domain/usecases/fetch_diary_usecase.dart';
+import 'package:studentmanagement/fetaures/classdiary/domain/usecases/saveDiaryStatusUseCase.dart';
 import 'package:studentmanagement/fetaures/classdiary/presentation/cubit/diary_cubit.dart';
 import 'package:studentmanagement/fetaures/earlygo/data/datasources/earlygo_remote_data_source.dart';
 import 'package:studentmanagement/fetaures/earlygo/data/repositories/earlygo_repository_impl.dart';
@@ -35,10 +36,14 @@ import 'package:studentmanagement/fetaures/earlygo/presentation/cubit/earlygo_cu
 import 'package:studentmanagement/fetaures/fees/data/datasources/fees_remote_data_sources.dart';
 import 'package:studentmanagement/fetaures/fees/data/repositories/fees_repository_impl.dart';
 import 'package:studentmanagement/fetaures/fees/domain/repositories/fees_repository.dart';
+import 'package:studentmanagement/fetaures/fees/domain/usecases/checkFeePayExistUseCase.dart';
 import 'package:studentmanagement/fetaures/fees/domain/usecases/fetchAccYearUseCase.dart';
+import 'package:studentmanagement/fetaures/fees/domain/usecases/fetchFeeProcessingListUseCase.dart';
 import 'package:studentmanagement/fetaures/fees/domain/usecases/fetchPaidFeesDetailsUseCase.dart';
+import 'package:studentmanagement/fetaures/fees/domain/usecases/fetchPaymentGatewayDetailsUseCase.dart';
 import 'package:studentmanagement/fetaures/fees/domain/usecases/fetchUnpaidFeeDetailsUseCase.dart';
 import 'package:studentmanagement/fetaures/fees/domain/usecases/saveFeePaymentUseCase.dart';
+import 'package:studentmanagement/fetaures/fees/domain/usecases/saveOfflineFeeDetailsUseCase.dart';
 import 'package:studentmanagement/fetaures/fees/presentation/bloc/fees_cubit.dart';
 import 'package:studentmanagement/fetaures/fees/presentation/unPaidFee/un_paid_fee_cubit.dart';
 import 'package:studentmanagement/fetaures/home_screen/data/datasources/feed_remote_data_source.dart';
@@ -94,7 +99,7 @@ class ServiceLocator {
         checkDeviceRegisterStatusUseCase: sl(),
         fetchSchoolUseCase: sl(),
         getBranchUseCase: sl(),
-        loginStatusUseCase: sl(),
+        loginStatusUseCase: sl(), fetchPaymentGatewayDetailsUseCase: sl(),
       ),
     );
     // usecase
@@ -131,7 +136,7 @@ class ServiceLocator {
     // ------------------- DIARY -------------------
 
     /// Cubit
-    sl.registerFactory(() => DiaryCubit(fetchDiaryUseCase: sl()));
+    sl.registerFactory(() => DiaryCubit(fetchDiaryUseCase: sl(), saveDiaryStatusUseCase: sl()));
 
     /// UseCase
     sl.registerLazySingleton(() => FetchDiaryUseCase(sl()));
@@ -152,7 +157,8 @@ class ServiceLocator {
         fetchPaidFeesDetailsUseCase: sl(),
         fetchAccYearListUseCase: sl(),
         fetchUnPaidFeesDetailsUseCase: sl(),
-        saveFeesDetailsUseCase: sl(),
+        saveFeesDetailsUseCase: sl(), saveOfflineFeesDetailsUseCase: sl(),
+        loginServerUseCase: sl(), checkFeeExistUseCase: sl(), feeProcessingListUseCase: sl(),
       ),
     );
 
@@ -164,6 +170,12 @@ class ServiceLocator {
     /// UseCase
     sl.registerLazySingleton(() => FetchPaidFeesDetailsUseCase(sl()));
     sl.registerLazySingleton(() => FetchUnPaidFeesDetailsUseCase(sl()));
+    sl.registerLazySingleton(() => CheckFeeExistUseCase(sl()));
+    sl.registerLazySingleton(() => FetchPaidFeeProcessingListUseCase(sl()));
+    sl.registerLazySingleton(() => FetchPaymentGatewayDetailsUseCase(sl()));
+
+
+
 
     /// Remote Data Source
     sl.registerLazySingleton<FeesRemoteDataSource>(
@@ -188,6 +200,9 @@ class ServiceLocator {
     sl.registerLazySingleton(() => FetchFeedUseCase(sl()));
     sl.registerLazySingleton(() => FeedActionUseCase(sl()));
     sl.registerLazySingleton(() => SaveFeesDetailsUseCase(sl()));
+    sl.registerLazySingleton(() => SaveOfflineFeesDetailsUseCase(sl()));
+    sl.registerLazySingleton(() => SaveDiaryStatusUseCase(sl()));
+
 
     sl.registerLazySingleton<FeedRemoteDataSource>(
       () => FeedRemoteDataSourceImpl(),

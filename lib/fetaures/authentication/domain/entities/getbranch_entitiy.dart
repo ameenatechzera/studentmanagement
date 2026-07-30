@@ -41,6 +41,7 @@ class BranchData {
   final String? modifiedDate;
   final String? modifiedUser;
   final String? bannerImage;
+  final String? base64Logo;
 
   BranchData({
     this.branchId,
@@ -77,5 +78,6 @@ class BranchData {
     this.modifiedDate,
     this.modifiedUser,
     this.bannerImage,
+    this.base64Logo
   });
 }

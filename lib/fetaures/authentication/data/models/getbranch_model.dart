@@ -54,6 +54,7 @@ class BranchDataModel extends BranchData {
     super.modifiedDate,
     super.modifiedUser,
     super.bannerImage,
+    super.base64Logo
   });
 
   factory BranchDataModel.fromJson(Map<String, dynamic> json) {
@@ -99,6 +100,7 @@ class BranchDataModel extends BranchData {
       modifiedDate: json['ModifiedDate']?.toString(),
       modifiedUser: json['ModifiedUser']?.toString(),
       bannerImage: json['bannerImage']?.toString(),
+        base64Logo: json['base64Logo']?.toString()
     );
   }
   Map<String, dynamic> toJson() {
@@ -136,6 +138,7 @@ class BranchDataModel extends BranchData {
       "ModifiedDate": modifiedDate,
       "ModifiedUser": modifiedUser,
       "bannerImage": bannerImage,
+      "base64Logo":base64Logo
     };
   }
 }
