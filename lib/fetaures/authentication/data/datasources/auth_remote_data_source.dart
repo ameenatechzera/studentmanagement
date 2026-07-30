@@ -5,6 +5,7 @@ import 'package:studentmanagement/core/errors/error_message_model.dart';
 import 'package:studentmanagement/core/errors/exceptions.dart';
 import 'package:studentmanagement/core/network/api_endpoints.dart';
 import 'package:studentmanagement/core/network/apihelper.dart';
+import 'package:studentmanagement/core/network/dio_client.dart';
 import 'package:studentmanagement/fetaures/authentication/data/models/device_register_model.dart';
 import 'package:studentmanagement/fetaures/authentication/data/models/getbranch_model.dart';
 import 'package:studentmanagement/fetaures/authentication/data/models/getschool_model.dart';
@@ -35,7 +36,7 @@ abstract class AuthRemoteDataSource {
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
-  Dio dio = Dio();
+  final Dio dio = DioClient.dio;
 
   @override
   Future<RegisterResponseResult> registerServer(

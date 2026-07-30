@@ -3,6 +3,7 @@ import 'package:studentmanagement/core/errors/error_message_model.dart';
 import 'package:studentmanagement/core/errors/exceptions.dart';
 import 'package:studentmanagement/core/network/api_endpoints.dart';
 import 'package:studentmanagement/core/network/apihelper.dart';
+import 'package:studentmanagement/core/network/dio_client.dart';
 import 'package:studentmanagement/fetaures/fees/data/models/accYearListModel.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/accyearResult.dart';
 import 'package:studentmanagement/fetaures/fees/domain/entities/feeSaveResult.dart';
@@ -17,13 +18,10 @@ abstract class FeesRemoteDataSource {
   Future<UnpaidFeeResult> fetchUnPaidFees(PaidFeesRequest request);
   Future<AccYearResult> fetchAccYearsList();
   Future<FeeSaveResult> saveFeeDetails(FeeSaveRequest request);
-
-
 }
 
 class FeesRemoteDataSourceImpl implements FeesRemoteDataSource {
-  Dio dio = Dio();
-
+  final Dio dio = DioClient.dio;
   @override
   Future<PaidFeeResult> fetchPaidFees(PaidFeesRequest request) async {
     // Load base URL safely
@@ -61,41 +59,75 @@ class FeesRemoteDataSourceImpl implements FeesRemoteDataSource {
     }
   }
 
+  // @override
+  // Future<UnpaidFeeResult> fetchUnPaidFees(PaidFeesRequest request) async {
+  //   // Load base URL safely
+  //   final baseUrl = await SharedPreferenceHelper().getBaseUrl();
+
+  //   if (baseUrl == null || baseUrl.isEmpty) {}
+
+  //   final url = ApiConstants.getFeesUnPaidServerPath(baseUrl!);
+  //   // final token = await SharedPreferenceHelper().getToken() ?? "";
+  //   print('Register URL: $url');
+  //   // print(' token: $token');
+  //   print('Request Body: ${request.toJson()}');
+  //   final options = await ApiHelper.getAuthOptions(withToken: true);
+
+  //   final response = await dio.post(
+  //     ApiConstants.getFeesUnPaidServerPath(baseUrl),
+  //     options: options,
+  //     // options: Options(
+  //     //   contentType: "application/json",
+  //     //   headers: {
+  //     //     "Accept": "application/json",
+  //     //     "Authorization": "Bearer $token",
+  //     //   },
+  //     // ),
+  //     data: request.toJson(),
+  //   );
+  //   print(response.data);
+  //   print('Status Code: ${response.statusCode}');
+  //   print('Response Data fetched pending: ${response.data}');
+  //   if (response.statusCode == 200) {
+  //     return UnpaidFeeResult.fromJson(response.data);
+  //   } else {
+  //     throw ServerException(
+  //       errorMessageModel: ErrorMessageModel.fromJson(response.data),
+  //     );
+  //   }
+  // }
   @override
   Future<UnpaidFeeResult> fetchUnPaidFees(PaidFeesRequest request) async {
-    // Load base URL safely
-    final baseUrl = await SharedPreferenceHelper().getBaseUrl();
+    try {
+      final baseUrl = await SharedPreferenceHelper().getBaseUrl();
 
-    if (baseUrl == null || baseUrl.isEmpty) {}
+      print("BASE URL = $baseUrl");
 
-    final url = ApiConstants.getFeesUnPaidServerPath(baseUrl!);
-    // final token = await SharedPreferenceHelper().getToken() ?? "";
-    print('Register URL: $url');
-    // print(' token: $token');
-    print('Request Body: ${request.toJson()}');
-    final options = await ApiHelper.getAuthOptions(withToken: true);
+      final options = await ApiHelper.getAuthOptions(withToken: true);
 
-    final response = await dio.post(
-      ApiConstants.getFeesUnPaidServerPath(baseUrl),
-      options: options,
-      // options: Options(
-      //   contentType: "application/json",
-      //   headers: {
-      //     "Accept": "application/json",
-      //     "Authorization": "Bearer $token",
-      //   },
-      // ),
-      data: request.toJson(),
-    );
-    print(response.data);
-    print('Status Code: ${response.statusCode}');
-    print('Response Data fetched pending: ${response.data}');
-    if (response.statusCode == 200) {
-      return UnpaidFeeResult.fromJson(response.data);
-    } else {
-      throw ServerException(
-        errorMessageModel: ErrorMessageModel.fromJson(response.data),
+      final response = await dio.post(
+        ApiConstants.getFeesUnPaidServerPath(baseUrl!),
+        data: request.toJson(),
+        options: options,
       );
+
+      print("STATUS = ${response.statusCode}");
+      print("DATA = ${response.data}");
+
+      return UnpaidFeeResult.fromJson(response.data);
+    } on DioException catch (e) {
+      print("========== DIO ERROR ==========");
+      print(e.type);
+      print(e.message);
+      print(e.error);
+      print(e.response?.statusCode);
+      print(e.response?.data);
+      print("===============================");
+
+      rethrow;
+    } catch (e) {
+      print("GENERAL ERROR = $e");
+      rethrow;
     }
   }
 
@@ -110,7 +142,6 @@ class FeesRemoteDataSourceImpl implements FeesRemoteDataSource {
     // final token = await SharedPreferenceHelper().getToken() ?? "";
     print('AccYear URL: $url');
     // print(' token: $token');
-
 
     final options = await ApiHelper.getAuthOptions(withToken: true);
 

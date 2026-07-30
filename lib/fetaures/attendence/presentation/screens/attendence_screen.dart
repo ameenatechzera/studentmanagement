@@ -117,10 +117,11 @@ class _AttendenceScreenState extends State<AttendenceScreen> {
               BlocBuilder<AttendenceCubit, AttendenceState>(
                 builder: (context, state) {
                   bool isLoading = state is AttendenceMonthLoading;
+                  final bool hasError = state is AttendenceMonthError;
 
                   int totalPresent = 0;
                   int totalAbsent = 0;
-
+                  String errorMessage = "";
                   if (state is AttendenceMonthLoaded) {
                     final student = state.data.data?.isNotEmpty == true
                         ? state.data.data!.first
@@ -134,7 +135,9 @@ class _AttendenceScreenState extends State<AttendenceScreen> {
                         int.tryParse(student?.totalAbsent?.toString() ?? "0") ??
                         0;
                   }
-
+                  if (state is AttendenceMonthError) {
+                    errorMessage = state.message;
+                  }
                   final totalWorkingDays = totalPresent + totalAbsent;
 
                   final attendancePercentage = totalWorkingDays == 0
@@ -153,6 +156,37 @@ class _AttendenceScreenState extends State<AttendenceScreen> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
+                            /// Error Message
+                            if (hasError)
+                              Container(
+                                width: double.infinity,
+                                margin: const EdgeInsets.only(bottom: 16),
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: Colors.red.shade100,
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(color: Colors.red),
+                                ),
+                                child: Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.wifi_off,
+                                      color: Colors.red,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        errorMessage,
+                                        style: const TextStyle(
+                                          color: Colors.red,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -608,6 +642,8 @@ class _AttendenceScreenState extends State<AttendenceScreen> {
           builder: (context, state) {
             Map<String, dynamic> daysMap = {};
             List<dynamic> attendanceDetails = [];
+            String? errorMessage;
+
             if (state is AttendenceMonthLoaded) {
               final student = state.data.data?.isNotEmpty == true
                   ? state.data.data!.first
@@ -618,7 +654,9 @@ class _AttendenceScreenState extends State<AttendenceScreen> {
               /// ✅ CORRECT
               attendanceDetails = state.data.attendanceDetails ?? [];
             }
-
+            if (state is AttendenceMonthError) {
+              errorMessage = state.message;
+            }
             final daysInMonth = DateTime(
               focusedDay.year,
               focusedDay.month + 1,

@@ -3,6 +3,7 @@ import 'package:studentmanagement/core/errors/error_message_model.dart';
 import 'package:studentmanagement/core/errors/exceptions.dart';
 import 'package:studentmanagement/core/network/api_endpoints.dart';
 import 'package:studentmanagement/core/network/apihelper.dart';
+import 'package:studentmanagement/core/network/dio_client.dart';
 import 'package:studentmanagement/fetaures/timetable/data/models/fetch_timetable_model.dart';
 import 'package:studentmanagement/fetaures/timetable/domain/parameters/fetch_timetable_parameter.dart';
 import 'package:studentmanagement/services/shared_preference_helper.dart';
@@ -14,7 +15,7 @@ abstract class TimeTableRemoteDataSource {
 }
 
 class TimeTableRemoteDataSourceImpl implements TimeTableRemoteDataSource {
-  final Dio dio = Dio();
+  final Dio dio = DioClient.dio;
 
   @override
   Future<FetchTimeTableResponseModel> fetchTimeTable(

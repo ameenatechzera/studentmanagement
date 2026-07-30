@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
+import 'package:studentmanagement/core/errors/dio_error_handler.dart';
 import 'package:studentmanagement/core/errors/exceptions.dart';
 import 'package:studentmanagement/core/errors/failure.dart';
 import 'package:studentmanagement/core/utils/typedef.dart';
@@ -35,7 +36,7 @@ class AuthRepositoryImpl implements AuthRepository {
     } on ServerException catch (failure) {
       return Left(ServerFailure(failure.errorMessageModel.statusMessage));
     } on DioException catch (failure) {
-      return Left(ServerFailure(failure.message.toString()));
+      return Left(DioErrorHandler.handle(failure));
     }
   }
 
@@ -50,7 +51,7 @@ class AuthRepositoryImpl implements AuthRepository {
     } on ServerException catch (failure) {
       return Left(ServerFailure(failure.errorMessageModel.statusMessage));
     } on DioException catch (failure) {
-      return Left(ServerFailure(failure.message.toString()));
+      return Left(DioErrorHandler.handle(failure));
     }
   }
 
@@ -65,7 +66,7 @@ class AuthRepositoryImpl implements AuthRepository {
     } on ServerException catch (failure) {
       return Left(ServerFailure(failure.errorMessageModel.statusMessage));
     } on DioException catch (failure) {
-      return Left(ServerFailure(failure.message.toString()));
+      return Left(DioErrorHandler.handle(failure));
     }
   }
 
@@ -80,7 +81,7 @@ class AuthRepositoryImpl implements AuthRepository {
     } on ServerException catch (failure) {
       return Left(ServerFailure(failure.errorMessageModel.statusMessage));
     } on DioException catch (failure) {
-      return Left(ServerFailure(failure.message.toString()));
+      return Left(DioErrorHandler.handle(failure));
     }
   }
 
@@ -93,7 +94,7 @@ class AuthRepositoryImpl implements AuthRepository {
     } on ServerException catch (failure) {
       return Left(ServerFailure(failure.errorMessageModel.statusMessage));
     } on DioException catch (failure) {
-      return Left(ServerFailure(failure.message.toString()));
+      return Left(DioErrorHandler.handle(failure));
     }
   }
 
@@ -108,7 +109,7 @@ class AuthRepositoryImpl implements AuthRepository {
     } on ServerException catch (failure) {
       return Left(ServerFailure(failure.errorMessageModel.statusMessage));
     } on DioException catch (failure) {
-      return Left(ServerFailure(failure.message.toString()));
+      return Left(DioErrorHandler.handle(failure));
     }
   }
 }

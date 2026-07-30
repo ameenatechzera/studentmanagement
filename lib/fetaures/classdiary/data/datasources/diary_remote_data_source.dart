@@ -5,6 +5,7 @@ import 'package:studentmanagement/core/errors/error_message_model.dart';
 import 'package:studentmanagement/core/errors/exceptions.dart';
 import 'package:studentmanagement/core/network/api_endpoints.dart';
 import 'package:studentmanagement/core/network/apihelper.dart';
+import 'package:studentmanagement/core/network/dio_client.dart';
 import 'package:studentmanagement/fetaures/classdiary/data/models/fetch_diary_model.dart';
 import 'package:studentmanagement/fetaures/classdiary/domain/parameters/fetch_diary_parameter.dart';
 import 'package:studentmanagement/services/shared_preference_helper.dart';
@@ -14,7 +15,7 @@ abstract class DiaryRemoteDataSource {
 }
 
 class DiaryRemoteDataSourceImpl implements DiaryRemoteDataSource {
-  final Dio dio = Dio();
+  final Dio dio = DioClient.dio;
 
   @override
   Future<FetchDiaryResponseModel> fetchDiary(FetchDiaryParameter params) async {

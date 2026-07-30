@@ -1,4 +1,6 @@
 import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
+import 'package:studentmanagement/core/errors/dio_error_handler.dart';
 import 'package:studentmanagement/core/errors/exceptions.dart';
 import 'package:studentmanagement/core/errors/failure.dart';
 import 'package:studentmanagement/core/utils/typedef.dart';
@@ -24,34 +26,34 @@ class MaterialRepositoryImpl implements MaterialRepository {
       return Right(result);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.errorMessageModel.statusMessage));
-    } catch (e) {
-      return Left(ServerFailure(e.toString()));
+    } on DioException catch (failure) {
+      return Left(DioErrorHandler.handle(failure));
     }
   }
 
   @override
-  ResultFuture<SubjectsModel> fetchSubjects()
-    async {
-      try {
-        final result = await _remoteDataSource.fetchSubjects();
-        return Right(result);
-      } on ServerException catch (e) {
-        return Left(ServerFailure(e.errorMessageModel.statusMessage));
-      } catch (e) {
-        return Left(ServerFailure(e.toString()));
-      }
+  ResultFuture<SubjectsModel> fetchSubjects() async {
+    try {
+      final result = await _remoteDataSource.fetchSubjects();
+      return Right(result);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.errorMessageModel.statusMessage));
+    } on DioException catch (failure) {
+      return Left(DioErrorHandler.handle(failure));
+    }
   }
 
   @override
-  ResultFuture<FetchMaterialsbySubjectModel> fetchMaterialsBySubjectId(FetchMaterialBySubjectIdParameter params)
-    async {
-      try {
-        final result = await _remoteDataSource.fetchMaterialsBySubject(params);
-        return Right(result);
-      } on ServerException catch (e) {
-        return Left(ServerFailure(e.errorMessageModel.statusMessage));
-      } catch (e) {
-        return Left(ServerFailure(e.toString()));
-      }
+  ResultFuture<FetchMaterialsbySubjectModel> fetchMaterialsBySubjectId(
+    FetchMaterialBySubjectIdParameter params,
+  ) async {
+    try {
+      final result = await _remoteDataSource.fetchMaterialsBySubject(params);
+      return Right(result);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.errorMessageModel.statusMessage));
+    } on DioException catch (failure) {
+      return Left(DioErrorHandler.handle(failure));
     }
+  }
 }

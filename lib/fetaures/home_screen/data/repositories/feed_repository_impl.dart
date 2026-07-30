@@ -1,6 +1,8 @@
 import 'dart:developer';
 
 import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
+import 'package:studentmanagement/core/errors/dio_error_handler.dart';
 import 'package:studentmanagement/core/errors/exceptions.dart';
 import 'package:studentmanagement/core/errors/failure.dart';
 import 'package:studentmanagement/core/utils/typedef.dart';
@@ -33,8 +35,8 @@ class FeedRepositoryImpl implements FeedRepository {
     } on ServerException catch (e) {
       log("SERVER EXCEPTION: ${e.errorMessageModel.statusMessage}");
       return Left(ServerFailure(e.errorMessageModel.statusMessage));
-    } catch (e) {
-      return Left(ServerFailure(e.toString()));
+    } on DioException catch (failure) {
+      return Left(DioErrorHandler.handle(failure));
     }
   }
 
@@ -47,8 +49,8 @@ class FeedRepositoryImpl implements FeedRepository {
       return Right(result);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.errorMessageModel.statusMessage));
-    } catch (e) {
-      return Left(ServerFailure(e.toString()));
+    } on DioException catch (failure) {
+      return Left(DioErrorHandler.handle(failure));
     }
   }
 }

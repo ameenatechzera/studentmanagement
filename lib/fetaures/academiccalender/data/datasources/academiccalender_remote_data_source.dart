@@ -3,6 +3,7 @@ import 'package:studentmanagement/core/errors/error_message_model.dart';
 import 'package:studentmanagement/core/errors/exceptions.dart';
 import 'package:studentmanagement/core/network/api_endpoints.dart';
 import 'package:studentmanagement/core/network/apihelper.dart';
+import 'package:studentmanagement/core/network/dio_client.dart';
 import 'package:studentmanagement/fetaures/academiccalender/data/models/fetchcalenderevents_model.dart';
 import 'package:studentmanagement/fetaures/academiccalender/domain/parameters/fetchcalender_parameter.dart';
 import 'package:studentmanagement/services/shared_preference_helper.dart';
@@ -15,7 +16,7 @@ abstract class AcademicCalendarRemoteDataSource {
 
 class AcademicCalendarRemoteDataSourceImpl
     implements AcademicCalendarRemoteDataSource {
-  final Dio dio = Dio();
+  final Dio dio = DioClient.dio;
 
   @override
   Future<FetchCalendarResponseModel> fetchAcademicCalendar(
@@ -59,13 +60,17 @@ class AcademicCalendarRemoteDataSourceImpl
         );
       }
     } on DioException catch (e) {
-      print("Dio Exception => ${e.response?.data}");
-      throw ServerException(
-        errorMessageModel: ErrorMessageModel.fromJson(e.response?.data ?? {}),
-      );
-    } catch (e, stackTrace) {
-      print("Exception => $e");
-      print(stackTrace);
+      print("=============== DIO EXCEPTION ===============");
+      print("Type    : ${e.type}");
+      print("Message : ${e.message}");
+
+      if (e.response != null) {
+        print("Status  : ${e.response?.statusCode}");
+        print("Data    : ${e.response?.data}");
+      } else {
+        print("No response received from server.");
+      }
+
       rethrow;
     }
   }

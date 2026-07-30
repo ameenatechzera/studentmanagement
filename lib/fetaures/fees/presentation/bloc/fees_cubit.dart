@@ -75,23 +75,49 @@ class FeesCubit extends Cubit<FeesState> {
     }
   }
 
+  // Future<void> fetchAccYearList() async {
+  //   emit(AccYearsInitial());
+  //   try {
+  //     final result = await _fetchAccYearListUseCase();
+
+  //     result.fold(
+  //       (failure) {
+  //         emit(AccYearFailure(failure.message));
+  //       },
+  //       (accYearResponse) {
+  //         emit(AccYearSuccess(accYearResponse));
+  //       },
+  //     );
+  //   } catch (e, stacktrace) {
+  //     // Handle unexpected exceptions
+  //     print('❌ Exception during loginUser: $e');
+  //     print('Stacktrace: $stacktrace');
+  //     emit(FeesPaidFailure('An unexpected error occurred'));
+  //   }
+  // }
   Future<void> fetchAccYearList() async {
+    print("1. fetchAccYearList called");
+
     emit(AccYearsInitial());
+
     try {
       final result = await _fetchAccYearListUseCase();
 
+      print("2. UseCase completed");
+
       result.fold(
         (failure) {
+          print("3. FAILURE = ${failure.message}");
           emit(AccYearFailure(failure.message));
         },
         (accYearResponse) {
+          print("3. SUCCESS");
           emit(AccYearSuccess(accYearResponse));
         },
       );
     } catch (e, stacktrace) {
-      // Handle unexpected exceptions
-      print('❌ Exception during loginUser: $e');
-      print('Stacktrace: $stacktrace');
+      print("4. EXCEPTION = $e");
+      print(stacktrace);
       emit(FeesPaidFailure('An unexpected error occurred'));
     }
   }

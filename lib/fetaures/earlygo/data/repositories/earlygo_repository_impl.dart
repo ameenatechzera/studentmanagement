@@ -1,5 +1,7 @@
 import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
 import 'package:studentmanagement/core/data/models/common_response_model.dart';
+import 'package:studentmanagement/core/errors/dio_error_handler.dart';
 import 'package:studentmanagement/core/errors/exceptions.dart';
 import 'package:studentmanagement/core/errors/failure.dart';
 import 'package:studentmanagement/core/utils/typedef.dart';
@@ -15,14 +17,16 @@ class EarlyLeaveRepositoryImpl implements EarlyLeaveRepository {
   EarlyLeaveRepositoryImpl(this._remoteDataSource);
 
   @override
-  ResultFuture<FetchEarlyLeaveResponseModel> fetchEarlyLeave(FetchEarlyGoParameter request) async {
+  ResultFuture<FetchEarlyLeaveResponseModel> fetchEarlyLeave(
+    FetchEarlyGoParameter request,
+  ) async {
     try {
       final result = await _remoteDataSource.fetchEarlyLeave(request);
       return Right(result);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.errorMessageModel.statusMessage));
-    } catch (e) {
-      return Left(ServerFailure(e.toString()));
+    } on DioException catch (failure) {
+      return Left(DioErrorHandler.handle(failure));
     }
   }
 
@@ -35,8 +39,8 @@ class EarlyLeaveRepositoryImpl implements EarlyLeaveRepository {
       return Right(result);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.errorMessageModel.statusMessage));
-    } catch (e) {
-      return Left(ServerFailure(e.toString()));
+    } on DioException catch (failure) {
+      return Left(DioErrorHandler.handle(failure));
     }
   }
 }

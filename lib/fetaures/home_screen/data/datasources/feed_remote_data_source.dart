@@ -3,6 +3,7 @@ import 'package:studentmanagement/core/errors/error_message_model.dart';
 import 'package:studentmanagement/core/errors/exceptions.dart';
 import 'package:studentmanagement/core/network/api_endpoints.dart';
 import 'package:studentmanagement/core/network/apihelper.dart';
+import 'package:studentmanagement/core/network/dio_client.dart';
 import 'package:studentmanagement/fetaures/home_screen/data/models/feedaction_model.dart';
 import 'package:studentmanagement/fetaures/home_screen/data/models/fetchfeed_model.dart';
 import 'package:studentmanagement/fetaures/home_screen/domain/parameters/feedaction_parameter.dart';
@@ -124,7 +125,7 @@ abstract class FeedRemoteDataSource {
 //   }
 // }
 class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
-  final Dio dio = Dio();
+  final Dio dio = DioClient.dio;
 
   @override
   Future<FetchFeedResponseModel> fetchFeeds(FetchFeedParameter params) async {
@@ -159,11 +160,10 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
       print('\n🔥 RAW RESPONSE TYPE: ${response.data.runtimeType}');
       print('🔥 RAW RESPONSE FULL: ${response.data}');
 
-
       if (response.statusCode == 200 || response.statusCode == 201) {
         final dataList = response.data['data'];
 
-       // print('\n📦 TOTAL ITEMS: ${dataList.length}');
+        // print('\n📦 TOTAL ITEMS: ${dataList.length}');
 
         /// 🔥 LOOP ALL ITEMS
         for (var item in dataList) {

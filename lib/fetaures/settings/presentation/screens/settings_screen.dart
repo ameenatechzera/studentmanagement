@@ -117,6 +117,123 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
+  Future<void> _makePhoneCall(String? phoneNumber) async {
+    final String phone = phoneNumber?.trim() ?? '';
+
+    if (phone.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Phone number is not available'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    final Uri phoneUri = Uri(scheme: 'tel', path: phone);
+
+    try {
+      final bool opened = await launchUrl(
+        phoneUri,
+        mode: LaunchMode.externalApplication,
+      );
+
+      if (!opened && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Could not open the phone app'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (error) {
+      debugPrint('Phone launch error: $error');
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Could not open the phone app'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  Future<void> _sendEmail(String? emailAddress) async {
+    final String email = emailAddress?.trim() ?? '';
+
+    if (email.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Email address is not available'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    final Uri emailUri = Uri(scheme: 'mailto', path: email);
+
+    try {
+      final bool opened = await launchUrl(
+        emailUri,
+        mode: LaunchMode.externalApplication,
+      );
+
+      if (!opened && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Could not open the email app'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (error) {
+      debugPrint('Email launch error: $error');
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Could not open the email app'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  Future<void> _openGoogleMaps() async {
+    final Uri googleMapsUri = Uri.parse('https://www.google.com/maps');
+
+    try {
+      final bool opened = await launchUrl(
+        googleMapsUri,
+        mode: LaunchMode.externalApplication,
+      );
+
+      if (!opened && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Could not open Google Maps'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (error) {
+      debugPrint('Google Maps launch error: $error');
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Could not open Google Maps'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     debugPrint("Branch Data: $branchData");
@@ -1050,12 +1167,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 ],
                               ),
                             ),
-                            SizedBox(
-                              // width: 75,
-                              // height: 75,
-                              child: Image.asset(
-                                "assets/images/ChatGPT Image May 11, 2026, 09_40_13 AM 1.png",
-                                fit: BoxFit.cover,
+
+                            // SizedBox(
+                            //   // width: 75,
+                            //   // height: 75,
+                            //   child: Image.asset(
+                            //     "assets/images/ChatGPT Image May 11, 2026, 09_40_13 AM 1.png",
+                            //     fit: BoxFit.cover,
+                            //   ),
+                            // ),
+                            Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(12),
+                                onTap: _openGoogleMaps,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(4),
+                                  child: Image.asset(
+                                    "assets/images/ChatGPT Image May 11, 2026, 09_40_13 AM 1.png",
+                                    width: 75,
+                                    height: 75,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
                               ),
                             ),
                           ],
@@ -1076,6 +1210,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               iconColor: Color(0xff3C82FF),
                               bgColor: Color(0xffEEF4FF),
                               text: branchData?["Phone1"]?.toString() ?? "",
+                              isLink: true,
+                              onTap: () {
+                                _makePhoneCall(
+                                  branchData?["Phone1"]?.toString(),
+                                );
+                              },
                             ),
                             Padding(
                               padding: const EdgeInsets.only(right: 35.0),
@@ -1086,6 +1226,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               iconColor: Color(0xffFF8A3D),
                               bgColor: Color(0xffFFF1E8),
                               text: branchData?["Email"]?.toString() ?? "",
+                              isLink: true,
+                              onTap: () {
+                                _sendEmail(branchData?["Email"]?.toString());
+                              },
                             ),
                             if (branchData?["Website"] != null)
                               Divider(height: 1, indent: 55),

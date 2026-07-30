@@ -1,4 +1,6 @@
 import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
+import 'package:studentmanagement/core/errors/dio_error_handler.dart';
 import 'package:studentmanagement/core/errors/exceptions.dart';
 import 'package:studentmanagement/core/errors/failure.dart';
 import 'package:studentmanagement/core/utils/typedef.dart';
@@ -21,8 +23,8 @@ class DiaryRepositoryImpl implements DiaryRepository {
       return Right(result);
     } on ServerException catch (e) {
       throw ServerFailure(e.errorMessageModel.statusMessage);
-    } catch (e) {
-      throw ServerFailure(e.toString());
+    } on DioException catch (failure) {
+      return Left(DioErrorHandler.handle(failure));
     }
   }
 }

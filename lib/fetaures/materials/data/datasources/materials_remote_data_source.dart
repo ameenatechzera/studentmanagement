@@ -3,6 +3,7 @@ import 'package:studentmanagement/core/errors/error_message_model.dart';
 import 'package:studentmanagement/core/errors/exceptions.dart';
 import 'package:studentmanagement/core/network/api_endpoints.dart';
 import 'package:studentmanagement/core/network/apihelper.dart';
+import 'package:studentmanagement/core/network/dio_client.dart';
 import 'package:studentmanagement/fetaures/materials/data/models/fetch_materials_model.dart';
 import 'package:studentmanagement/fetaures/materials/data/models/fetch_materialsbysubject_model.dart';
 import 'package:studentmanagement/fetaures/materials/data/models/subjects_model.dart';
@@ -16,12 +17,12 @@ abstract class MaterialRemoteDataSource {
   );
   Future<SubjectsModel> fetchSubjects();
   Future<FetchMaterialsbySubjectModel> fetchMaterialsBySubject(
-      FetchMaterialBySubjectIdParameter params,
-      );
+    FetchMaterialBySubjectIdParameter params,
+  );
 }
 
 class MaterialRemoteDataSourceImpl implements MaterialRemoteDataSource {
-  final Dio dio = Dio();
+  final Dio dio = DioClient.dio;
 
   @override
   Future<FetchMaterialResponseModel> fetchMaterials(params) async {
@@ -43,6 +44,7 @@ class MaterialRemoteDataSourceImpl implements MaterialRemoteDataSource {
       //final token = await SharedPreferenceHelper().getToken() ?? "";
       //final options = await ApiHelper.getAuthOptions();
       final options = await ApiHelper.getAuthOptions(withToken: true);
+
       /// 🔹 API Call (GET or POST based on backend)
       final response = await dio.post(
         url,
@@ -84,6 +86,7 @@ class MaterialRemoteDataSourceImpl implements MaterialRemoteDataSource {
       if (baseUrl == null || baseUrl.isEmpty) {
         throw Exception("Base URL not set");
       }
+
       /// 🔹 Build API URL
       final url = ApiConstants.getSubjectsPath(baseUrl);
       print('url $url');
@@ -91,11 +94,9 @@ class MaterialRemoteDataSourceImpl implements MaterialRemoteDataSource {
       /// 🔹 Get Token
 
       final options = await ApiHelper.getAuthOptions(withToken: true);
+
       /// 🔹 API Call (GET or POST based on backend)
-      final response = await dio.get(
-        url,
-        options: options,
-      );
+      final response = await dio.get(url, options: options);
 
       print('📘 Status Code: ${response.statusCode}');
       print('📘 Response Data: ${response.data}');
@@ -117,7 +118,9 @@ class MaterialRemoteDataSourceImpl implements MaterialRemoteDataSource {
   }
 
   @override
-  Future<FetchMaterialsbySubjectModel> fetchMaterialsBySubject(FetchMaterialBySubjectIdParameter params) async {
+  Future<FetchMaterialsbySubjectModel> fetchMaterialsBySubject(
+    FetchMaterialBySubjectIdParameter params,
+  ) async {
     try {
       /// 🔹 Get Base URL
       final baseUrl = await SharedPreferenceHelper().getBaseUrl();
@@ -130,6 +133,7 @@ class MaterialRemoteDataSourceImpl implements MaterialRemoteDataSource {
       print('url $url');
 
       final options = await ApiHelper.getAuthOptions(withToken: true);
+
       /// 🔹 API Call (GET or POST based on backend)
       final response = await dio.post(
         url,

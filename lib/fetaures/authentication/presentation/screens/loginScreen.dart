@@ -654,7 +654,7 @@ class _Login_ScreenState extends State<Login_Screen> {
                     showAppSnackBar(context, state.error);
                   }
                   if (state is LoginFailure) {
-                    showAppSnackBar(context, 'Invalid Credentials');
+                    showAppSnackBar(context, state.error);
                   }
                 },
                 builder: (context, state) {

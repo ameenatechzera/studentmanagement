@@ -3,6 +3,7 @@ import 'package:studentmanagement/core/errors/error_message_model.dart';
 import 'package:studentmanagement/core/errors/exceptions.dart';
 import 'package:studentmanagement/core/network/api_endpoints.dart';
 import 'package:studentmanagement/core/network/apihelper.dart';
+import 'package:studentmanagement/core/network/dio_client.dart';
 import 'package:studentmanagement/fetaures/attendence/data/models/attendence_reportbydate_model.dart';
 import 'package:studentmanagement/fetaures/attendence/data/models/attendence_reportbymonth_model.dart';
 import 'package:studentmanagement/fetaures/attendence/domain/entities/attendence_reportbydate_entity.dart';
@@ -21,7 +22,7 @@ abstract class AttendanceRemoteDataSource {
 }
 
 class AttendanceRemoteDataSourceImpl implements AttendanceRemoteDataSource {
-  Dio dio = Dio();
+  final Dio dio = DioClient.dio;
 
   @override
   Future<AttendanceReportByDateEntity> getAttendanceReportByDate(

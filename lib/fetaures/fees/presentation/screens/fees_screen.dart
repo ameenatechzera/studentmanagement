@@ -819,42 +819,77 @@ class _FeesScreenState extends State<FeesScreen> {
     );
   }
 
+  // Widget _pendingFeeSection() {
+  //   return BlocConsumer<UnPaidFeeCubit, UnPaidFeeState>(
+  //     listener: (context, state) {},
+  //     builder: (context, state) {
+  //       if (_isAccYearLoading || _isPendingLoading) {
+  //         return _sectionLoader();
+  //       }
+  //       // if (state is FeeUnpaidInitial || state is FeeUnpaid_Loading) {
+  //       //   return Padding(
+  //       //     padding: EdgeInsets.only(left: 24, right: 24),
+  //       //     child: CircularProgressIndicator(strokeWidth: 2),
+  //       //   );
+  //       // }
+
+  //       if (state is FeesUnPaidSuccess) {
+  //         print('wwwwwwwwwwwwwwww${AppData.feeCollectionStatus}');
+  //         if (state.feeUnPaidResult.data.isNotEmpty) {
+  //           return PendingFee(
+  //             feesUnpaidList: state.feeUnPaidResult,
+  //             selectedIndexes: _selectedIndexes,
+  //             onSelectionChanged: _onFeeSelectionChanged,
+  //             feeCollectionStatus: AppData.feeCollectionStatus,
+  //           );
+  //         } else {
+  //           return const Padding(
+  //             padding: EdgeInsets.all(24),
+  //             child: Center(child: Text('No Pending List')),
+  //           );
+  //         }
+  //       }
+
+  //       if (state is FeeUnPaidFailure) {
+  //         return Center(child: Text(state.error));
+  //       }
+
+  //       return const SizedBox();
+  //     },
+  //   );
+  // }
   Widget _pendingFeeSection() {
-    return BlocConsumer<UnPaidFeeCubit, UnPaidFeeState>(
-      listener: (context, state) {},
-      builder: (context, state) {
-        if (_isAccYearLoading || _isPendingLoading) {
-          return _sectionLoader();
-        }
-        // if (state is FeeUnpaidInitial || state is FeeUnpaid_Loading) {
-        //   return Padding(
-        //     padding: EdgeInsets.only(left: 24, right: 24),
-        //     child: CircularProgressIndicator(strokeWidth: 2),
-        //   );
-        // }
-
-        if (state is FeesUnPaidSuccess) {
-          print('wwwwwwwwwwwwwwww${AppData.feeCollectionStatus}');
-          if (state.feeUnPaidResult.data.isNotEmpty) {
-            return PendingFee(
-              feesUnpaidList: state.feeUnPaidResult,
-              selectedIndexes: _selectedIndexes,
-              onSelectionChanged: _onFeeSelectionChanged,
-              feeCollectionStatus: AppData.feeCollectionStatus,
-            );
-          } else {
-            return const Padding(
-              padding: EdgeInsets.all(24),
-              child: Center(child: Text('No Pending List')),
-            );
-          }
+    return BlocBuilder<FeesCubit, FeesState>(
+      builder: (context, feesState) {
+        if (feesState is AccYearFailure) {
+          return Center(child: Text(feesState.error));
         }
 
-        if (state is FeeUnPaidFailure) {
-          return Center(child: Text(state.error));
-        }
+        return BlocConsumer<UnPaidFeeCubit, UnPaidFeeState>(
+          listener: (_, __) {},
+          builder: (context, state) {
+            if (_isAccYearLoading || _isPendingLoading) {
+              return _sectionLoader();
+            }
 
-        return const SizedBox();
+            if (state is FeesUnPaidSuccess) {
+              if (state.feeUnPaidResult.data.isNotEmpty) {
+                return PendingFee(
+                  feesUnpaidList: state.feeUnPaidResult,
+                  selectedIndexes: _selectedIndexes,
+                  onSelectionChanged: _onFeeSelectionChanged,
+                  feeCollectionStatus: AppData.feeCollectionStatus,
+                );
+              }
+            }
+
+            if (state is FeeUnPaidFailure) {
+              return Center(child: Text(state.error));
+            }
+
+            return const SizedBox();
+          },
+        );
       },
     );
   }

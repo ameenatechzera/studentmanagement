@@ -7,7 +7,6 @@ import 'package:studentmanagement/fetaures/earlygo/domain/entities/fetch_earlygo
 import 'package:studentmanagement/fetaures/earlygo/domain/parameters/fetch_earlygo_parameter.dart';
 import 'package:studentmanagement/fetaures/earlygo/presentation/cubit/earlygo_cubit.dart';
 import 'package:studentmanagement/fetaures/earlygo/presentation/screens/earlygo_requestscreen.dart';
-import 'package:studentmanagement/fetaures/home_screen/domain/parameters/fetchfeed_parameter.dart';
 
 class EarlyGoScreen extends StatefulWidget {
   const EarlyGoScreen({super.key});
@@ -20,7 +19,12 @@ class _EarlyGoScreenState extends State<EarlyGoScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<EarlygoCubit>().fetchEarlyLeave(FetchEarlyGoParameter (accYear: AppData.accYear!, admNo: AppData.admissionNo!));
+    context.read<EarlygoCubit>().fetchEarlyLeave(
+      FetchEarlyGoParameter(
+        accYear: AppData.accYear!,
+        admNo: AppData.admissionNo!,
+      ),
+    );
   }
 
   @override
@@ -31,7 +35,7 @@ class _EarlyGoScreenState extends State<EarlyGoScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
-        leading: const Icon(Icons.arrow_back, color: Colors.black),
+        //  leading: const Icon(Icons.arrow_back, color: Colors.black),
         title: const Text(
           "Early Go Request",
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600),

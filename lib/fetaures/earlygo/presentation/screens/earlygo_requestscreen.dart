@@ -261,7 +261,12 @@ class _EarlyGoRequestScreenState extends State<EarlyGoRequestScreen> {
     return BlocConsumer<EarlygoCubit, EarlygoState>(
       listener: (context, state) {
         if (state is SaveEarlyLeaveSuccess) {
-          context.read<EarlygoCubit>().fetchEarlyLeave(FetchEarlyGoParameter (accYear: AppData.accYear!, admNo: AppData.admissionNo!));
+          context.read<EarlygoCubit>().fetchEarlyLeave(
+            FetchEarlyGoParameter(
+              accYear: AppData.accYear!,
+              admNo: AppData.admissionNo!,
+            ),
+          );
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
@@ -285,7 +290,7 @@ class _EarlyGoRequestScreenState extends State<EarlyGoRequestScreen> {
           appBar: AppBar(
             backgroundColor: Colors.white,
             elevation: 0,
-            leading: const Icon(Icons.arrow_back, color: Colors.black),
+            //leading: const Icon(Icons.arrow_back, color: Colors.black),
             centerTitle: true,
             title: const Text(
               'Early Go Request',
@@ -323,9 +328,13 @@ class _EarlyGoRequestScreenState extends State<EarlyGoRequestScreen> {
                       initialTime: TimeOfDay.now(),
                     );
                     if (picked != null) {
-                      final hour = picked.hourOfPeriod == 0 ? 12 : picked.hourOfPeriod;
+                      final hour = picked.hourOfPeriod == 0
+                          ? 12
+                          : picked.hourOfPeriod;
                       final minute = picked.minute.toString().padLeft(2, '0');
-                      final period = picked.period == DayPeriod.am ? 'AM' : 'PM';
+                      final period = picked.period == DayPeriod.am
+                          ? 'AM'
+                          : 'PM';
                       timeController.text = '$hour:$minute $period';
                     }
                   },

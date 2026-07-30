@@ -27,37 +27,65 @@ class _SubjectPageState extends State<SubjectPage> {
     switch (name.toLowerCase()) {
       case "maths":
         return {
-          "icon": Image.asset('assets/icons/mathsicon.png', height: 24, width: 24),
+          "icon": Image.asset(
+            'assets/icons/mathsicon.png',
+            height: 24,
+            width: 24,
+          ),
           "color": const Color(0xFFFFF3C4),
         };
       case "physics":
         return {
-          "icon": Image.asset('assets/icons/physics_icon.png', height: 24, width: 24),
+          "icon": Image.asset(
+            'assets/icons/physics_icon.png',
+            height: 24,
+            width: 24,
+          ),
           "color": const Color(0xFFDDF5C9),
         };
       case "chemistry":
         return {
-          "icon": Image.asset('assets/icons/chemistry_icon.png', height: 24, width: 24),
+          "icon": Image.asset(
+            'assets/icons/chemistry_icon.png',
+            height: 24,
+            width: 24,
+          ),
           "color": const Color(0xFFD4F5D0),
         };
       case "english":
         return {
-          "icon": Image.asset('assets/icons/english_icon.png', height: 24, width: 24),
+          "icon": Image.asset(
+            'assets/icons/english_icon.png',
+            height: 24,
+            width: 24,
+          ),
           "color": const Color(0xFFD6EAF8),
         };
       case "gk":
         return {
-          "icon": Image.asset('assets/icons/chemistry_icon.png', height: 24, width: 24),
+          "icon": Image.asset(
+            'assets/icons/chemistry_icon.png',
+            height: 24,
+            width: 24,
+          ),
           "color": const Color(0xFFCFEEFF),
         };
       case "arabic":
         return {
-          "icon": Image.asset('assets/icons/chemistry_icon.png', height: 24, width: 24),
+          "icon": Image.asset(
+            'assets/icons/chemistry_icon.png',
+            height: 24,
+            width: 24,
+          ),
           "color": const Color(0xFFCFEEFF),
         };
       default:
         return {
-          "icon": Image.asset('assets/icons/physics_icon.png', height: 24, width: 24),
+          "icon": Image.asset(
+            'assets/icons/physics_icon.png',
+            height: 24,
+            width: 24,
+          ),
           "color": const Color(0xFFF8D7EC),
         };
     }
@@ -74,13 +102,17 @@ class _SubjectPageState extends State<SubjectPage> {
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          "Subject",
-          style: TextStyle(color: Colors.black),
-        ),
+        title: const Text("Subject", style: TextStyle(color: Colors.black)),
       ),
       body: BlocBuilder<MaterialCubit, MaterialsState>(
         builder: (context, state) {
+          if (state is SubjectsLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (state is SubjectsError) {
+            return Center(child: Text(state.message));
+          }
           if (state is SubjectsLoaded) {
             subjectList = state.response.data;
           }
@@ -98,8 +130,14 @@ class _SubjectPageState extends State<SubjectPage> {
               final style = getSubjectStyle(subjectName);
 
               return InkWell(
-                onTap: (){
-                  AppNavigator.pushSlide(context: context, page: MaterialListPage(subjectName: item.subjectName, subjectId: item.subjectId,));
+                onTap: () {
+                  AppNavigator.pushSlide(
+                    context: context,
+                    page: MaterialListPage(
+                      subjectName: item.subjectName,
+                      subjectId: item.subjectId,
+                    ),
+                  );
                 },
                 child: Container(
                   margin: const EdgeInsets.only(bottom: 16),

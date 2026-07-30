@@ -3,6 +3,7 @@ import 'package:studentmanagement/core/errors/error_message_model.dart';
 import 'package:studentmanagement/core/errors/exceptions.dart';
 import 'package:studentmanagement/core/network/api_endpoints.dart';
 import 'package:studentmanagement/core/network/apihelper.dart';
+import 'package:studentmanagement/core/network/dio_client.dart';
 import 'package:studentmanagement/fetaures/marklist/data/models/fetch_examterm_model.dart';
 import 'package:studentmanagement/fetaures/marklist/data/models/fetch_marklist_model.dart';
 import 'package:studentmanagement/fetaures/marklist/domain/parameter/fetch_marklist_parameter.dart';
@@ -16,8 +17,7 @@ abstract class MarkListRemoteDataSource {
 }
 
 class MarkListRemoteDataSourceImpl implements MarkListRemoteDataSource {
-  final Dio dio = Dio();
-
+  final Dio dio = DioClient.dio;
   @override
   Future<FetchExamTermResponseModel> fetchExamTerms() async {
     print('📘 Fetch Exam Terms Called');
@@ -98,9 +98,9 @@ class MarkListRemoteDataSourceImpl implements MarkListRemoteDataSource {
         url,
         data: params.toJson(),
         options: options,
-
       );
       print('response $response');
+
       /// 🔹 Parse Response
       if (response.statusCode == 200 || response.statusCode == 201) {
         return FetchMarkListResponseModel.fromJson(response.data);
